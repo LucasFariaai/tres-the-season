@@ -130,8 +130,8 @@ function MenuLine({
     >
       {/* Watermark number */}
       <span
-        className="absolute -left-1 top-1/2 -translate-y-1/2 font-display text-[80px] leading-none select-none pointer-events-none"
-        style={{ color: "#E8DCC8", opacity: 0.4 }}
+        className="absolute -left-1 -top-2 font-display text-[100px] leading-none select-none pointer-events-none"
+        style={{ color: "#E8DCC8", opacity: 0.2 }}
       >
         {num}
       </span>
