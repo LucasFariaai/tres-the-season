@@ -130,8 +130,8 @@ function MenuLine({
     >
       {/* Watermark number */}
       <span
-        className="absolute -left-1 top-1/2 -translate-y-1/2 font-display text-[80px] leading-none select-none pointer-events-none"
-        style={{ color: "#E8DCC8", opacity: 0.4 }}
+        className="absolute -left-1 -top-2 font-display text-[100px] leading-none select-none pointer-events-none"
+        style={{ color: "#E8DCC8", opacity: 0.2 }}
       >
         {num}
       </span>
@@ -213,12 +213,13 @@ export default function MenuPoem() {
           <div className="flex flex-col lg:flex-row">
             {/* Left: Sticky dish image showcase */}
             <div className="hidden lg:block lg:w-[45%] relative">
-              <div className="sticky top-14 h-[calc(100vh-3.5rem)] flex items-center justify-center p-8">
+            <div className="sticky top-0 h-screen flex items-center justify-center p-8">
                 <div
-                  className="relative w-full h-full max-h-[75vh] rounded-sm overflow-hidden"
+                  className="relative w-full max-h-[75vh] overflow-hidden"
                   style={{
-                    boxShadow:
-                      "inset 0 0 80px 20px rgba(26, 20, 16, 0.3), 0 20px 60px -15px rgba(26, 20, 16, 0.25)",
+                    aspectRatio: "3/4",
+                    maskImage: "radial-gradient(ellipse 75% 75% at center, black 45%, transparent 100%)",
+                    WebkitMaskImage: "radial-gradient(ellipse 75% 75% at center, black 45%, transparent 100%)",
                   }}
                 >
                   <img
@@ -233,11 +234,11 @@ export default function MenuPoem() {
                     width={800}
                     height={1000}
                   />
-                  {/* Vignette overlay */}
+                  {/* Soft overlay */}
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                      boxShadow: "inset 0 0 100px 30px rgba(26, 20, 16, 0.4)",
+                      background: "radial-gradient(ellipse at center, transparent 40%, rgba(247, 243, 237, 0.6) 100%)",
                     }}
                   />
                 </div>
@@ -270,7 +271,7 @@ export default function MenuPoem() {
                   className="font-body text-[13px]"
                   style={{ color: "#B8B0A3" }}
                 >
-                  8 servings · €185 per guest
+                  18 servings · €185 per guest
                 </p>
               </div>
 

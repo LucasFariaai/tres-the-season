@@ -1,35 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import { useSeason, seasonLabels, type Season } from "@/lib/seasonContext";
+
+import producer01 from "@/assets/producers/producer-01.jpg";
+import producer02 from "@/assets/producers/producer-02.jpg";
+import producer03 from "@/assets/producers/producer-03.jpg";
+import producer04 from "@/assets/producers/producer-04.jpg";
+import producer05 from "@/assets/producers/producer-05.jpg";
+import producer06 from "@/assets/producers/producer-06.jpg";
 
 interface Producer {
   name: string;
   specialty: string;
   distance: string;
-  quote: string;
+  image: string;
 }
 
-const producers: Record<Season, Producer[]> = {
-  winter: [
-    { name: "Vishandel de Kust", specialty: "North Sea fish, day-boat catch", distance: "12 km", quote: "The cold water gives the flesh its firm texture." },
-    { name: "Hoeve Biesland", specialty: "Root vegetables, heritage varieties", distance: "18 km", quote: "What sleeps under frozen ground feeds the soul." },
-    { name: "De Citroenboom", specialty: "Preserved citrus, ferments", distance: "8 km", quote: "Preservation is the art of patience." },
-  ],
-  spring: [
-    { name: "Tuin van Floddertje", specialty: "Wild herbs, edible flowers", distance: "6 km", quote: "Spring doesn't wait. We pick at dawn." },
-    { name: "Schapenboerderij Groen", specialty: "Young lamb, free-range", distance: "22 km", quote: "Our lambs taste the first grass of the year." },
-    { name: "Aspergehoeve", specialty: "White asparagus, hand-cut", distance: "28 km", quote: "Each spear is cut by hand, before sunrise." },
-  ],
-  summer: [
-    { name: "Tomatenkas Zuid", specialty: "Heirloom tomatoes, 40 varieties", distance: "15 km", quote: "A good tomato needs nothing but sunshine." },
-    { name: "Fruitweide", specialty: "Stone fruit, berries", distance: "20 km", quote: "Summer is too short not to taste it." },
-    { name: "Kruidenrijk", specialty: "Fresh herbs, micro greens", distance: "5 km", quote: "We grow flavour, not volume." },
-  ],
-  autumn: [
-    { name: "Wildhandel Veluwe", specialty: "Wild game, venison, pheasant", distance: "25 km", quote: "The forest provides when you respect it." },
-    { name: "Paddenstoelen Pracht", specialty: "Wild mushrooms, foraged", distance: "10 km", quote: "I know every tree in this forest by name." },
-    { name: "Landgoed de Herfst", specialty: "Pumpkin, quince, chestnuts", distance: "16 km", quote: "Autumn is not decline — it is ripening." },
-  ],
-};
+const producers: Producer[] = [
+  { name: "Willem de Boer", specialty: "Heritage lamb, Hoeksche Waard", distance: "18km", image: producer01 },
+  { name: "Anneke Visser", specialty: "Raw milk cheese, Alblasserwaard", distance: "24km", image: producer02 },
+  { name: "Joris van Dijk", specialty: "Line-caught fish, North Sea", distance: "28km", image: producer03 },
+  { name: "Marieke Bos", specialty: "Wild herbs & foraging, Biesbosch", distance: "15km", image: producer04 },
+  { name: "Pieter Hendriks", specialty: "Heritage vegetables, Westland", distance: "12km", image: producer05 },
+  { name: "Sanne de Groot", specialty: "Honeycomb & beeswax, Ridderkerk", distance: "8km", image: producer06 },
+];
 
 function ProducerCard({ producer, index }: { producer: Producer; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -38,7 +30,10 @@ function ProducerCard({ producer, index }: { producer: Producer; index: number }
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.unobserve(el); } }, { threshold: 0.2 });
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.unobserve(el); } },
+      { threshold: 0.2 }
+    );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
@@ -46,46 +41,184 @@ function ProducerCard({ producer, index }: { producer: Producer; index: number }
   return (
     <div
       ref={ref}
-      className="min-w-[280px] sm:min-w-[320px] snap-start bg-season-lighter/50 rounded-sm p-6 season-transition"
+      className="min-w-[280px] sm:min-w-[320px] snap-start rounded-lg overflow-hidden cursor-pointer group"
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(16px)",
-        transition: `all 0.5s ease ${index * 0.1}s`,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: `all 0.6s ease ${index * 0.1}s`,
+        boxShadow: "0 4px 20px -4px rgba(42, 31, 24, 0.15)",
       }}
     >
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="font-display text-lg text-season-darkest season-transition">{producer.name}</h3>
-        <span className="text-xs font-body text-season-mid season-transition">{producer.distance}</span>
+      {/* Portrait photo — top 65% */}
+      <div className="relative h-[280px] sm:h-[300px] overflow-hidden">
+        <img
+          src={producer.image}
+          alt={producer.name}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+          width={640}
+          height={896}
+        />
+        {/* Warm tint overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "rgba(42, 31, 24, 0.1)", mixBlendMode: "multiply" }}
+        />
       </div>
-      <p className="font-body text-sm text-season-mid mb-4 season-transition">{producer.specialty}</p>
-      <p className="font-accent text-sm text-season-dark season-transition">"{producer.quote}"</p>
+
+      {/* Info — bottom 35% */}
+      <div
+        className="p-5 transition-transform duration-300 group-hover:-translate-y-1"
+        style={{ backgroundColor: "#E8DCC8" }}
+      >
+        <h3 className="font-display text-lg" style={{ color: "#2A1F18" }}>
+          {producer.name}
+        </h3>
+        <p className="font-accent text-sm mt-1" style={{ color: "#8B7355" }}>
+          {producer.specialty}
+        </p>
+        <span
+          className="inline-block mt-3 px-3 py-1 text-xs font-body tracking-wide rounded-full"
+          style={{
+            color: "#8B7355",
+            border: "1px solid rgba(139, 115, 85, 0.3)",
+          }}
+        >
+          {producer.distance}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function SourcingRadius() {
+  const ref = useRef<SVGCircleElement>(null);
+  const [drawn, setDrawn] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setDrawn(true); obs.unobserve(el); } },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const circumference = 2 * Math.PI * 120;
+
+  return (
+    <div className="flex flex-col items-center mt-20 mb-8">
+      <svg width="260" height="260" viewBox="0 0 260 260" className="opacity-30">
+        <circle
+          ref={ref}
+          cx="130"
+          cy="130"
+          r="120"
+          fill="none"
+          stroke="hsl(var(--season-mid))"
+          strokeWidth="1"
+          strokeDasharray={circumference}
+          strokeDashoffset={drawn ? 0 : circumference}
+          style={{ transition: "stroke-dashoffset 2s ease-out" }}
+        />
+        {/* Center dot */}
+        <circle cx="130" cy="130" r="3" fill="hsl(var(--season-mid))" />
+      </svg>
+      <p
+        className="font-display text-lg mt-4 tracking-wide"
+        style={{ color: "#B8B0A3" }}
+      >
+        30km
+      </p>
+      <p
+        className="font-body text-xs uppercase tracking-[0.2em] mt-1"
+        style={{ color: "#B8B0A3" }}
+      >
+        Tres · Rotterdam
+      </p>
     </div>
   );
 }
 
 export default function ProducersSection() {
-  const { season } = useSeason();
-  const seasonProducers = producers[season];
-
   return (
-    <section id="producers" className="bg-background season-transition py-24 sm:py-32">
-      <div className="max-w-7xl mx-auto px-6">
-        <p className="font-body text-sm tracking-[0.3em] uppercase text-season-mid mb-4 season-transition">
-          The Producers Circle
+    <>
+      {/* Transitional quote strip */}
+      <div
+        className="w-full flex flex-col items-center justify-center px-6 text-center"
+        style={{
+          backgroundColor: "#2A1F18",
+          minHeight: "300px",
+          paddingTop: "80px",
+          paddingBottom: "80px",
+        }}
+      >
+        <p
+          className="font-display italic text-xl sm:text-2xl max-w-2xl leading-relaxed"
+          style={{ color: "#F7F3ED" }}
+        >
+          "The best producers and growers have been invited to be a part of this celebration of Dutch produce."
         </p>
-        <h2 className="font-display text-3xl sm:text-4xl text-season-dark mb-4 season-transition">
-          Within 30 kilometres
-        </h2>
-        <p className="font-body text-muted-foreground max-w-lg mb-12">
-          Every ingredient has a name. Every producer, a story. Our {seasonLabels[season].toLowerCase()} menu is shaped by what grows closest.
+        <p
+          className="font-body text-xs uppercase tracking-[0.25em] mt-6"
+          style={{ color: "#8B7355" }}
+        >
+          All ingredients sourced within 30km of Rotterdam
         </p>
-
-        <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6 scrollbar-hide">
-          {seasonProducers.map((p, i) => (
-            <ProducerCard key={`${season}-${p.name}`} producer={p} index={i} />
-          ))}
-        </div>
       </div>
-    </section>
+
+      {/* Producers section */}
+      <section
+        id="producers"
+        className="relative overflow-hidden py-24 sm:py-32"
+        style={{ backgroundColor: "#F7F3ED" }}
+      >
+        {/* Grain texture */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "256px 256px",
+          }}
+        />
+
+        <div className="relative z-[2] max-w-7xl mx-auto px-6">
+          {/* Section header */}
+          <div className="mb-16">
+            <p
+              className="font-body text-xs tracking-[0.3em] uppercase mb-4"
+              style={{ color: "#8B7355" }}
+            >
+              Our Producers
+            </p>
+            <h2
+              className="font-display text-4xl sm:text-5xl mb-4"
+              style={{ color: "#2A1F18" }}
+            >
+              The Circle
+            </h2>
+            <p
+              className="font-accent text-base max-w-lg"
+              style={{ color: "#8B7355" }}
+            >
+              Every name on this wall has shaped what you'll taste tonight.
+            </p>
+          </div>
+
+          {/* Horizontal scrolling cards */}
+          <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6 -mx-6 px-6 scrollbar-hide">
+            {producers.map((p, i) => (
+              <ProducerCard key={p.name} producer={p} index={i} />
+            ))}
+          </div>
+
+          {/* Sourcing radius visual */}
+          <SourcingRadius />
+        </div>
+      </section>
+    </>
   );
 }
