@@ -218,8 +218,7 @@ export default function MenuPoem() {
                   className="relative w-full max-h-[75vh] overflow-hidden"
                   style={{
                     aspectRatio: "3/4",
-                    maskImage: "radial-gradient(ellipse 75% 75% at center, black 45%, transparent 100%)",
-                    WebkitMaskImage: "radial-gradient(ellipse 75% 75% at center, black 45%, transparent 100%)",
+                    boxShadow: "0 8px 40px rgba(42, 31, 24, 0.15)",
                   }}
                 >
                   <img
@@ -234,19 +233,12 @@ export default function MenuPoem() {
                     width={800}
                     height={1000}
                   />
-                  {/* Soft overlay */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: "radial-gradient(ellipse at center, transparent 40%, rgba(247, 243, 237, 0.6) 100%)",
-                    }}
-                  />
                 </div>
               </div>
             </div>
 
             {/* Right: Menu items */}
-            <div className="w-full lg:w-[55%] px-6 sm:px-10 lg:px-16 pt-20 sm:pt-28 lg:pt-32 pb-24">
+            <div className="w-full lg:w-[55%] px-6 sm:px-10 lg:px-16 lg:pr-10 pt-20 sm:pt-28 lg:pt-32 pb-24" style={{ wordWrap: "break-word", overflowWrap: "break-word" }}>
               {/* Section header */}
               <div className="mb-16 sm:mb-20">
                 <p
