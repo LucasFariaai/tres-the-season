@@ -12,7 +12,14 @@ export default function SeasonBar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 season-transition bg-season-nav-bg text-season-nav-fg">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 season-transition text-season-nav-fg"
+      style={{
+        backgroundColor: "rgba(26, 20, 16, 0.3)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
         {/* Left: Logo */}
         <button
@@ -38,7 +45,13 @@ export default function SeasonBar() {
           </button>
 
           {pickerOpen && (
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-season-dark rounded-md shadow-xl overflow-hidden min-w-[160px]">
+            <div
+              className="absolute top-full left-1/2 -translate-x-1/2 mt-2 rounded-md shadow-xl overflow-hidden min-w-[160px]"
+              style={{
+                backgroundColor: "rgba(26, 20, 16, 0.85)",
+                backdropFilter: "blur(12px)",
+              }}
+            >
               {allSeasons.map((s) => (
                 <button
                   key={s}
