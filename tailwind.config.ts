@@ -101,6 +101,8 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "ken-burns": "ken-burns 20s ease-in-out infinite alternate",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
+        "scroll-line": "scroll-line 2s ease-in-out infinite",
+        "scroll-chevron": "scroll-chevron 2s ease-in-out infinite",
       },
     },
   },
