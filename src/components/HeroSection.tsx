@@ -21,7 +21,6 @@ function FloatingParticles() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Create 18 particles
     for (let i = 0; i < 18; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -103,22 +102,17 @@ export default function HeroSection() {
       {/* Floating particles */}
       <FloatingParticles />
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+      {/* Content — positioned at ~45% from top */}
+      <div className="relative z-10 h-full flex flex-col items-center px-4" style={{ justifyContent: "start", paddingTop: "35vh" }}>
         {/* Season label with decorative lines */}
-        <div
-          className="flex items-center gap-4 mb-8 opacity-0 hero-stagger-1"
-        >
+        <div className="flex items-center gap-4 mb-8 opacity-0 hero-stagger-1">
           <span className="block w-12 sm:w-16 h-px bg-season-mid/50" />
-          <button
-            onClick={() =>
-              document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })
-            }
-            className="font-accent text-sm tracking-[0.2em] uppercase text-season-mid season-transition cursor-default"
+          <span
+            className="font-accent text-sm tracking-[0.2em] uppercase text-season-mid season-transition"
             style={{ fontSize: "14px" }}
           >
             {seasonLabels[season]}
-          </button>
+          </span>
           <span className="block w-12 sm:w-16 h-px bg-season-mid/50" />
         </div>
 
@@ -133,12 +127,12 @@ export default function HeroSection() {
           Tres
         </h1>
 
-        {/* Tagline */}
+        {/* Tagline — always the signature quote */}
         <p
           className="font-accent text-lg sm:text-xl mt-6 opacity-0 hero-stagger-3"
           style={{ color: "#B8B0A3" }}
         >
-          {seasonQuotes[season]}
+          Complex without being complicated.
         </p>
 
         {/* Location */}
@@ -149,12 +143,21 @@ export default function HeroSection() {
           Kop van Zuid-Entrepot · Rotterdam
         </p>
 
-        {/* Reserve button */}
+        {/* Reserve button — semi-transparent fill for visibility */}
         <button
           onClick={() =>
             document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" })
           }
-          className="mt-10 px-8 py-3 border border-season-mid text-season-mid font-accent text-sm tracking-[0.15em] uppercase bg-transparent season-transition opacity-0 hero-stagger-5 hover:bg-season-mid hover:text-season-darkest transition-colors duration-300"
+          className="mt-10 px-8 py-3 border border-season-mid text-season-mid font-accent text-sm tracking-[0.15em] uppercase season-transition opacity-0 hero-stagger-5 hover:text-season-darkest transition-colors duration-300"
+          style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "";
+            e.currentTarget.classList.add("bg-season-mid");
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.classList.remove("bg-season-mid");
+            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)";
+          }}
         >
           Reserve
         </button>
