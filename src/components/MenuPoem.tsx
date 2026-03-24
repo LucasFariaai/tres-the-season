@@ -213,12 +213,13 @@ export default function MenuPoem() {
           <div className="flex flex-col lg:flex-row">
             {/* Left: Sticky dish image showcase */}
             <div className="hidden lg:block lg:w-[45%] relative">
-              <div className="sticky top-14 h-[calc(100vh-3.5rem)] flex items-center justify-center p-8">
+            <div className="sticky top-0 h-screen flex items-center justify-center p-8">
                 <div
-                  className="relative w-full h-full max-h-[75vh] rounded-sm overflow-hidden"
+                  className="relative w-full max-h-[75vh] overflow-hidden"
                   style={{
-                    boxShadow:
-                      "inset 0 0 80px 20px rgba(26, 20, 16, 0.3), 0 20px 60px -15px rgba(26, 20, 16, 0.25)",
+                    aspectRatio: "3/4",
+                    maskImage: "radial-gradient(ellipse 75% 75% at center, black 45%, transparent 100%)",
+                    WebkitMaskImage: "radial-gradient(ellipse 75% 75% at center, black 45%, transparent 100%)",
                   }}
                 >
                   <img
