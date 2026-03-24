@@ -271,7 +271,7 @@ export default function MenuPoem() {
                   className="font-body text-[13px]"
                   style={{ color: "#B8B0A3" }}
                 >
-                  8 servings · €185 per guest
+                  18 servings · €185 per guest
                 </p>
               </div>
 
