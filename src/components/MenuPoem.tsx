@@ -238,7 +238,7 @@ export default function MenuPoem() {
             </div>
 
             {/* Right: Menu items */}
-            <div className="w-full lg:w-[55%] px-6 sm:px-10 lg:px-16 pt-20 sm:pt-28 lg:pt-32 pb-24">
+            <div className="w-full lg:w-[55%] px-6 sm:px-10 lg:px-16 lg:pr-10 pt-20 sm:pt-28 lg:pt-32 pb-24" style={{ wordWrap: "break-word", overflowWrap: "break-word" }}>
               {/* Section header */}
               <div className="mb-16 sm:mb-20">
                 <p
