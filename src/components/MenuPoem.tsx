@@ -1,85 +1,161 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useSeason, seasonMenus, seasonLabels } from "@/lib/seasonContext";
-import menuSpring from "@/assets/menu-spring.jpg";
 
-// Seasonal palette shades for abstract circular thumbnails
-const seasonThumbnailColors: Record<string, string[]> = {
-  winter: [
-    "hsl(213, 27%, 24%)", "hsl(212, 14%, 48%)", "hsl(209, 18%, 71%)",
-    "hsl(210, 18%, 60%)", "hsl(213, 18%, 35%)", "hsl(220, 30%, 20%)",
-    "hsl(209, 18%, 55%)", "hsl(212, 14%, 40%)",
-  ],
+// Dish images — spring set (used as default for all seasons for now)
+import dish01 from "@/assets/dishes/dish-01.jpg";
+import dish02 from "@/assets/dishes/dish-02.jpg";
+import dish03 from "@/assets/dishes/dish-03.jpg";
+import dish04 from "@/assets/dishes/dish-04.jpg";
+import dish05 from "@/assets/dishes/dish-05.jpg";
+import dish06 from "@/assets/dishes/dish-06.jpg";
+import dish07 from "@/assets/dishes/dish-07.jpg";
+import dish08 from "@/assets/dishes/dish-08.jpg";
+
+const dishImages = [dish01, dish02, dish03, dish04, dish05, dish06, dish07, dish08];
+
+// Poetic one-line descriptions per season per dish
+const seasonDescriptions: Record<string, string[]> = {
   spring: [
-    "hsl(130, 20%, 33%)", "hsl(120, 22%, 53%)", "hsl(118, 30%, 70%)",
-    "hsl(132, 18%, 42%)", "hsl(118, 35%, 60%)", "hsl(130, 25%, 28%)",
-    "hsl(120, 22%, 45%)", "hsl(118, 30%, 55%)",
+    "Spring pastures, first foraging",
+    "The earth still cool, the stem still pale",
+    "Hedgerow blossoms, morning milk",
+    "Forest floor after rain",
+    "The garden at its gentlest",
+    "First warmth, first sweetness",
+    "Wildflowers pressed into curd",
+    "A whisper of citrus and herb",
   ],
   summer: [
-    "hsl(30, 32%, 31%)", "hsl(34, 30%, 50%)", "hsl(38, 45%, 65%)",
-    "hsl(40, 55%, 55%)", "hsl(34, 30%, 40%)", "hsl(30, 32%, 25%)",
-    "hsl(38, 45%, 50%)", "hsl(34, 30%, 60%)",
+    "Sun-warmed, hand-torn, still breathing",
+    "Orchard heat trapped in juice",
+    "Tide pools at golden hour",
+    "Pollen dust on yellow petals",
+    "The garden in full chorus",
+    "Stone fruit, sun-split, fragrant",
+    "Aged slowly, served simply",
+    "The long day's last sweetness",
   ],
   autumn: [
-    "hsl(22, 38%, 26%)", "hsl(22, 40%, 39%)", "hsl(30, 55%, 50%)",
-    "hsl(32, 50%, 45%)", "hsl(22, 38%, 33%)", "hsl(24, 30%, 20%)",
-    "hsl(30, 55%, 40%)", "hsl(22, 40%, 50%)",
+    "Dark woods, cold morning, smoke",
+    "Earth and age, nothing wasted",
+    "Field to fire, butter to brown",
+    "Preserved before the frost",
+    "Raw edge, soft centre",
+    "Roots, bark, deep forest",
+    "Rind and rot, noble and true",
+    "Bitterness tempered by heat",
+  ],
+  winter: [
+    "Cold sea, patient hands",
+    "Underground, unhurried",
+    "Brightness against the grey",
+    "River to smoke to silk",
+    "What the earth gives slowly",
+    "Ice crystals on crimson",
+    "Time compressed into flavour",
+    "Dark, salt, stillness",
   ],
 };
 
-function MenuLine({ text, index, season }: { text: string; index: number; season: string }) {
+const seasonSubheadings: Record<string, string> = {
+  spring: "A celebration of first growth",
+  summer: "Abundance at the golden hour",
+  autumn: "The harvest, the hearth, the fire",
+  winter: "Stillness, depth, preservation",
+};
+
+function MenuLine({
+  text,
+  description,
+  index,
+  onInView,
+}: {
+  text: string;
+  description: string;
+  index: number;
+  onInView: (index: number) => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
+
+    // Fade-in observer
+    const fadeObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-          observer.unobserve(el);
+          fadeObserver.unobserve(el);
         }
       },
       { threshold: 0.3 }
     );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    fadeObserver.observe(el);
 
-  const colors = seasonThumbnailColors[season] || seasonThumbnailColors.spring;
+    // Active-tracking observer (center of viewport)
+    const activeObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          onInView(index);
+        }
+      },
+      {
+        rootMargin: "-40% 0px -40% 0px",
+        threshold: 0.1,
+      }
+    );
+    activeObserver.observe(el);
+
+    return () => {
+      fadeObserver.disconnect();
+      activeObserver.disconnect();
+    };
+  }, [index, onInView]);
+
   const num = String(index + 1).padStart(2, "0");
 
   return (
     <div
       ref={ref}
-      className="relative py-6 border-b border-season-lighter/30 season-transition"
+      className="relative"
       style={{
+        paddingTop: index === 0 ? "0px" : "40px",
+        paddingBottom: "40px",
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`,
+        transition: `opacity 0.7s ease ${index * 0.08}s, transform 0.7s ease ${index * 0.08}s`,
       }}
     >
       {/* Watermark number */}
       <span
-        className="absolute -left-2 top-1/2 -translate-y-1/2 font-display text-[80px] leading-none select-none pointer-events-none season-transition"
-        style={{ opacity: 0.06 }}
+        className="absolute -left-1 top-1/2 -translate-y-1/2 font-display text-[80px] leading-none select-none pointer-events-none"
+        style={{ color: "#E8DCC8", opacity: 0.4 }}
       >
         {num}
       </span>
 
-      <div className="flex items-center gap-5 relative z-10">
-        {/* Circular color thumbnail */}
-        <div
-          className="w-[60px] h-[60px] rounded-full flex-shrink-0"
-          style={{
-            backgroundColor: colors[index % colors.length],
-            opacity: 0.7,
-          }}
-        />
-        <span className="font-display text-xl sm:text-2xl md:text-[28px] text-season-dark season-transition leading-snug">
+      <div className="relative z-10 pl-14 sm:pl-16">
+        <h3
+          className="font-display text-[22px] sm:text-[26px] leading-snug"
+          style={{ color: "#2A1F18" }}
+        >
           {text}
-        </span>
+        </h3>
+        <p
+          className="font-accent text-[14px] sm:text-[15px] mt-1.5"
+          style={{ color: "#8B7355" }}
+        >
+          {description}
+        </p>
       </div>
+
+      {/* Divider */}
+      <div
+        className="mt-8 sm:mt-10 h-px w-full"
+        style={{ backgroundColor: "#E8DCC8" }}
+      />
     </div>
   );
 }
@@ -87,80 +163,167 @@ function MenuLine({ text, index, season }: { text: string; index: number; season
 export default function MenuPoem() {
   const { season } = useSeason();
   const menu = seasonMenus[season];
+  const descriptions = seasonDescriptions[season] || seasonDescriptions.spring;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [displayIndex, setDisplayIndex] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  const handleInView = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
+
+  // Crossfade image when active dish changes
+  useEffect(() => {
+    if (activeIndex === displayIndex) return;
+    setFading(true);
+    const timeout = setTimeout(() => {
+      setDisplayIndex(activeIndex);
+      setFading(false);
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, [activeIndex, displayIndex]);
 
   return (
-    <section id="menu" className="bg-season-lightest season-transition relative overflow-hidden">
-      {/* Paper texture overlay */}
+    <>
+      {/* Hero-to-menu gradient transition strip */}
       <div
-        className="absolute inset-0 pointer-events-none z-[1]"
+        className="h-[150px] w-full"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "256px 256px",
+          background: "linear-gradient(to bottom, #1A1410, #F7F3ED)",
         }}
       />
 
-      <div className="relative z-[2] max-w-7xl mx-auto">
-        {/* Section header */}
-        <div className="px-6 pt-24 sm:pt-32 pb-12 text-center">
-          <p className="font-body text-sm tracking-[0.3em] uppercase text-season-mid mb-4 season-transition">
-            Tasting Menu · {seasonLabels[season]}
-          </p>
-          <h2 className="font-accent text-xl sm:text-2xl text-season-dark mb-4 season-transition">
-            {menu.subtitle}
-          </h2>
-          <p className="font-body text-sm text-season-mid/70 season-transition">
-            8 servings · €185 per guest
-          </p>
-        </div>
+      <section
+        id="menu"
+        className="relative overflow-hidden"
+        style={{ backgroundColor: "#F7F3ED" }}
+      >
+        {/* Paper texture overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "256px 256px",
+          }}
+        />
 
-        {/* Two-column layout */}
-        <div className="flex flex-col lg:flex-row">
-          {/* Left: Sticky image */}
-          <div className="hidden lg:block lg:w-[40%] relative">
-            <div className="sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
-              <img
-                src={menuSpring}
-                alt="Seasonal ingredients"
-                className="w-full h-full object-cover"
-                loading="lazy"
-                width={640}
-                height={960}
-              />
-              {/* Seasonal tint overlay */}
-              <div
-                className="absolute inset-0 bg-season-dark/20 mix-blend-multiply season-transition"
-              />
+        <div className="relative z-[2] max-w-7xl mx-auto">
+          {/* Two-column layout */}
+          <div className="flex flex-col lg:flex-row">
+            {/* Left: Sticky dish image showcase */}
+            <div className="hidden lg:block lg:w-[45%] relative">
+              <div className="sticky top-14 h-[calc(100vh-3.5rem)] flex items-center justify-center p-8">
+                <div
+                  className="relative w-full h-full max-h-[75vh] rounded-sm overflow-hidden"
+                  style={{
+                    boxShadow:
+                      "inset 0 0 80px 20px rgba(26, 20, 16, 0.3), 0 20px 60px -15px rgba(26, 20, 16, 0.25)",
+                  }}
+                >
+                  <img
+                    src={dishImages[displayIndex % dishImages.length]}
+                    alt={menu.items[displayIndex] || "Seasonal dish"}
+                    className="w-full h-full object-cover"
+                    style={{
+                      opacity: fading ? 0 : 1,
+                      transition: "opacity 0.3s ease",
+                    }}
+                    loading="lazy"
+                    width={800}
+                    height={1000}
+                  />
+                  {/* Vignette overlay */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      boxShadow: "inset 0 0 100px 30px rgba(26, 20, 16, 0.4)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Menu items */}
+            <div className="w-full lg:w-[55%] px-6 sm:px-10 lg:px-16 pt-20 sm:pt-28 lg:pt-32 pb-24">
+              {/* Section header */}
+              <div className="mb-16 sm:mb-20">
+                <p
+                  className="font-body text-xs tracking-[0.3em] uppercase mb-4"
+                  style={{ color: "#8B7355" }}
+                >
+                  Tasting Menu
+                </p>
+                <h2
+                  className="font-display italic text-3xl sm:text-4xl mb-3 season-transition"
+                  style={{ color: "hsl(var(--season-dark))" }}
+                >
+                  {seasonLabels[season]}
+                </h2>
+                <p
+                  className="font-accent text-base mb-3"
+                  style={{ color: "#B8B0A3" }}
+                >
+                  {seasonSubheadings[season]}
+                </p>
+                <p
+                  className="font-body text-[13px]"
+                  style={{ color: "#B8B0A3" }}
+                >
+                  8 servings · €185 per guest
+                </p>
+              </div>
+
+              {/* Menu items */}
+              <div>
+                {menu.items.map((item, i) => (
+                  <MenuLine
+                    key={`${season}-${i}`}
+                    text={item}
+                    description={descriptions[i] || ""}
+                    index={i}
+                    onInView={handleInView}
+                  />
+                ))}
+              </div>
+
+              {/* Pairings */}
+              <div className="mt-8 pt-8">
+                <p
+                  className="font-body text-sm text-center"
+                  style={{ color: "#B8B0A3" }}
+                >
+                  Wine pairing €110 · Non-alcoholic pairing €100
+                </p>
+              </div>
+
+              {/* CTA */}
+              <div className="mt-12 text-center">
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("reserve")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="inline-block px-10 py-4 font-display text-sm tracking-[0.12em] uppercase rounded-sm transition-colors duration-300"
+                  style={{
+                    backgroundColor: "#2A1F18",
+                    color: "#F7F3ED",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = `hsl(var(--season-dark))`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#2A1F18";
+                  }}
+                >
+                  Reserve Your Evening
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* Right: Menu items */}
-          <div className="w-full lg:w-[60%] px-6 sm:px-10 lg:px-16 pb-24">
-            <div>
-              {menu.items.map((item, i) => (
-                <MenuLine key={`${season}-${i}`} text={item} index={i} season={season} />
-              ))}
-            </div>
-
-            {/* Pairings */}
-            <div className="mt-12 pt-8 border-t border-season-lighter/30">
-              <p className="font-body text-sm text-season-mid/70 season-transition text-center">
-                Wine pairing €110 · Non-alcoholic pairing €100
-              </p>
-            </div>
-
-            {/* CTA */}
-            <div className="mt-12 text-center">
-              <button
-                onClick={() => document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" })}
-                className="inline-block px-10 py-4 bg-season-dark text-season-lightest font-accent text-sm tracking-[0.15em] uppercase rounded-sm hover:bg-season-darkest transition-colors season-transition"
-              >
-                Reserve Your Evening
-              </button>
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
