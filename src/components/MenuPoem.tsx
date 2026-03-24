@@ -234,11 +234,11 @@ export default function MenuPoem() {
                     width={800}
                     height={1000}
                   />
-                  {/* Vignette overlay */}
+                  {/* Soft overlay */}
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                      boxShadow: "inset 0 0 100px 30px rgba(26, 20, 16, 0.4)",
+                      background: "radial-gradient(ellipse at center, transparent 40%, rgba(247, 243, 237, 0.6) 100%)",
                     }}
                   />
                 </div>
