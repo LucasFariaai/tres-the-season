@@ -55,6 +55,7 @@ interface Props {
   hoveredIndex: number | null;
   onPinClick: (index: number) => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, className }: Props) {
