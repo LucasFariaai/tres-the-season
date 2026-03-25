@@ -104,7 +104,13 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
 
     if (effectiveActive !== null && effectiveActive >= 0 && effectiveActive < producers.length) {
       const p = producers[effectiveActive];
-      map.flyTo([p.lat, p.lng], 12, { duration: 0.4 });
+      const lat = Number(p.lat);
+      const lng = Number(p.lng);
+      if (Number.isFinite(lat) && Number.isFinite(lng)) {
+        try {
+          map.flyTo([lat, lng], 12, { duration: 0.4 });
+        } catch (_) { /* map not ready */ }
+      }
       markersRef.current[effectiveActive]?.openPopup();
     }
   }, [activeIndex, hoveredIndex]);
