@@ -58,10 +58,9 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, className }: Props) {
+export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, className, style }: Props) {
   const effectiveActive = activeIndex ?? hoveredIndex;
 
-  // Muted warm tile layer (Stadia Alidade Smooth - warm/muted)
   const tileUrl = "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png";
   const attribution = '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>';
 
@@ -72,6 +71,7 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
         boxShadow: "inset 0 0 30px rgba(42, 31, 24, 0.08)",
         borderRadius: "4px",
         overflow: "hidden",
+        ...style,
       }}
     >
       <MapContainer
