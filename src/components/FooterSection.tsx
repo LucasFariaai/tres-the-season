@@ -1,5 +1,5 @@
 import { Instagram, Facebook } from "lucide-react";
-import logoTres from "@/assets/logo-tres.png";
+import logoTres from "@/assets/logo-tres-svg.svg";
 
 export default function FooterSection() {
   return (

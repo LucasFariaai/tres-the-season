@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useSeason, seasonLabels, seasonQuotes } from "@/lib/seasonContext";
+import { useSeason, seasonLabels } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import logoTres from "@/assets/logo-tres.png";
+import logoTres from "@/assets/logo-tres-svg.svg";
 
 function FloatingParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -68,6 +68,48 @@ function FloatingParticles() {
   );
 }
 
+function DotsToLogo() {
+  const [dot1, setDot1] = useState(false);
+  const [dot2, setDot2] = useState(false);
+  const [dot3, setDot3] = useState(false);
+  const [phase, setPhase] = useState<"dots" | "logo">("dots");
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setDot1(true), 0);
+    const t2 = setTimeout(() => setDot2(true), 2000);
+    const t3 = setTimeout(() => setDot3(true), 4000);
+    const t4 = setTimeout(() => setPhase("logo"), 14000);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+  }, []);
+
+  return (
+    <div className="relative flex items-center justify-center" style={{ minHeight: "50px" }}>
+      {/* Dots */}
+      <div
+        className="flex items-center justify-center gap-3 transition-opacity duration-1000"
+        style={{ opacity: phase === "dots" ? 1 : 0, position: phase === "logo" ? "absolute" : "relative" }}
+      >
+        <span className="w-4 h-4 bg-white rounded-full transition-opacity duration-1000" style={{ opacity: dot1 ? 1 : 0 }} />
+        <span className="w-4 h-4 bg-white rounded-full transition-opacity duration-1000" style={{ opacity: dot2 ? 1 : 0 }} />
+        <span className="w-4 h-4 bg-white rounded-full transition-opacity duration-1000" style={{ opacity: dot3 ? 1 : 0 }} />
+      </div>
+      {/* Logo */}
+      <img
+        src={logoTres}
+        alt="Tres"
+        className="transition-opacity duration-1000"
+        style={{
+          opacity: phase === "logo" ? 1 : 0,
+          height: "45px",
+          width: "auto",
+          position: phase === "dots" ? "absolute" : "relative",
+          filter: "brightness(0) invert(1)",
+        }}
+      />
+    </div>
+  );
+}
+
 export default function HeroSection() {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
@@ -81,73 +123,52 @@ export default function HeroSection() {
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-[#1A1410]">
-      {/* Background video */}
       <div className="absolute inset-0">
         <video
           key={isMobile ? "mobile" : "desktop"}
-          autoPlay
-          muted
-          loop
-          playsInline
+          autoPlay muted loop playsInline
           className="w-full h-full object-cover"
           src={isMobile ? "/videos/hero-mobile.mp4" : "/videos/hero-desktop.mp4"}
         />
       </div>
 
-      {/* Vignette overlay */}
       <div
         className="absolute inset-0 z-[1]"
         style={{
-          background:
-            "radial-gradient(ellipse at center, rgba(26,20,16,0.15) 0%, rgba(26,20,16,0.55) 60%, rgba(26,20,16,0.85) 100%)",
+          background: "radial-gradient(ellipse at center, rgba(26,20,16,0.15) 0%, rgba(26,20,16,0.55) 60%, rgba(26,20,16,0.85) 100%)",
         }}
       />
 
-      {/* Floating particles */}
       <FloatingParticles />
 
-      {/* Content — positioned at ~45% from top */}
       <div className="relative z-10 h-full flex flex-col items-center px-4" style={{ justifyContent: "start", paddingTop: "35vh" }}>
         {/* Season label */}
         <div className="flex items-center gap-4 mb-8 opacity-0 hero-stagger-1">
           <span className="block w-12 sm:w-16 h-px bg-white/30" />
-          <span
-            className="font-accent text-sm tracking-[0.2em] uppercase season-transition"
-            style={{ color: "#FFFFFF", fontSize: "14px" }}
-          >
+          <span className="font-accent text-sm tracking-[0.2em] uppercase" style={{ color: "#FFFFFF", fontSize: "14px" }}>
             {seasonLabels[season]}
           </span>
           <span className="block w-12 sm:w-16 h-px bg-white/30" />
         </div>
 
-        {/* Animated dots */}
-        <div className="flex justify-center items-center gap-3 opacity-0 hero-stagger-2">
-          <span className="w-4 h-4 bg-white rounded-full animate-bolinha" style={{ animationDelay: "0s" }} />
-          <span className="w-4 h-4 bg-white rounded-full animate-bolinha" style={{ animationDelay: "0.2s" }} />
-          <span className="w-4 h-4 bg-white rounded-full animate-bolinha" style={{ animationDelay: "0.4s" }} />
+        {/* Animated dots → logo */}
+        <div className="opacity-0 hero-stagger-2">
+          <DotsToLogo />
         </div>
 
         {/* Tagline */}
-        <p
-          className="font-accent text-lg sm:text-xl mt-6 opacity-0 hero-stagger-3"
-          style={{ color: "#B8B0A3" }}
-        >
+        <p className="font-accent text-lg sm:text-xl mt-6 opacity-0 hero-stagger-3" style={{ color: "#B8B0A3" }}>
           Complex without being complicated.
         </p>
 
         {/* Location */}
-        <p
-          className="font-body text-xs sm:text-[13px] uppercase tracking-[0.2em] mt-4 opacity-0 hero-stagger-4"
-          style={{ color: "#B8B0A3" }}
-        >
+        <p className="font-body text-xs sm:text-[13px] uppercase tracking-[0.2em] mt-4 opacity-0 hero-stagger-4" style={{ color: "#B8B0A3" }}>
           Kop van Zuid-Entrepot · Rotterdam
         </p>
 
-        {/* Reserve button — glassy style */}
+        {/* Reserve button */}
         <button
-          onClick={() =>
-            document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" })
-          }
+          onClick={() => document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" })}
           className="mt-10 flex items-center gap-1.5 text-[13px] font-body tracking-wide px-6 py-3 rounded-full transition-all duration-300 opacity-0 hero-stagger-5 hover:opacity-90"
           style={{
             backgroundColor: "rgba(247, 243, 237, 0.15)",
@@ -165,21 +186,9 @@ export default function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 transition-opacity duration-500 ${
-          scrolled ? "opacity-0 pointer-events-none" : "opacity-60"
-        }`}
-      >
+      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 transition-opacity duration-500 ${scrolled ? "opacity-0 pointer-events-none" : "opacity-60"}`}>
         <span className="block w-px h-8 bg-gradient-to-b from-transparent to-[#B8B0A3] animate-scroll-line" />
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="#B8B0A3"
-          strokeWidth="1"
-          className="animate-scroll-chevron"
-        >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#B8B0A3" strokeWidth="1" className="animate-scroll-chevron">
           <path d="M3 6l5 5 5-5" />
         </svg>
       </div>

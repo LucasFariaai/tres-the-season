@@ -95,11 +95,6 @@ export default {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "bolinha": {
-          "0%": { opacity: "0" },
-          "30%": { opacity: "1" },
-          "100%": { opacity: "0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -108,7 +103,7 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
         "scroll-line": "scroll-line 2s ease-in-out infinite",
         "scroll-chevron": "scroll-chevron 2s ease-in-out infinite",
-        "bolinha": "bolinha 1.4s infinite both",
+        
       },
     },
   },
