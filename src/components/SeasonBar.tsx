@@ -1,4 +1,5 @@
 import { useSeason } from "@/lib/seasonContext";
+import { useNavigate } from "react-router-dom";
 
 export default function SeasonBar() {
   const scrollTo = (id: string) => {
@@ -47,7 +48,7 @@ export default function SeasonBar() {
 
         {/* Right: Reserve button */}
         <button
-          onClick={() => scrollTo("reserve")}
+          onClick={() => navigate("/reserve")}
           className="flex items-center gap-1.5 text-[13px] font-body tracking-wide px-5 py-2 rounded-full transition-opacity hover:opacity-90"
           style={{
             backgroundColor: "#2A1F18",
