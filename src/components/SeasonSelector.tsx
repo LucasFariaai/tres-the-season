@@ -69,18 +69,22 @@ export default function SeasonSelector() {
       <div className="flex flex-row gap-3 sm:gap-4 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto h-[400px] sm:h-[450px] lg:h-[500px]">
         {allSeasons.map((s, index) => {
           const isActive = s === season;
+          const isHovered = hoveredSeason === s;
+          const isExpanded = isActive || isHovered;
           const hasAnimated = animatedIn.includes(index);
 
           return (
             <motion.button
               key={s}
               onClick={() => setSeason(s)}
+              onMouseEnter={() => setHoveredSeason(s)}
+              onMouseLeave={() => setHoveredSeason(null)}
               className="relative overflow-hidden rounded-sm"
               style={{
                 opacity: hasAnimated ? 1 : 0,
                 transform: hasAnimated ? "translateX(0)" : "translateX(-60px)",
                 transition: "opacity 0.6s ease, transform 0.6s ease, flex 0.6s cubic-bezier(0.32, 0.72, 0, 1)",
-                flex: isActive ? 4 : 1,
+                flex: isExpanded ? 4 : 1,
               }}
             >
               {/* Shadow overlay */}
