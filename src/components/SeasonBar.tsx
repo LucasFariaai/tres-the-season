@@ -2,6 +2,7 @@ import { useSeason } from "@/lib/seasonContext";
 import { useNavigate } from "react-router-dom";
 
 export default function SeasonBar() {
+  const navigate = useNavigate();
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
