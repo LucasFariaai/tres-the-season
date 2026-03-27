@@ -1,9 +1,9 @@
-import producer01 from "@/assets/producers/producer-01.jpg";
-import producer02 from "@/assets/producers/producer-02.jpg";
-import producer03 from "@/assets/producers/producer-03.jpg";
-import producer04 from "@/assets/producers/producer-04.jpg";
-import producer05 from "@/assets/producers/producer-05.jpg";
-import producer06 from "@/assets/producers/producer-06.jpg";
+import detailFlowerWood from "@/assets/detail-flower-wood.jpg";
+import detailFlowerLinen from "@/assets/detail-flower-linen.jpg";
+import detailDishFoam from "@/assets/detail-dish-foam.jpg";
+import detailPetitFours from "@/assets/detail-petit-fours.jpg";
+import detailTomatoBowl from "@/assets/detail-tomato-bowl.jpg";
+import detailVangoghFrame from "@/assets/detail-vangogh-frame.jpg";
 import type { Producer } from "./types";
 
 export const TRES_LOCATION = { lat: 51.9000, lng: 4.4950 };
@@ -11,63 +11,63 @@ export const RADIUS_KM = 30;
 
 export const producers: Producer[] = [
   {
-    name: "Willem de Boer",
-    specialty: "Heritage lamb, Hoeksche Waard",
-    distance: "18km",
-    image: producer01,
-    region: "Hoeksche Waard",
-    lat: 51.7500,
-    lng: 4.3500,
-    quote: "Willem's lambs graze on heritage salt marshes, giving the meat a natural mineral depth.",
+    name: "De Bloementuin",
+    specialty: "Edible flowers & table floristry",
+    distance: "12km",
+    image: detailFlowerWood,
+    region: "Ridderkerk",
+    lat: 51.8700,
+    lng: 4.5900,
+    quote: "Each table receives a single stem arranged by hand — a living echo of what grows in the fields that week.",
   },
   {
-    name: "Anneke Visser",
-    specialty: "Raw milk cheese, Alblasserwaard",
-    distance: "24km",
-    image: producer02,
-    region: "Alblasserwaard",
-    lat: 51.8600,
-    lng: 4.6800,
-    quote: "Anneke ages her wheels in a centuries-old cellar beneath the family farmhouse.",
+    name: "Atelier Rosa",
+    specialty: "Heritage rose varieties, Biesbosch",
+    distance: "15km",
+    image: detailFlowerLinen,
+    region: "Biesbosch",
+    lat: 51.8100,
+    lng: 4.7200,
+    quote: "Dried petals from Rosa's garden infuse our vinegars and garnish our desserts year-round.",
   },
   {
     name: "Joris van Dijk",
     specialty: "Line-caught fish, North Sea",
     distance: "28km",
-    image: producer03,
+    image: detailDishFoam,
     region: "North Sea",
     lat: 51.9700,
     lng: 4.2000,
-    quote: "Joris fishes with hook and line — each catch is chosen, never trawled.",
+    quote: "Joris fishes with hook and line — each catch is chosen, never trawled. The foam is made from the bones.",
   },
   {
     name: "Marieke Bos",
-    specialty: "Wild herbs & foraging, Biesbosch",
-    distance: "15km",
-    image: producer04,
-    region: "Biesbosch",
-    lat: 51.8100,
-    lng: 4.7200,
-    quote: "Marieke forages before dawn, when the oils in wild herbs are at their peak.",
+    specialty: "Wild herbs & ferments, Biesbosch",
+    distance: "22km",
+    image: detailPetitFours,
+    region: "Hoeksche Waard",
+    lat: 51.7500,
+    lng: 4.3500,
+    quote: "Marieke's lacto-fermented berries and bark extracts shape our petit fours each season.",
   },
   {
     name: "Pieter Hendriks",
     specialty: "Heritage vegetables, Westland",
-    distance: "12km",
-    image: producer05,
+    distance: "14km",
+    image: detailTomatoBowl,
     region: "Westland",
     lat: 52.0200,
     lng: 4.2900,
-    quote: "Pieter grows forgotten Dutch varieties — seeds saved across five generations.",
+    quote: "Pieter grows forgotten Dutch varieties — seeds saved across five generations, served raw at their peak.",
   },
   {
-    name: "Sanne de Groot",
-    specialty: "Honeycomb & beeswax, Ridderkerk",
+    name: "Anneke Visser",
+    specialty: "Art & craft, Dutch tradition",
     distance: "8km",
-    image: producer06,
-    region: "Ridderkerk",
-    lat: 51.8700,
-    lng: 4.5900,
-    quote: "Sanne's bees pollinate the orchards that supply half the region's fruit.",
+    image: detailVangoghFrame,
+    region: "Alblasserwaard",
+    lat: 51.8600,
+    lng: 4.6800,
+    quote: "At Tres, even the presentation pays homage to Dutch mastery — the plate as canvas, the ingredient as paint.",
   },
 ];
