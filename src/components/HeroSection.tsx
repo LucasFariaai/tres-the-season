@@ -108,29 +108,26 @@ export default function HeroSection() {
 
       {/* Content — positioned at ~45% from top */}
       <div className="relative z-10 h-full flex flex-col items-center px-4" style={{ justifyContent: "start", paddingTop: "35vh" }}>
-        {/* Season label with decorative lines */}
+        {/* Season label */}
         <div className="flex items-center gap-4 mb-8 opacity-0 hero-stagger-1">
-          <span className="block w-12 sm:w-16 h-px bg-season-mid/50" />
+          <span className="block w-12 sm:w-16 h-px bg-white/30" />
           <span
-            className="font-accent text-sm tracking-[0.2em] uppercase text-season-mid season-transition"
-            style={{ fontSize: "14px" }}
+            className="font-accent text-sm tracking-[0.2em] uppercase season-transition"
+            style={{ color: "#FFFFFF", fontSize: "14px" }}
           >
             {seasonLabels[season]}
           </span>
-          <span className="block w-12 sm:w-16 h-px bg-season-mid/50" />
+          <span className="block w-12 sm:w-16 h-px bg-white/30" />
         </div>
 
-        {/* Restaurant name */}
-        <img
-          src={logoTres}
-          alt="Tres"
-          className="h-20 sm:h-28 md:h-36 w-auto opacity-0 hero-stagger-2"
-          style={{
-            filter: "drop-shadow(0 2px 40px rgba(26,20,16,0.5))",
-          }}
-        />
+        {/* Animated dots */}
+        <div className="flex justify-center items-center gap-3 opacity-0 hero-stagger-2">
+          <span className="w-4 h-4 bg-white rounded-full animate-bolinha" style={{ animationDelay: "0s" }} />
+          <span className="w-4 h-4 bg-white rounded-full animate-bolinha" style={{ animationDelay: "0.2s" }} />
+          <span className="w-4 h-4 bg-white rounded-full animate-bolinha" style={{ animationDelay: "0.4s" }} />
+        </div>
 
-        {/* Tagline — always the signature quote */}
+        {/* Tagline */}
         <p
           className="font-accent text-lg sm:text-xl mt-6 opacity-0 hero-stagger-3"
           style={{ color: "#B8B0A3" }}
@@ -146,23 +143,24 @@ export default function HeroSection() {
           Kop van Zuid-Entrepot · Rotterdam
         </p>
 
-        {/* Reserve button — semi-transparent fill for visibility */}
+        {/* Reserve button — glassy style */}
         <button
           onClick={() =>
             document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" })
           }
-          className="mt-10 px-8 py-3 border border-season-mid text-season-mid font-accent text-sm tracking-[0.15em] uppercase season-transition opacity-0 hero-stagger-5 hover:text-season-darkest transition-colors duration-300"
-          style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "";
-            e.currentTarget.classList.add("bg-season-mid");
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.classList.remove("bg-season-mid");
-            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)";
+          className="mt-10 flex items-center gap-1.5 text-[13px] font-body tracking-wide px-6 py-3 rounded-full transition-all duration-300 opacity-0 hero-stagger-5 hover:opacity-90"
+          style={{
+            backgroundColor: "rgba(247, 243, 237, 0.15)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            color: "#F7F3ED",
           }}
         >
           Reserve
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M4 12L12 4M12 4H6M12 4V10" />
+          </svg>
         </button>
       </div>
 
