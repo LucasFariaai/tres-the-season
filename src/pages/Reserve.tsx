@@ -2,8 +2,6 @@ import { useState } from "react";
 import ReservationHero from "@/components/reservations/ReservationHero";
 import DateTimePicker from "@/components/reservations/DateTimePicker";
 import PartySizeSelector from "@/components/reservations/PartySizeSelector";
-import SeatingPreference from "@/components/reservations/SeatingPreference";
-import SpecialRequests from "@/components/reservations/SpecialRequests";
 import ReservationSummary from "@/components/reservations/ReservationSummary";
 import ConfirmationCelebration from "@/components/reservations/ConfirmationCelebration";
 import SeasonBar from "@/components/SeasonBar";
@@ -12,14 +10,10 @@ export default function Reserve() {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [partySize, setPartySize] = useState(2);
-  const [seating, setSeating] = useState<string | null>(null);
-  const [occasion, setOccasion] = useState<string | null>(null);
-  const [dietary, setDietary] = useState<string[]>([]);
-  const [notes, setNotes] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState("");
 
-  const canSubmit = !!date && !!time && !!seating;
+  const canSubmit = !!date && !!time;
 
   const handleSubmit = () => {
     if (!canSubmit) return;
@@ -34,42 +28,25 @@ export default function Reserve() {
 
       <ReservationHero />
 
-      <div className="lg:pr-[340px]">
-        <DateTimePicker
-          selectedDate={date}
-          selectedTime={time}
-          onDateChange={setDate}
-          onTimeChange={setTime}
-        />
+      <div className="px-4 sm:px-6 py-12 flex justify-center">
+        <div className="w-full max-w-2xl bg-season-lightest/10 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl p-6 sm:p-10 season-transition">
+          <DateTimePicker
+            selectedDate={date}
+            selectedTime={time}
+            onDateChange={setDate}
+            onTimeChange={setTime}
+          />
 
-        <div className="border-t border-season-lighter season-transition" />
+          <div className="border-t border-white/10 my-2" />
 
-        <PartySizeSelector partySize={partySize} onChange={setPartySize} />
-
-        <div className="border-t border-season-lighter season-transition" />
-
-        <SeatingPreference selected={seating} onChange={setSeating} />
-
-        <div className="border-t border-season-lighter season-transition" />
-
-        <SpecialRequests
-          occasion={occasion}
-          dietary={dietary}
-          notes={notes}
-          onOccasionChange={setOccasion}
-          onDietaryChange={setDietary}
-          onNotesChange={setNotes}
-        />
-
-        {/* Bottom spacer for mobile bar */}
-        <div className="h-24 lg:h-0" />
+          <PartySizeSelector partySize={partySize} onChange={setPartySize} />
+        </div>
       </div>
 
       <ReservationSummary
         date={date}
         time={time}
         partySize={partySize}
-        seating={seating}
         canSubmit={canSubmit}
         onSubmit={handleSubmit}
       />
@@ -79,7 +56,6 @@ export default function Reserve() {
         date={date}
         time={time}
         partySize={partySize}
-        seating={seating}
         confirmationCode={confirmationCode}
       />
     </div>

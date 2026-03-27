@@ -9,15 +9,8 @@ interface Props {
   date: Date | null;
   time: string | null;
   partySize: number;
-  seating: string | null;
   confirmationCode: string;
 }
-
-const seatingLabels: Record<string, string> = {
-  terrace: "Waterside Terrace",
-  dining: "Main Dining",
-  counter: "Chef's Counter",
-};
 
 function Confetti() {
   const [particles] = useState(() =>
@@ -47,7 +40,7 @@ function Confetti() {
   );
 }
 
-export default function ConfirmationCelebration({ show, date, time, partySize, seating, confirmationCode }: Props) {
+export default function ConfirmationCelebration({ show, date, time, partySize, confirmationCode }: Props) {
   const [confetti, setConfetti] = useState(false);
 
   useEffect(() => {
@@ -99,11 +92,6 @@ export default function ConfirmationCelebration({ show, date, time, partySize, s
               <p className="text-season-dark">
                 <strong>Guests:</strong> {partySize}
               </p>
-              {seating && (
-                <p className="text-season-dark">
-                  <strong>Seating:</strong> {seatingLabels[seating]}
-                </p>
-              )}
             </div>
 
             <div className="flex gap-3">
