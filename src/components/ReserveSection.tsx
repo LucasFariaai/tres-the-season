@@ -1,4 +1,5 @@
 import { useSeason, seasonLabels } from "@/lib/seasonContext";
+import { Link } from "react-router-dom";
 
 export default function ReserveSection() {
   const { season } = useSeason();
@@ -21,10 +22,6 @@ export default function ReserveSection() {
                 <h3 className="font-display text-lg text-season-dark mb-2 season-transition">Hours</h3>
                 <p className="text-sm text-muted-foreground">Wednesday – Saturday</p>
                 <p className="text-sm text-muted-foreground">18:00 – 23:00</p>
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-xs text-primary font-medium">Open now</span>
-                </div>
               </div>
 
               <div>
@@ -56,12 +53,12 @@ export default function ReserveSection() {
               <p className="font-body text-sm text-season-mid mb-8 season-transition">
                 per person · wine pairing available
               </p>
-              <a
-                href="#"
+              <Link
+                to="/reserve"
                 className="inline-block w-full px-8 py-4 bg-season-dark text-season-lightest font-body text-sm tracking-widest uppercase rounded-sm hover:bg-season-darkest transition-colors season-transition text-center"
               >
                 Reserve a Table
-              </a>
+              </Link>
               <p className="text-xs text-season-mid mt-4 season-transition">
                 Reservations recommended 2–3 weeks ahead
               </p>
