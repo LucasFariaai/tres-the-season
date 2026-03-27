@@ -5,7 +5,7 @@ import DishStack from "@/components/DishStack";
 import SeasonSelector from "@/components/SeasonSelector";
 import ConceptSection from "@/components/ConceptSection";
 import ProducersSection from "@/components/ProducersSection";
-import ProcessSection from "@/components/ProcessSection";
+
 import ReserveSection from "@/components/ReserveSection";
 import FooterSection from "@/components/FooterSection";
 
@@ -19,7 +19,7 @@ const Index = () => {
       <SeasonSelector />
       <ConceptSection />
       <ProducersSection />
-      <ProcessSection />
+      
       <ReserveSection />
       <FooterSection />
     </div>
