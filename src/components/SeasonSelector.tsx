@@ -91,7 +91,7 @@ export default function SeasonSelector() {
               <div
                 className="absolute inset-0 z-[1]"
                 style={{
-                  background: isActive
+                  background: isExpanded
                     ? "linear-gradient(to top, rgba(26,20,16,0.7) 0%, rgba(26,20,16,0.1) 50%, transparent 100%)"
                     : "linear-gradient(to top, rgba(26,20,16,0.85) 0%, rgba(26,20,16,0.4) 100%)",
                   transition: "background 0.6s ease",
@@ -104,9 +104,9 @@ export default function SeasonSelector() {
                 alt={`${seasonLabels[s]} at Tres`}
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{
-                  filter: isActive ? "none" : "grayscale(30%) brightness(0.7)",
+                  filter: isExpanded ? "none" : "grayscale(30%) brightness(0.7)",
                   transition: "filter 0.6s ease, transform 0.6s ease",
-                  transform: isActive ? "scale(1.05)" : "scale(1)",
+                  transform: isExpanded ? "scale(1.05)" : "scale(1)",
                 }}
                 loading="lazy"
               />
