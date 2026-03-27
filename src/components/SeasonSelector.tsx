@@ -121,7 +121,7 @@ export default function SeasonSelector() {
                 </p>
 
                 <AnimatePresence>
-                  {isActive && (
+                  {isExpanded && (
                     <motion.p
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
