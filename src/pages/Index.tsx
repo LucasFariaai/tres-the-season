@@ -1,7 +1,7 @@
 import SeasonBar from "@/components/SeasonBar";
 import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
-import MenuPoem from "@/components/MenuPoem";
+import DishStack from "@/components/DishStack";
 import ProducersSection from "@/components/ProducersSection";
 import ProcessSection from "@/components/ProcessSection";
 import ReserveSection from "@/components/ReserveSection";
@@ -13,7 +13,7 @@ const Index = () => {
       <SeasonBar />
       <HeroSection />
       <ZoomParallaxSection />
-      <MenuPoem />
+      <DishStack />
       <ProducersSection />
       <ProcessSection />
       <ReserveSection />
