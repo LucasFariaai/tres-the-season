@@ -122,7 +122,7 @@ export default function DishStack() {
       id="menu"
       className="relative w-full"
       style={{
-        height: `${items.length * 100}vh`,
+        height: `${items.length * 40}vh`,
         backgroundColor: "#F7F3ED",
       }}
     >
