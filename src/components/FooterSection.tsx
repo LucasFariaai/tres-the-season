@@ -1,4 +1,5 @@
 import { Instagram, Facebook } from "lucide-react";
+import logoTres from "@/assets/logo-tres.png";
 
 export default function FooterSection() {
   return (
@@ -25,9 +26,7 @@ export default function FooterSection() {
           </a>
         </div>
 
-        <p className="font-display text-sm tracking-[0.3em] uppercase text-season-mid/40 season-transition">
-          Tres
-        </p>
+        <img src={logoTres} alt="Tres" className="h-6 w-auto mx-auto opacity-40" />
       </div>
     </footer>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSeason, seasonLabels, seasonQuotes } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import logoTres from "@/assets/logo-tres.png";
 
 function FloatingParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -120,15 +121,14 @@ export default function HeroSection() {
         </div>
 
         {/* Restaurant name */}
-        <h1
-          className="font-display text-7xl sm:text-8xl md:text-[120px] font-light tracking-wide opacity-0 hero-stagger-2"
+        <img
+          src={logoTres}
+          alt="Tres"
+          className="h-20 sm:h-28 md:h-36 w-auto opacity-0 hero-stagger-2"
           style={{
-            color: "#F7F3ED",
-            textShadow: "0 2px 40px rgba(26,20,16,0.5)",
+            filter: "drop-shadow(0 2px 40px rgba(26,20,16,0.5))",
           }}
-        >
-          Tres
-        </h1>
+        />
 
         {/* Tagline — always the signature quote */}
         <p

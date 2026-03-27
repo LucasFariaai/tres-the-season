@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import logoTres from "@/assets/logo-tres.png";
 
 export default function SeasonBar() {
   const navigate = useNavigate();
@@ -41,10 +42,9 @@ export default function SeasonBar() {
         {/* Left: Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="font-display text-lg tracking-[0.2em] uppercase"
-          style={{ color: "#2A1F18" }}
+          className="flex items-center"
         >
-          Tres
+          <img src={logoTres} alt="Tres" className="h-6 sm:h-7 w-auto" style={{ filter: "invert(10%) sepia(20%) saturate(500%) hue-rotate(350deg)" }} />
         </button>
 
         {/* Center: Menu only */}
