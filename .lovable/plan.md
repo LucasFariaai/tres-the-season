@@ -1,42 +1,35 @@
 
 
-## Simplify Reservation Page
+## Move Reservation to Homepage + UI Refinements
 
 ### Changes
 
-**1. `src/pages/Reserve.tsx`**
-- Remove `SeatingPreference` and `SpecialRequests` imports and rendering
-- Remove `seating`, `occasion`, `dietary`, `notes` state variables
-- Change `canSubmit` to just `!!date && !!time`
-- Update `ReservationSummary` and `ConfirmationCelebration` props (remove seating)
-- Remove the dividers for removed sections
-- Make the whole booking area a floating glass card (backdrop-blur, semi-transparent bg, rounded-2xl, border) centered on the page instead of full-width sections
+**1. `src/components/ReserveSection.tsx`** — Replace CTA-only section with inline reservation form
+- Keep the left column (Hours, Location, Getting here info)
+- Replace the right column CTA card with the actual reservation form: DateTimePicker, PartySizeSelector, and a Reserve button
+- Add local state for date, time, partySize, confirmed, confirmationCode
+- Wrap the form in a glass card (`backdrop-blur-xl`, `bg-season-lightest/10`, `border border-white/15`, `rounded-3xl`)
+- Include ConfirmationCelebration overlay on submit
+- Remove the Link to `/reserve`
 
-**2. `src/components/reservations/DateTimePicker.tsx`**
-- Replace the horizontal scrollable date cards with a Shadcn Calendar popover (using `Calendar`, `Popover`, `PopoverTrigger`, `PopoverContent`)
-- Keep the time slots grid below
-- Calendar uses `pointer-events-auto` class as per shadcn guidelines
+**2. `src/components/reservations/DateTimePicker.tsx`** — Rounder, glassier calendar
+- Change PopoverTrigger button corners from `rounded-xl` to `rounded-2xl`
+- Add glass styling to the trigger: `backdrop-blur-md bg-white/10 border-white/20`
+- Add `rounded-2xl` to the PopoverContent wrapper
+- Change time slot buttons from `rounded-xl` to `rounded-2xl`
 
-**3. `src/components/reservations/PartySizeSelector.tsx`**
-- Change heading from "Party Size" to "Table for"
-- Keep the circular counter + quick select buttons
+**3. `src/components/SeasonBar.tsx`** — Simplify navbar
+- Remove the center nav links (Menu, Events, Gift Cards, Loyalty)
+- Keep only: Tres logo (left), single "Menu" button (center or beside logo), Reserve button (right)
+- "Menu" scrolls to the menu/dish section
+- On mobile: Tres left, Reserve right (already works), Menu visible too
 
-**4. `src/components/reservations/ReservationSummary.tsx`**
-- Remove `seating` prop and its display
-- Change button text from "Confirm Reservation" / "Book" to "Reserve"
-- Update progress steps to just 2: Date & Time, Table size
-- Apply glass styling (`bg-season-lightest/20 backdrop-blur-xl border border-white/20`) to both desktop card and mobile bar
+**4. `src/App.tsx`** — Keep `/reserve` route for direct access but it's no longer the primary path
 
-**5. `src/components/reservations/ConfirmationCelebration.tsx`**
-- Remove `seating` from props and display
-
-**6. Overall layout in Reserve.tsx**
-- Wrap the form content (DateTimePicker + PartySizeSelector) inside a single glass container: `bg-season-lightest/10 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl` centered with `max-w-2xl mx-auto`
+**5. `src/pages/Reserve.tsx`** — Keep as-is (still functional if someone navigates directly)
 
 ### Files to modify
-- `src/pages/Reserve.tsx`
+- `src/components/ReserveSection.tsx`
 - `src/components/reservations/DateTimePicker.tsx`
-- `src/components/reservations/PartySizeSelector.tsx`
-- `src/components/reservations/ReservationSummary.tsx`
-- `src/components/reservations/ConfirmationCelebration.tsx`
+- `src/components/SeasonBar.tsx`
 
