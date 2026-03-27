@@ -1,43 +1,73 @@
 
-Objetivo
-- Corrigir o DishStack: bolinhas mais para baixo, subtítulo sem overlap, e rolagem da seção presa até passar por todas as fotos.
 
-Diagnóstico rápido
-- A seção está em `h-screen`, então o scroll geral avança para a próxima seção cedo demais.
-- O conteúdo textual mistura camadas absolutas com área curta, gerando sobreposição.
-- As bolinhas estão no fluxo logo após o texto, não no rodapé junto de preço/pairing.
+## Rebuild Reserve Section as Full Reservation Experience
 
-Plano de implementação (src/components/DishStack.tsx)
-1. Transformar em seção “scroll-driven” com sticky
-- Trocar o wrapper para `relative` com altura dinâmica por quantidade de pratos (`items.length * 100vh`).
-- Criar um container interno `sticky top-0 h-screen overflow-hidden`.
-- Resultado: o usuário permanece nessa seção enquanto percorre todos os pratos via scroll normal do site.
+Inspired by The Brunchery's `/reserve` flow, transform the current simple `ReserveSection` into a multi-step interactive reservation experience, adapted to Tres's seasonal aesthetic and restaurant context (dinner, not brunch).
 
-2. Sincronizar `currentIndex` com o progresso do scroll da seção
-- Remover a captura manual de wheel (`IntersectionObserver` + `preventDefault`), que hoje é instável.
-- Calcular `currentIndex` com base no progresso da rolagem dentro da seção (0 a `items.length - 1`).
-- Manter as animações atuais das imagens; muda apenas a origem do índice.
+### Architecture
 
-3. Reorganizar coluna de texto para evitar overlap
-- Estruturar em 3 blocos: cabeçalho, conteúdo do prato, rodapé.
-- Aumentar a área do conteúdo ativo (min-height maior) e manter o número grande como fundo real (absoluto), com padding superior fixo no texto.
-- Expandir subtítulo/descrição com `max-w`, `leading-relaxed` e `break-words` para não cortar nem sobrepor.
+The reservation will live as a new `/reserve` route (not inline in the homepage). The current `ReserveSection` on the homepage becomes a CTA that links to `/reserve`. The navbar "Reserve" button also links there.
 
-4. Descer o mostrador (bolinhas) para o rodapé
-- Mover as bolinhas para o mesmo bloco inferior de “18 servings... / preço / wine pairing”.
-- Usar `mt-auto` + espaçamentos consistentes para posicionar esse grupo mais baixo, como solicitado.
+### New Files
 
-5. Ajustar clique/drag para manter sincronismo
-- Clique nas bolinhas fará scroll suave para o passo correspondente da seção (não só `setState`), mantendo tudo sincronizado.
-- Drag vertical pode continuar, mas também deve navegar por “steps” de scroll para evitar descompasso entre estado e posição da página.
+**1. `src/pages/Reserve.tsx`** — Main reservation page
+- State management for: date, time, partySize, seating, occasion, dietary, notes, submission
+- Renders all sub-components in sequence
+- Desktop: sticky summary card on the right (`lg:pr-[340px]`)
+- Mobile: fixed bottom bar with progress
+- On submit: simulated confirmation with code generation
+- Wraps in `AnimatePresence` for confirmation overlay
 
-Detalhes técnicos
-- Arquivo único: `src/components/DishStack.tsx`.
-- Remover: `isInView`, listener de wheel manual e cooldown dependente de evento wheel.
-- Manter: animações framer-motion do stack e estrutura visual atual.
-- Adicionar: `sectionRef` + cálculo de índice por progresso de rolagem da seção + navegação por step para bolinhas/drag.
+**2. `src/components/reservations/ReservationHero.tsx`**
+- Parallax hero with Tres branding ("Reserve Your Table")
+- Season-aware gradient background (uses `useSeason`)
+- Stats: rating, guests served, avg wait
+- Scroll indicator
 
-Critérios de pronto
-- Sem overlap entre número, nome, subtítulo e descrição.
-- Bolinhas posicionadas no bloco inferior, junto de preço/pairing.
-- A seção só termina após o usuário passar por todas as fotos no scroll normal do site.
+**3. `src/components/reservations/DateTimePicker.tsx`**
+- Step 1: horizontal scrollable date cards (14 days ahead)
+- Time slots grid for dinner hours: 18:00, 18:30, 19:00, 19:30, 20:00, 20:30, 21:00, 21:30
+- Popular times marked
+- Uses `date-fns` for formatting
+
+**4. `src/components/reservations/PartySizeSelector.tsx`**
+- Step 2: circular counter with progress ring
+- Quick-select buttons (1, 2, 4, 6, 8)
+- +/- buttons, large party notice for 8+
+
+**5. `src/components/reservations/SeatingPreference.tsx`**
+- Step 3: three options adapted to Tres:
+  - "Waterside Terrace" — Views of the Maas
+  - "Main Dining" — Intimate indoor setting
+  - "Chef's Counter" — Watch the kitchen
+
+**6. `src/components/reservations/SpecialRequests.tsx`**
+- Step 4 (optional): occasion selector, dietary preferences, notes textarea
+
+**7. `src/components/reservations/ReservationSummary.tsx`**
+- Desktop: floating card fixed right with progress bar
+- Mobile: bottom bar with compact summary + "Book" button
+- Progress tracking (date+time, party, seating)
+
+**8. `src/components/reservations/ConfirmationCelebration.tsx`**
+- Full-screen overlay with confetti
+- Confirmation code, details card
+- "Add to Calendar" + "Share" + "Return home" buttons
+
+### Modified Files
+
+**`src/App.tsx`** — Add route: `<Route path="/reserve" element={<Reserve />} />`
+
+**`src/components/ReserveSection.tsx`** — Simplify to a CTA section on the homepage that links to `/reserve` instead of having an inline form
+
+**`src/components/SeasonBar.tsx`** — Change Reserve button to use `react-router-dom` `Link` to `/reserve`
+
+### Styling
+- All components use Tres's season tokens (`season-dark`, `season-mid`, etc.) and fonts (`font-display`, `font-body`)
+- Framer Motion for all animations (already installed)
+- `date-fns` needed for date formatting (will install)
+- No `react-icons` or `next/image` — use lucide-react icons and standard `<img>`
+
+### Dependencies
+- `date-fns` (new)
+
