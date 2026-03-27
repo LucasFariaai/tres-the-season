@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSeason, seasonLabels, seasonQuotes } from "@/lib/seasonContext";
-import heroCellar from "@/assets/hero-cellar.jpg";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function FloatingParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -70,6 +70,7 @@ function FloatingParticles() {
 export default function HeroSection() {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -79,14 +80,16 @@ export default function HeroSection() {
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-[#1A1410]">
-      {/* Background image with Ken Burns */}
-      <div className="absolute inset-0 animate-ken-burns">
-        <img
-          src={heroCellar}
-          alt="Candlelit cellar dining at Tres Rotterdam"
+      {/* Background video */}
+      <div className="absolute inset-0">
+        <video
+          key={isMobile ? "mobile" : "desktop"}
+          autoPlay
+          muted
+          loop
+          playsInline
           className="w-full h-full object-cover"
-          width={1920}
-          height={1080}
+          src={isMobile ? "/videos/hero-mobile.mp4" : "/videos/hero-desktop.mp4"}
         />
       </div>
 
