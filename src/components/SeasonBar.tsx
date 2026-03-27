@@ -48,7 +48,7 @@ export default function SeasonBar() {
         {/* Right: Reserve button */}
         <button
           onClick={() => scrollTo("reserve")}
-          className="hidden md:flex items-center gap-1.5 text-[13px] font-body tracking-wide px-5 py-2 rounded-full transition-opacity hover:opacity-90"
+          className="flex items-center gap-1.5 text-[13px] font-body tracking-wide px-5 py-2 rounded-full transition-opacity hover:opacity-90"
           style={{
             backgroundColor: "#2A1F18",
             color: "#F7F3ED",
