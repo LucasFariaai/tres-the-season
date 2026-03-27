@@ -45,7 +45,7 @@ export default function DateTimePicker({ selectedDate, selectedTime, onDateChang
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-body h-14 rounded-xl border-season-lighter bg-season-lightest/50 text-season-dark hover:bg-season-lightest/80 hover:text-season-dark season-transition",
+              "w-full justify-start text-left font-body h-14 rounded-2xl border-white/20 bg-white/10 backdrop-blur-md text-season-dark hover:bg-white/20 hover:text-season-dark season-transition",
               !selectedDate && "text-season-mid"
             )}
           >
@@ -53,7 +53,7 @@ export default function DateTimePicker({ selectedDate, selectedTime, onDateChang
             {selectedDate ? format(selectedDate, "EEEE, MMMM d, yyyy") : <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 rounded-2xl" align="start">
           <Calendar
             mode="single"
             selected={selectedDate ?? undefined}
@@ -83,7 +83,7 @@ export default function DateTimePicker({ selectedDate, selectedTime, onDateChang
                 <button
                   key={time}
                   onClick={() => onTimeChange(time)}
-                  className={`relative py-4 px-3 rounded-xl border text-center transition-all duration-300 ${
+                  className={`relative py-4 px-3 rounded-2xl border text-center transition-all duration-300 ${
                     isSelected
                       ? "bg-season-dark text-season-lightest border-season-dark shadow-lg"
                       : "bg-season-lightest/50 text-season-dark border-season-lighter hover:border-season-mid"
