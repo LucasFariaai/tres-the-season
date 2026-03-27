@@ -25,6 +25,7 @@ const seasonDescriptionsShort: Record<Season, string> = {
 
 export default function SeasonSelector() {
   const { season, setSeason } = useSeason();
+  const [hoveredSeason, setHoveredSeason] = useState<Season | null>(null);
   const [animatedIn, setAnimatedIn] = useState<number[]>([]);
 
   useEffect(() => {
@@ -68,25 +69,29 @@ export default function SeasonSelector() {
       <div className="flex flex-row gap-3 sm:gap-4 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto h-[400px] sm:h-[450px] lg:h-[500px]">
         {allSeasons.map((s, index) => {
           const isActive = s === season;
+          const isHovered = hoveredSeason === s;
+          const isExpanded = isActive || isHovered;
           const hasAnimated = animatedIn.includes(index);
 
           return (
             <motion.button
               key={s}
               onClick={() => setSeason(s)}
+              onMouseEnter={() => setHoveredSeason(s)}
+              onMouseLeave={() => setHoveredSeason(null)}
               className="relative overflow-hidden rounded-sm"
               style={{
                 opacity: hasAnimated ? 1 : 0,
                 transform: hasAnimated ? "translateX(0)" : "translateX(-60px)",
                 transition: "opacity 0.6s ease, transform 0.6s ease, flex 0.6s cubic-bezier(0.32, 0.72, 0, 1)",
-                flex: isActive ? 4 : 1,
+                flex: isExpanded ? 4 : 1,
               }}
             >
               {/* Shadow overlay */}
               <div
                 className="absolute inset-0 z-[1]"
                 style={{
-                  background: isActive
+                  background: isExpanded
                     ? "linear-gradient(to top, rgba(26,20,16,0.7) 0%, rgba(26,20,16,0.1) 50%, transparent 100%)"
                     : "linear-gradient(to top, rgba(26,20,16,0.85) 0%, rgba(26,20,16,0.4) 100%)",
                   transition: "background 0.6s ease",
@@ -99,9 +104,9 @@ export default function SeasonSelector() {
                 alt={`${seasonLabels[s]} at Tres`}
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{
-                  filter: isActive ? "none" : "grayscale(30%) brightness(0.7)",
+                  filter: isExpanded ? "none" : "grayscale(30%) brightness(0.7)",
                   transition: "filter 0.6s ease, transform 0.6s ease",
-                  transform: isActive ? "scale(1.05)" : "scale(1)",
+                  transform: isExpanded ? "scale(1.05)" : "scale(1)",
                 }}
                 loading="lazy"
               />
@@ -116,7 +121,7 @@ export default function SeasonSelector() {
                 </p>
 
                 <AnimatePresence>
-                  {isActive && (
+                  {isExpanded && (
                     <motion.p
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
