@@ -1,10 +1,29 @@
-import { useSeason } from "@/lib/seasonContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function SeasonBar() {
   const navigate = useNavigate();
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const location = useLocation();
+
+  const scrollToMenu = () => {
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    } else {
+      document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const scrollToReserve = () => {
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    } else {
+      document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -28,28 +47,18 @@ export default function SeasonBar() {
           Tres
         </button>
 
-        {/* Center: Nav links */}
-        <div className="hidden md:flex items-center gap-8 text-[13px] font-body tracking-wide">
-          {[
-            { label: "Menu", id: "menu" },
-            { label: "Events", id: "producers" },
-            { label: "Gift Cards", id: "process" },
-            { label: "Loyalty", id: "reserve" },
-          ].map((link) => (
-            <button
-              key={link.id}
-              onClick={() => scrollTo(link.id)}
-              className="transition-opacity hover:opacity-70"
-              style={{ color: "#2A1F18", opacity: 0.75 }}
-            >
-              {link.label}
-            </button>
-          ))}
-        </div>
+        {/* Center: Menu only */}
+        <button
+          onClick={scrollToMenu}
+          className="hidden md:block text-[13px] font-body tracking-wide transition-opacity hover:opacity-70"
+          style={{ color: "#2A1F18", opacity: 0.75 }}
+        >
+          Menu
+        </button>
 
         {/* Right: Reserve button */}
         <button
-          onClick={() => navigate("/reserve")}
+          onClick={scrollToReserve}
           className="flex items-center gap-1.5 text-[13px] font-body tracking-wide px-5 py-2 rounded-full transition-opacity hover:opacity-90"
           style={{
             backgroundColor: "#2A1F18",
