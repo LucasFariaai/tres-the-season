@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import logoTres from "@/assets/logo-tres-svg.svg";
+import logoTres from "@/assets/logo-tres-nav.svg";
 
 export default function SeasonBar() {
   const navigate = useNavigate();
