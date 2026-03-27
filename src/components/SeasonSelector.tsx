@@ -25,6 +25,7 @@ const seasonDescriptionsShort: Record<Season, string> = {
 
 export default function SeasonSelector() {
   const { season, setSeason } = useSeason();
+  const [hoveredSeason, setHoveredSeason] = useState<Season | null>(null);
   const [animatedIn, setAnimatedIn] = useState<number[]>([]);
 
   useEffect(() => {
