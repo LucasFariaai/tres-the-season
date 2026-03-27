@@ -180,7 +180,7 @@ export default function DishStack() {
           </h2>
 
           {/* Active dish info */}
-          <div className="relative min-h-[120px]">
+          <div className="relative min-h-[180px] sm:min-h-[200px]">
             {items.map((item, i) => (
               <motion.div
                 key={`${season}-${i}`}
@@ -190,27 +190,29 @@ export default function DishStack() {
                   y: i === currentIndex ? 0 : 10,
                 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="absolute top-0 left-0"
+                className="absolute top-0 left-0 w-full"
                 style={{ pointerEvents: i === currentIndex ? "auto" : "none" }}
               >
-                <span
-                  className="font-display text-[80px] sm:text-[100px] leading-none select-none pointer-events-none"
-                  style={{ color: "#E8DCC8", opacity: 0.25 }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3
-                  className="font-display text-[22px] sm:text-[28px] leading-snug -mt-6 sm:-mt-8"
-                  style={{ color: "#2A1F18" }}
-                >
-                  {item}
-                </h3>
-                <p
-                  className="font-accent text-[14px] sm:text-[15px] mt-2"
-                  style={{ color: "#8B7355" }}
-                >
-                  {descriptions[i] || ""}
-                </p>
+                <div className="relative pt-12 sm:pt-16">
+                  <span
+                    className="absolute top-0 left-0 font-display text-[80px] sm:text-[100px] leading-none select-none pointer-events-none"
+                    style={{ color: "#E8DCC8", opacity: 0.25 }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3
+                    className="font-display text-[22px] sm:text-[28px] leading-snug relative z-[1]"
+                    style={{ color: "#2A1F18" }}
+                  >
+                    {item}
+                  </h3>
+                  <p
+                    className="font-accent text-[14px] sm:text-[15px] mt-2 relative z-[1]"
+                    style={{ color: "#8B7355" }}
+                  >
+                    {descriptions[i] || ""}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -273,7 +275,7 @@ export default function DishStack() {
                   style={{ zIndex: style.zIndex }}
                 >
                   <div
-                    className="w-full h-full overflow-hidden"
+                    className="w-full h-full overflow-hidden rounded-2xl"
                     style={{
                       boxShadow: "0 12px 40px rgba(42, 31, 24, 0.2)",
                     }}
