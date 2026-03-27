@@ -1,73 +1,42 @@
 
 
-## Rebuild Reserve Section as Full Reservation Experience
+## Simplify Reservation Page
 
-Inspired by The Brunchery's `/reserve` flow, transform the current simple `ReserveSection` into a multi-step interactive reservation experience, adapted to Tres's seasonal aesthetic and restaurant context (dinner, not brunch).
+### Changes
 
-### Architecture
+**1. `src/pages/Reserve.tsx`**
+- Remove `SeatingPreference` and `SpecialRequests` imports and rendering
+- Remove `seating`, `occasion`, `dietary`, `notes` state variables
+- Change `canSubmit` to just `!!date && !!time`
+- Update `ReservationSummary` and `ConfirmationCelebration` props (remove seating)
+- Remove the dividers for removed sections
+- Make the whole booking area a floating glass card (backdrop-blur, semi-transparent bg, rounded-2xl, border) centered on the page instead of full-width sections
 
-The reservation will live as a new `/reserve` route (not inline in the homepage). The current `ReserveSection` on the homepage becomes a CTA that links to `/reserve`. The navbar "Reserve" button also links there.
+**2. `src/components/reservations/DateTimePicker.tsx`**
+- Replace the horizontal scrollable date cards with a Shadcn Calendar popover (using `Calendar`, `Popover`, `PopoverTrigger`, `PopoverContent`)
+- Keep the time slots grid below
+- Calendar uses `pointer-events-auto` class as per shadcn guidelines
 
-### New Files
+**3. `src/components/reservations/PartySizeSelector.tsx`**
+- Change heading from "Party Size" to "Table for"
+- Keep the circular counter + quick select buttons
 
-**1. `src/pages/Reserve.tsx`** — Main reservation page
-- State management for: date, time, partySize, seating, occasion, dietary, notes, submission
-- Renders all sub-components in sequence
-- Desktop: sticky summary card on the right (`lg:pr-[340px]`)
-- Mobile: fixed bottom bar with progress
-- On submit: simulated confirmation with code generation
-- Wraps in `AnimatePresence` for confirmation overlay
+**4. `src/components/reservations/ReservationSummary.tsx`**
+- Remove `seating` prop and its display
+- Change button text from "Confirm Reservation" / "Book" to "Reserve"
+- Update progress steps to just 2: Date & Time, Table size
+- Apply glass styling (`bg-season-lightest/20 backdrop-blur-xl border border-white/20`) to both desktop card and mobile bar
 
-**2. `src/components/reservations/ReservationHero.tsx`**
-- Parallax hero with Tres branding ("Reserve Your Table")
-- Season-aware gradient background (uses `useSeason`)
-- Stats: rating, guests served, avg wait
-- Scroll indicator
+**5. `src/components/reservations/ConfirmationCelebration.tsx`**
+- Remove `seating` from props and display
 
-**3. `src/components/reservations/DateTimePicker.tsx`**
-- Step 1: horizontal scrollable date cards (14 days ahead)
-- Time slots grid for dinner hours: 18:00, 18:30, 19:00, 19:30, 20:00, 20:30, 21:00, 21:30
-- Popular times marked
-- Uses `date-fns` for formatting
+**6. Overall layout in Reserve.tsx**
+- Wrap the form content (DateTimePicker + PartySizeSelector) inside a single glass container: `bg-season-lightest/10 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl` centered with `max-w-2xl mx-auto`
 
-**4. `src/components/reservations/PartySizeSelector.tsx`**
-- Step 2: circular counter with progress ring
-- Quick-select buttons (1, 2, 4, 6, 8)
-- +/- buttons, large party notice for 8+
-
-**5. `src/components/reservations/SeatingPreference.tsx`**
-- Step 3: three options adapted to Tres:
-  - "Waterside Terrace" — Views of the Maas
-  - "Main Dining" — Intimate indoor setting
-  - "Chef's Counter" — Watch the kitchen
-
-**6. `src/components/reservations/SpecialRequests.tsx`**
-- Step 4 (optional): occasion selector, dietary preferences, notes textarea
-
-**7. `src/components/reservations/ReservationSummary.tsx`**
-- Desktop: floating card fixed right with progress bar
-- Mobile: bottom bar with compact summary + "Book" button
-- Progress tracking (date+time, party, seating)
-
-**8. `src/components/reservations/ConfirmationCelebration.tsx`**
-- Full-screen overlay with confetti
-- Confirmation code, details card
-- "Add to Calendar" + "Share" + "Return home" buttons
-
-### Modified Files
-
-**`src/App.tsx`** — Add route: `<Route path="/reserve" element={<Reserve />} />`
-
-**`src/components/ReserveSection.tsx`** — Simplify to a CTA section on the homepage that links to `/reserve` instead of having an inline form
-
-**`src/components/SeasonBar.tsx`** — Change Reserve button to use `react-router-dom` `Link` to `/reserve`
-
-### Styling
-- All components use Tres's season tokens (`season-dark`, `season-mid`, etc.) and fonts (`font-display`, `font-body`)
-- Framer Motion for all animations (already installed)
-- `date-fns` needed for date formatting (will install)
-- No `react-icons` or `next/image` — use lucide-react icons and standard `<img>`
-
-### Dependencies
-- `date-fns` (new)
+### Files to modify
+- `src/pages/Reserve.tsx`
+- `src/components/reservations/DateTimePicker.tsx`
+- `src/components/reservations/PartySizeSelector.tsx`
+- `src/components/reservations/ReservationSummary.tsx`
+- `src/components/reservations/ConfirmationCelebration.tsx`
 
