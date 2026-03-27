@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import DishStack from "@/components/DishStack";
 import SeasonSelector from "@/components/SeasonSelector";
+import ConceptSection from "@/components/ConceptSection";
 import ProducersSection from "@/components/ProducersSection";
 import ProcessSection from "@/components/ProcessSection";
 import ReserveSection from "@/components/ReserveSection";
@@ -16,6 +17,7 @@ const Index = () => {
       <ZoomParallaxSection />
       <DishStack />
       <SeasonSelector />
+      <ConceptSection />
       <ProducersSection />
       <ProcessSection />
       <ReserveSection />
