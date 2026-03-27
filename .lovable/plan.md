@@ -1,35 +1,35 @@
 
 
-## Move Reservation to Homepage + UI Refinements
+## Substituir logos pelo SVG + animação sequencial dos 3 pontos na Hero
 
-### Changes
+### Resumo
+1. Copiar o SVG enviado como novo logo (`src/assets/logo-tres-svg.svg`)
+2. Substituir todas as referências ao `logo-tres.png` pelo novo SVG em: SeasonBar, FooterSection, HeroSection
+3. Na Hero, reescrever a animação dos 3 pontos: cada ponto aparece e **fica visível** (não desaparece), com delay de ~2s entre eles (10x mais lento que os 0.2s atuais). Após os 3 pontos aparecerem, espera 10 segundos, depois faz fade-out dos pontos e fade-in do logo SVG no mesmo espaço
 
-**1. `src/components/ReserveSection.tsx`** — Replace CTA-only section with inline reservation form
-- Keep the left column (Hours, Location, Getting here info)
-- Replace the right column CTA card with the actual reservation form: DateTimePicker, PartySizeSelector, and a Reserve button
-- Add local state for date, time, partySize, confirmed, confirmationCode
-- Wrap the form in a glass card (`backdrop-blur-xl`, `bg-season-lightest/10`, `border border-white/15`, `rounded-3xl`)
-- Include ConfirmationCelebration overlay on submit
-- Remove the Link to `/reserve`
+### Ficheiros a modificar
 
-**2. `src/components/reservations/DateTimePicker.tsx`** — Rounder, glassier calendar
-- Change PopoverTrigger button corners from `rounded-xl` to `rounded-2xl`
-- Add glass styling to the trigger: `backdrop-blur-md bg-white/10 border-white/20`
-- Add `rounded-2xl` to the PopoverContent wrapper
-- Change time slot buttons from `rounded-xl` to `rounded-2xl`
+**`src/assets/logo-tres-svg.svg`** — Copiar o ficheiro enviado
 
-**3. `src/components/SeasonBar.tsx`** — Simplify navbar
-- Remove the center nav links (Menu, Events, Gift Cards, Loyalty)
-- Keep only: Tres logo (left), single "Menu" button (center or beside logo), Reserve button (right)
-- "Menu" scrolls to the menu/dish section
-- On mobile: Tres left, Reserve right (already works), Menu visible too
+**`src/components/HeroSection.tsx`**
+- Importar o novo SVG em vez do PNG
+- Substituir a div dos "Animated dots" por um componente com estado (`useState` + `useEffect` com timers):
+  - Estado `phase`: `"dots"` → `"logo"`
+  - Ponto 1 aparece (fade-in 1s) no instante 0
+  - Ponto 2 aparece (fade-in 1s) no instante 2s
+  - Ponto 3 aparece (fade-in 1s) no instante 4s
+  - Após 10s dos 3 visíveis (~14s total), fade-out dos pontos, fade-in do logo
+- O logo SVG terá tamanho similar ao espaço dos pontos (altura ~40-50px)
+- Usar CSS transitions para os fades (opacity com `transition-opacity duration-1000`)
 
-**4. `src/App.tsx`** — Keep `/reserve` route for direct access but it's no longer the primary path
+**`src/components/SeasonBar.tsx`**
+- Mudar import de `logo-tres.png` para `logo-tres-svg.svg`
+- Manter `h-6 sm:h-7` e ajustar se necessário
 
-**5. `src/pages/Reserve.tsx`** — Keep as-is (still functional if someone navigates directly)
+**`src/components/FooterSection.tsx`**
+- Mudar import de `logo-tres.png` para `logo-tres-svg.svg`
+- Manter tamanho e opacidade
 
-### Files to modify
-- `src/components/ReserveSection.tsx`
-- `src/components/reservations/DateTimePicker.tsx`
-- `src/components/SeasonBar.tsx`
+**`tailwind.config.ts`**
+- Remover o keyframe `bolinha` antigo (já não é usado)
 
