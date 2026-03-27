@@ -1,21 +1,43 @@
 
+Objetivo
+- Corrigir o DishStack: bolinhas mais para baixo, subtítulo sem overlap, e rolagem da seção presa até passar por todas as fotos.
 
-## Fix DishStack: Rounded Image Corners + Text Overlap
+Diagnóstico rápido
+- A seção está em `h-screen`, então o scroll geral avança para a próxima seção cedo demais.
+- O conteúdo textual mistura camadas absolutas com área curta, gerando sobreposição.
+- As bolinhas estão no fluxo logo após o texto, não no rodapé junto de preço/pairing.
 
-### Problems (from screenshot)
-1. **No rounded corners** on the dish image cards — they have sharp rectangular edges
-2. **Text overlapping** in the left panel — the large course number, dish name, description, and pricing info stack on top of each other because the container `min-h-[120px]` is too small for the absolutely-positioned content
+Plano de implementação (src/components/DishStack.tsx)
+1. Transformar em seção “scroll-driven” com sticky
+- Trocar o wrapper para `relative` com altura dinâmica por quantidade de pratos (`items.length * 100vh`).
+- Criar um container interno `sticky top-0 h-screen overflow-hidden`.
+- Resultado: o usuário permanece nessa seção enquanto percorre todos os pratos via scroll normal do site.
 
-### Changes — `src/components/DishStack.tsx`
+2. Sincronizar `currentIndex` com o progresso do scroll da seção
+- Remover a captura manual de wheel (`IntersectionObserver` + `preventDefault`), que hoje é instável.
+- Calcular `currentIndex` com base no progresso da rolagem dentro da seção (0 a `items.length - 1`).
+- Manter as animações atuais das imagens; muda apenas a origem do índice.
 
-**1. Add border-radius to image cards**
-- Add `rounded-2xl` (16px) to the image container div (line 276) so each card in the stack has soft rounded corners
+3. Reorganizar coluna de texto para evitar overlap
+- Estruturar em 3 blocos: cabeçalho, conteúdo do prato, rodapé.
+- Aumentar a área do conteúdo ativo (min-height maior) e manter o número grande como fundo real (absoluto), com padding superior fixo no texto.
+- Expandir subtítulo/descrição com `max-w`, `leading-relaxed` e `break-words` para não cortar nem sobrepor.
 
-**2. Fix text overlap in left info panel**
-- Increase `min-h-[120px]` on the text container (line 183) to `min-h-[180px] sm:min-h-[200px]` to give enough vertical space for the number + dish name + description
-- Ensure the large background number, dish title, and description don't collide by adjusting the layout: make the number truly a background element with `absolute` positioning relative to the text block, and let the title + description flow naturally below it
-- Move the progress dots and pricing text below with proper spacing
+4. Descer o mostrador (bolinhas) para o rodapé
+- Mover as bolinhas para o mesmo bloco inferior de “18 servings... / preço / wine pairing”.
+- Usar `mt-auto` + espaçamentos consistentes para posicionar esse grupo mais baixo, como solicitado.
 
-### Files to modify
-- `src/components/DishStack.tsx`
+5. Ajustar clique/drag para manter sincronismo
+- Clique nas bolinhas fará scroll suave para o passo correspondente da seção (não só `setState`), mantendo tudo sincronizado.
+- Drag vertical pode continuar, mas também deve navegar por “steps” de scroll para evitar descompasso entre estado e posição da página.
 
+Detalhes técnicos
+- Arquivo único: `src/components/DishStack.tsx`.
+- Remover: `isInView`, listener de wheel manual e cooldown dependente de evento wheel.
+- Manter: animações framer-motion do stack e estrutura visual atual.
+- Adicionar: `sectionRef` + cálculo de índice por progresso de rolagem da seção + navegação por step para bolinhas/drag.
+
+Critérios de pronto
+- Sem overlap entre número, nome, subtítulo e descrição.
+- Bolinhas posicionadas no bloco inferior, junto de preço/pairing.
+- A seção só termina após o usuário passar por todas as fotos no scroll normal do site.
