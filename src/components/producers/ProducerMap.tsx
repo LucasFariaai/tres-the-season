@@ -26,19 +26,22 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
       attributionControl: false,
     }).setView([TRES_LOCATION.lat, TRES_LOCATION.lng], 11);
 
-    L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap',
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
     }).addTo(map);
 
     // 30km radius
     L.circle([TRES_LOCATION.lat, TRES_LOCATION.lng], {
       radius: RADIUS_KM * 1000,
-      color: "hsl(130, 20%, 33%)",
-      weight: 2,
+      color: "#8B7355",
+      weight: 1.5,
       opacity: 0.6,
-      fillColor: "hsl(130, 20%, 33%)",
+      fillColor: "#8B7355",
       fillOpacity: 0.08,
     }).addTo(map);
+
+    // Ensure tiles load after container is laid out
+    setTimeout(() => map.invalidateSize(), 100);
 
     // Tres marker
     const tresIcon = L.divIcon({
@@ -123,6 +126,7 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
         boxShadow: "inset 0 0 30px rgba(42, 31, 24, 0.08)",
         borderRadius: "4px",
         overflow: "hidden",
+        filter: "saturate(0.3) sepia(0.15)",
         ...style,
       }}
     />
