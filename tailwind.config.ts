@@ -103,7 +103,7 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
         "scroll-line": "scroll-line 2s ease-in-out infinite",
         "scroll-chevron": "scroll-chevron 2s ease-in-out infinite",
-        "bolinha": "bolinha 1.4s infinite both",
+        
       },
     },
   },
