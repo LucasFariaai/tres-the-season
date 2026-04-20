@@ -3,6 +3,10 @@ import { useSeason, seasonLabels } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoTres from "@/assets/logo-tres-svg.svg";
 
+interface HeroSectionProps {
+  shouldPlay?: boolean;
+}
+
 function FloatingParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -68,52 +72,17 @@ function FloatingParticles() {
   );
 }
 
-function DotsToLogo() {
-  const [dot1, setDot1] = useState(false);
-  const [dot2, setDot2] = useState(false);
-  const [dot3, setDot3] = useState(false);
-  const [phase, setPhase] = useState<"dots" | "logo">("dots");
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setDot1(true), 0);
-    const t2 = setTimeout(() => setDot2(true), 2000);
-    const t3 = setTimeout(() => setDot3(true), 4000);
-    const t4 = setTimeout(() => setPhase("logo"), 14000);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
-  }, []);
-
-  return (
-    <div className="relative flex items-center justify-center" style={{ minHeight: "50px" }}>
-      {/* Dots */}
-      <div
-        className="flex items-center justify-center gap-3 transition-opacity duration-1000"
-        style={{ opacity: phase === "dots" ? 1 : 0, position: phase === "logo" ? "absolute" : "relative" }}
-      >
-        <span className="w-4 h-4 bg-white rounded-full transition-opacity duration-1000" style={{ opacity: dot1 ? 1 : 0 }} />
-        <span className="w-4 h-4 bg-white rounded-full transition-opacity duration-1000" style={{ opacity: dot2 ? 1 : 0 }} />
-        <span className="w-4 h-4 bg-white rounded-full transition-opacity duration-1000" style={{ opacity: dot3 ? 1 : 0 }} />
-      </div>
-      {/* Logo */}
-      <img
-        src={logoTres}
-        alt="Tres"
-        className="transition-opacity duration-1000"
-        style={{
-          opacity: phase === "logo" ? 1 : 0,
-          height: "45px",
-          width: "auto",
-          position: phase === "dots" ? "absolute" : "relative",
-          filter: "brightness(0) invert(1)",
-        }}
-      />
-    </div>
-  );
-}
-
-export default function HeroSection() {
+export default function HeroSection({ shouldPlay = true }: HeroSectionProps) {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (shouldPlay && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [shouldPlay, isMobile]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -125,8 +94,9 @@ export default function HeroSection() {
     <section className="relative h-screen w-full overflow-hidden bg-[#1A1410]">
       <div className="absolute inset-0">
         <video
+          ref={videoRef}
           key={isMobile ? "mobile" : "desktop"}
-          autoPlay muted loop playsInline
+          muted loop playsInline
           className="w-full h-full object-cover"
           src={isMobile ? "/videos/hero-mobile.mp4" : "/videos/hero-desktop.mp4"}
         />
@@ -151,9 +121,13 @@ export default function HeroSection() {
           <span className="block w-12 sm:w-16 h-px bg-white/30" />
         </div>
 
-        {/* Animated dots → logo */}
+        {/* Static logo (intro animation handled by IntroOverlay) */}
         <div className="opacity-0 hero-stagger-2">
-          <DotsToLogo />
+          <img
+            src={logoTres}
+            alt="Tres"
+            style={{ height: "45px", width: "auto", filter: "brightness(0) invert(1)" }}
+          />
         </div>
 
         {/* Tagline */}
