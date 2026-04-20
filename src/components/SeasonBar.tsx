@@ -1,76 +1,153 @@
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Menu, X, ArrowRight } from "lucide-react";
 import logoTres from "@/assets/logo-tres-nav.svg";
 
 export default function SeasonBar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const scrollToMenu = () => {
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const goToSection = (id: string) => {
+    setIsOpen(false);
     if (location.pathname !== "/") {
       navigate("/");
       setTimeout(() => {
-        document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
       }, 300);
     } else {
-      document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
-  const scrollToReserve = () => {
+  const goHome = () => {
+    setIsOpen(false);
     if (location.pathname !== "/") {
       navigate("/");
-      setTimeout(() => {
-        document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
     } else {
-      document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   return (
-    <nav
-      className="fixed top-4 left-4 right-4 z-50 rounded-full"
-      style={{
-        backgroundColor: "rgba(247, 243, 237, 0.55)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        border: "1px solid rgba(200, 190, 175, 0.25)",
-        boxShadow: "0 2px 20px rgba(42, 31, 24, 0.06)",
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 h-14 flex items-center justify-between">
-        {/* Left: Logo */}
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center"
+    <>
+      {/* Desktop floating island */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-4 hidden lg:block">
+        <nav
+          className={`rounded-full border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.12)] px-6 py-3 flex items-center justify-between transition-all duration-500 ${
+            scrolled ? "bg-black/50 backdrop-blur-xl" : "bg-black/40 backdrop-blur-lg"
+          }`}
         >
-          <img src={logoTres} alt="Tres" className="h-6 sm:h-7 w-auto" style={{ filter: "invert(10%) sepia(20%) saturate(500%) hue-rotate(350deg)" }} />
-        </button>
+          {/* Logo */}
+          <button onClick={goHome} className="shrink-0 flex items-center" aria-label="Tres Rotterdam">
+            <img
+              src={logoTres}
+              alt="Tres"
+              className="h-6 w-auto"
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
+          </button>
 
-        {/* Center: Menu only */}
-        <button
-          onClick={scrollToMenu}
-          className="hidden md:block text-[13px] font-body tracking-wide transition-opacity hover:opacity-70"
-          style={{ color: "#2A1F18", opacity: 0.75 }}
-        >
-          Menu
-        </button>
+          {/* Center links */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => goToSection("menu")}
+              className="text-sm px-3 py-1.5 rounded-full transition-all duration-300 text-white/70 hover:text-white hover:bg-white/10"
+            >
+              Menu
+            </button>
+            <button
+              onClick={() => goToSection("concept")}
+              className="text-sm px-3 py-1.5 rounded-full transition-all duration-300 text-white/70 hover:text-white hover:bg-white/10"
+            >
+              Concept
+            </button>
+            <button
+              onClick={() => goToSection("producers")}
+              className="text-sm px-3 py-1.5 rounded-full transition-all duration-300 text-white/70 hover:text-white hover:bg-white/10"
+            >
+              Producers
+            </button>
+          </div>
 
-        {/* Right: Reserve button */}
-        <button
-          onClick={scrollToReserve}
-          className="flex items-center gap-1.5 text-[13px] font-body tracking-wide px-5 py-2 rounded-full transition-opacity hover:opacity-90"
-          style={{
-            backgroundColor: "#2A1F18",
-            color: "#F7F3ED",
-          }}
-        >
-          Reserve
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M4 12L12 4M12 4H6M12 4V10" />
-          </svg>
-        </button>
+          {/* CTA */}
+          <button
+            onClick={() => goToSection("reserve")}
+            className="bg-white text-black rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-1.5 shrink-0"
+          >
+            Reserve
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </nav>
       </div>
-    </nav>
+
+      {/* Mobile floating island */}
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-[calc(100%-2rem)] px-0 lg:hidden">
+        <div
+          className={`rounded-full border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.12)] px-5 py-3 flex items-center justify-between transition-all duration-500 ${
+            scrolled ? "bg-black/50 backdrop-blur-xl" : "bg-black/40 backdrop-blur-lg"
+          }`}
+        >
+          <button onClick={goHome} aria-label="Tres Rotterdam">
+            <img
+              src={logoTres}
+              alt="Tres"
+              className="h-5 w-auto"
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
+          </button>
+
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-white p-1"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile fullscreen menu */}
+      <div
+        className={`lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xl transition-all duration-400 ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        }`}
+      >
+        <nav className="flex flex-col items-center justify-center h-full gap-6">
+          <button
+            onClick={() => goToSection("menu")}
+            className="text-2xl text-white/60 hover:text-white transition-colors duration-300"
+          >
+            Menu
+          </button>
+          <button
+            onClick={() => goToSection("concept")}
+            className="text-2xl text-white/60 hover:text-white transition-colors duration-300"
+          >
+            Concept
+          </button>
+          <button
+            onClick={() => goToSection("producers")}
+            className="text-2xl text-white/60 hover:text-white transition-colors duration-300"
+          >
+            Producers
+          </button>
+          <button
+            onClick={() => goToSection("reserve")}
+            className="bg-white text-black rounded-full px-6 py-2.5 text-lg font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-2 mt-4"
+          >
+            Reserve
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </nav>
+      </div>
+    </>
   );
 }
