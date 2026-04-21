@@ -45,7 +45,7 @@ export default function ChapterBreak({
       if (prefersReduced) {
         tl.to([label, wordEl, sub], { opacity: 1, duration: 0.3, ease: "power1.out" });
       } else {
-        const ease = "cubic-bezier(0.45, 0, 0.15, 1)";
+        const ease = "power3.out";
         // Word at t=0.2s, label at t=0 (200ms before word), subtitle at t=0.6s (400ms after word)
         tl.to(label, { opacity: 1, duration: 1.2, ease }, 0)
           .to(wordEl, { opacity: 1, y: 0, duration: 1.2, ease }, 0.2)
