@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SeasonBar from "@/components/SeasonBar";
 import HeroSection from "@/components/HeroSection";
+import ChapterBreak from "@/components/ChapterBreak";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import DishStack from "@/components/DishStack";
 import SeasonSelector from "@/components/SeasonSelector";
@@ -18,6 +19,7 @@ const Index = () => {
       {!introDone && <IntroOverlay onComplete={() => setIntroDone(true)} />}
       <SeasonBar />
       <HeroSection shouldPlay={introDone} />
+      <ChapterBreak word="Winter" subtitle="Where the season is stored." />
       <ZoomParallaxSection />
       <DishStack />
       <SeasonSelector />

@@ -19,7 +19,7 @@ const images = [
 
 export default function ZoomParallaxSection() {
   return (
-    <section className="relative" style={{ backgroundColor: '#F7F3ED' }}>
+    <section className="relative" style={{ backgroundColor: '#F5EFE6', paddingTop: 0 }}>
       <ZoomParallax images={images} />
     </section>
   );
