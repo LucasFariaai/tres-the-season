@@ -131,16 +131,21 @@ export default function ChapterBreak({
         id="chapter-fade-strip"
         style={{
           background:
-            "linear-gradient(to bottom, #2A1810 0%, #2A1810 18%, #2E1D15 32%, #3A2820 45%, #5A4A3A 58%, #8A7D6A 72%, #B8AE9C 83%, #D8CFBE 92%, #F5EFE6 100%)",
+            "linear-gradient(to bottom, #2A1810 0%, #2A1810 15%, #2A1811 22%, #2B1A14 30%, #2F1F18 38%, #3A2A20 45%, #4A3A2C 52%, #66553F 58%, #897858 64%, #AA9A78 70%, #C5B89A 76%, #DBD0B8 82%, #E8DDC9 88%, #F0E8D8 94%, #F5EFE6 100%)",
         }}
       />
 
       <style>{`
         .chapter-panel { height: 40vh; }
-        #chapter-fade-strip { height: 240px; }
+        #chapter-fade-strip { height: 500px; }
+        @media (max-width: 1023px) {
+          #chapter-fade-strip { height: 320px; }
+        }
         @media (max-width: 767px) {
           .chapter-panel { height: 32vh; }
-          #chapter-fade-strip { height: 160px; }
+        }
+        @media (max-width: 639px) {
+          #chapter-fade-strip { height: 220px; }
         }
       `}</style>
     </div>
