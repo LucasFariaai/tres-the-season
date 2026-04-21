@@ -137,8 +137,10 @@ export default function ChapterBreak({
 
       <style>{`
         .chapter-panel { height: 40vh; }
+        #chapter-fade-strip { height: 240px; }
         @media (max-width: 767px) {
           .chapter-panel { height: 32vh; }
+          #chapter-fade-strip { height: 160px; }
         }
       `}</style>
     </div>
