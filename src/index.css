@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600&family=Lora:ital,wght@0,400;1,400;1,500&family=Fraunces:ital,wght@1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abel&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600&family=Lora:ital,wght@0,400;1,400;1,500&family=Fraunces:ital,wght@1,400;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -58,6 +58,17 @@
 
     /* Transitions */
     --season-transition: 600ms ease;
+
+    /* Wine list editorial theme */
+    --wine-bg: 24 24% 8%;
+    --wine-text: 36 43% 93%;
+    --wine-muted: 39 30% 69%;
+    --wine-micro: 30 30% 42%;
+    --wine-accent: 29 51% 50%;
+    --wine-hairline: 36 43% 93% / 0.1;
+    --wine-hairline-strong: 36 43% 93% / 0.18;
+    --wine-hairline-input: 36 43% 93% / 0.15;
+    --wine-surface: 36 43% 93% / 0.05;
   }
 
   /* Winter — Dec-Feb */
@@ -145,6 +156,33 @@
 
   .font-body {
     font-family: var(--font-body);
+  }
+
+  .wine-list-theme {
+    --background: var(--wine-bg);
+    --foreground: var(--wine-text);
+    background-color: hsl(var(--wine-bg));
+    color: hsl(var(--wine-text));
+    font-family: 'Abel', sans-serif;
+  }
+
+  .wine-list-display {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.02;
+  }
+
+  .wine-list-body {
+    font-family: 'Abel', sans-serif;
+    font-weight: 400;
+  }
+
+  .wine-list-label {
+    font-family: 'Abel', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 }
 
