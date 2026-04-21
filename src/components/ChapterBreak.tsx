@@ -126,19 +126,21 @@ export default function ChapterBreak({
         </div>
       </div>
 
-      {/* Bottom fade strip — 70px */}
+      {/* Bottom fade strip */}
       <div
+        id="chapter-fade-strip"
         style={{
-          height: "70px",
           background:
-            "linear-gradient(to bottom, #2A1810 0%, #4A2818 28%, #8A6A4A 58%, #C8B89A 82%, #F5EFE6 100%)",
+            "linear-gradient(to bottom, #2A1810 0%, #2A1810 18%, #2E1D15 32%, #3A2820 45%, #5A4A3A 58%, #8A7D6A 72%, #B8AE9C 83%, #D8CFBE 92%, #F5EFE6 100%)",
         }}
       />
 
       <style>{`
         .chapter-panel { height: 40vh; }
+        #chapter-fade-strip { height: 240px; }
         @media (max-width: 767px) {
           .chapter-panel { height: 32vh; }
+          #chapter-fade-strip { height: 160px; }
         }
       `}</style>
     </div>
