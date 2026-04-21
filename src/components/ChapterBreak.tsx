@@ -126,26 +126,38 @@ export default function ChapterBreak({
         </div>
       </div>
 
-      {/* Bottom fade strip */}
-      <div
-        id="chapter-fade-strip"
-        style={{
-          background:
-            "linear-gradient(to bottom, #2A1810 0%, #2A1810 15%, #2A1811 22%, #2B1A14 30%, #2F1F18 38%, #3A2A20 45%, #4A3A2C 52%, #66553F 58%, #897858 64%, #AA9A78 70%, #C5B89A 76%, #DBD0B8 82%, #E8DDC9 88%, #F0E8D8 94%, #F5EFE6 100%)",
-        }}
-      />
+      {/* Bottom fade strip — rounder, perceptually smooth dissolve */}
+      <div className="relative w-full h-[280px] sm:h-[420px] lg:h-[640px]">
+        {/* Base gradient — 22 stops, smooth-step distribution, neutral warm taupe mids */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, #2A1810 0%, #2A1810 12%, #2B1911 18%, #2D1B13 24%, #301E15 30%, #352218 36%, #3C281E 42%, #463224 48%, #523D2D 54%, #614C39 60%, #725D48 65%, #847058 70%, #978670 75%, #AA9B86 80%, #BDB09C 84%, #CFC4B2 88%, #DED5C5 91%, #E9E2D4 94%, #F0EADD 96%, #F4EEE3 98%, #F5EFE6 100%)",
+          }}
+        />
+        {/* Top edge softener — blends into the panel above */}
+        <div
+          className="absolute inset-x-0 top-0 h-1/2 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at center top, rgba(42,24,16,0.4) 0%, transparent 70%)",
+          }}
+        />
+        {/* Bottom edge softener — blends into the photo grid below */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at center bottom, rgba(245,239,230,0.3) 0%, transparent 70%)",
+          }}
+        />
+      </div>
 
       <style>{`
         .chapter-panel { height: 40vh; }
-        #chapter-fade-strip { height: 500px; }
-        @media (max-width: 1023px) {
-          #chapter-fade-strip { height: 320px; }
-        }
         @media (max-width: 767px) {
           .chapter-panel { height: 32vh; }
-        }
-        @media (max-width: 639px) {
-          #chapter-fade-strip { height: 220px; }
         }
       `}</style>
     </div>
