@@ -69,10 +69,10 @@ export default function ChapterBreak({
       {/* Main chapter panel */}
       <div
         ref={panelRef}
-        className="flex items-center justify-center px-6"
+        data-chapter-panel
+        className="flex items-center justify-center px-6 chapter-panel"
         style={{
           backgroundColor: "#2A1810",
-          height: "clamp(320px, 40vh, 40vh)",
           minHeight: "320px",
         }}
       >
@@ -135,10 +135,10 @@ export default function ChapterBreak({
         }}
       />
 
-      {/* Mobile height override */}
       <style>{`
+        .chapter-panel { height: 40vh; }
         @media (max-width: 767px) {
-          [data-chapter-panel] { height: 32vh !important; }
+          .chapter-panel { height: 32vh; }
         }
       `}</style>
     </div>
