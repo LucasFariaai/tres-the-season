@@ -17,6 +17,8 @@ export default {
         display: ['Playfair Display', 'serif'],
         body: ['Source Sans 3', 'sans-serif'],
         accent: ['Lora', 'serif'],
+        wineDisplay: ['Fraunces', 'serif'],
+        wineBody: ['Abel', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,6 +53,13 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        wine: {
+          bg: "hsl(var(--wine-bg))",
+          text: "hsl(var(--wine-text))",
+          muted: "hsl(var(--wine-muted))",
+          micro: "hsl(var(--wine-micro))",
+          accent: "hsl(var(--wine-accent))",
         },
         season: {
           darkest: "hsl(var(--season-darkest))",
