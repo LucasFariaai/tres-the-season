@@ -1,98 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { legacyDishImages, legacySeasonDescriptions, legacySeasonSubheadings } from "@/data/legacySeasonMenu";
+import { useEffect, useMemo, useRef, useState } from "react";
+import logoTresNav from "@/assets/logo-tres-nav.svg";
+import { legacyDishImages, legacySeasonDescriptions } from "@/data/legacySeasonMenu";
 import { seasonLabels, seasonMenus, type Season, useSeason } from "@/lib/seasonContext";
-
-function MenuLine({
-  text,
-  description,
-  index,
-  onInView,
-}: {
-  text: string;
-  description: string;
-  index: number;
-  onInView: (index: number) => void;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const fadeObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          fadeObserver.unobserve(el);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    fadeObserver.observe(el);
-
-    const activeObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          onInView(index);
-        }
-      },
-      {
-        rootMargin: "-40% 0px -40% 0px",
-        threshold: 0.1,
-      }
-    );
-    activeObserver.observe(el);
-
-    return () => {
-      fadeObserver.disconnect();
-      activeObserver.disconnect();
-    };
-  }, [index, onInView]);
-
-  const num = String(index + 1).padStart(2, "0");
-
-  return (
-    <div
-      ref={ref}
-      className="relative"
-      style={{
-        paddingTop: index === 0 ? "0px" : "40px",
-        paddingBottom: "40px",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: `opacity 0.7s ease ${index * 0.08}s, transform 0.7s ease ${index * 0.08}s`,
-      }}
-    >
-      <span
-        className="absolute -left-1 -top-2 font-display text-[100px] leading-none select-none pointer-events-none"
-        style={{ color: "#E8DCC8", opacity: 0.2 }}
-      >
-        {num}
-      </span>
-
-      <div className="relative z-10 pl-14 sm:pl-16">
-        <h3
-          className="font-display text-[22px] sm:text-[26px] leading-snug"
-          style={{ color: "#2A1F18" }}
-        >
-          {text}
-        </h3>
-        <p
-          className="font-accent text-[14px] sm:text-[15px] mt-1.5"
-          style={{ color: "#8B7355" }}
-        >
-          {description}
-        </p>
-      </div>
-
-      <div
-        className="mt-8 sm:mt-10 h-px w-full"
-        style={{ backgroundColor: "#E8DCC8" }}
-      />
-    </div>
-  );
-}
 
 type MenuPoemProps = {
   seasonOverride?: Season;
@@ -100,6 +9,26 @@ type MenuPoemProps = {
   showCta?: boolean;
   className?: string;
 };
+
+const menuMeta = {
+  servings: "18 servings",
+  tastingPrice: "€185",
+  pairingPrice: "Wine pairing €110",
+};
+
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setReduced(mediaQuery.matches);
+    onChange();
+    mediaQuery.addEventListener("change", onChange);
+    return () => mediaQuery.removeEventListener("change", onChange);
+  }, []);
+
+  return reduced;
+}
 
 export default function MenuPoem({
   seasonOverride,
@@ -111,153 +40,254 @@ export default function MenuPoem({
   const season = seasonOverride ?? contextSeason;
   const menu = seasonMenus[season];
   const descriptions = legacySeasonDescriptions[season] || legacySeasonDescriptions.spring;
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [displayIndex, setDisplayIndex] = useState(0);
-  const [fading, setFading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(1);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const lineRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const reducedMotion = useReducedMotion();
 
-  const handleInView = useCallback((index: number) => {
-    setActiveIndex(index);
-  }, []);
+  const activeDish = menu.items[activeIndex] ?? menu.items[0];
+  const activeDescription = descriptions[activeIndex] ?? descriptions[0] ?? "";
+  const progressDots = menu.items.map((_, index) => index);
+
+  const stackIndices = useMemo(() => {
+    const length = legacyDishImages.length;
+    return [
+      (activeIndex - 1 + length) % length,
+      activeIndex % length,
+      (activeIndex + 1) % length,
+      (activeIndex + 2) % length,
+    ];
+  }, [activeIndex]);
 
   useEffect(() => {
-    if (activeIndex === displayIndex) return;
-    setFading(true);
-    const timeout = setTimeout(() => {
-      setDisplayIndex(activeIndex);
-      setFading(false);
-    }, 200);
-    return () => clearTimeout(timeout);
-  }, [activeIndex, displayIndex]);
+    if (reducedMotion) return;
+
+    const nodes = lineRefs.current.filter(Boolean) as HTMLButtonElement[];
+    if (!nodes.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number((entry.target as HTMLElement).dataset.index);
+            if (!Number.isNaN(index)) setActiveIndex(index);
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: "-42% 0px -42% 0px",
+        threshold: 0.01,
+      },
+    );
+
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [menu.items, reducedMotion]);
 
   return (
-    <>
-      <div
-        className="h-[150px] w-full"
+    <section
+      id="menu"
+      ref={containerRef}
+      className={`relative overflow-hidden bg-[#F3F0EB] text-[#2B231E] ${className}`.trim()}
+      style={{ minHeight: "100vh" }}
+    >
+      <div className="absolute inset-0 pointer-events-none opacity-[0.18]"
         style={{
-          background: "linear-gradient(to bottom, #1A1410, #F7F3ED)",
+          backgroundImage:
+            'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.45), transparent 32%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.3), transparent 28%)',
         }}
       />
 
-      <section
-        id="menu"
-        className={`relative overflow-hidden ${className}`.trim()}
-        style={{ backgroundColor: "#F7F3ED" }}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none z-[1]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-            backgroundSize: "256px 256px",
-          }}
-        />
-
-        <div className="relative z-[2] max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row">
-            <div className="hidden lg:block lg:w-[45%] relative">
-              <div className="sticky top-0 h-screen flex items-center justify-center p-8">
-                <div
-                  className="relative w-full max-h-[75vh] overflow-hidden"
-                  style={{
-                    aspectRatio: "3/4",
-                    boxShadow: "0 8px 40px rgba(42, 31, 24, 0.15)",
-                  }}
-                >
-                  <img
-                    src={legacyDishImages[displayIndex % legacyDishImages.length]}
-                    alt={menu.items[displayIndex] || "Seasonal dish"}
-                    className="w-full h-full object-cover"
-                    style={{
-                      opacity: fading ? 0 : 1,
-                      transition: "opacity 0.3s ease",
-                    }}
-                    loading="lazy"
-                    width={800}
-                    height={1000}
-                  />
-                </div>
-              </div>
+      <div className="relative z-10 mx-auto max-w-[1600px] px-6 pb-10 pt-4 sm:px-10 sm:pb-12 lg:px-12 lg:pb-14 lg:pt-3">
+        {showCta ? (
+          <div className="flex justify-center pb-6 sm:pb-8">
+            <div
+              className="flex items-center gap-3 border border-black/10 bg-[#7D7970] px-4 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.12)]"
+              style={{ borderRadius: "999px" }}
+            >
+              <img src={logoTresNav} alt="Tres" className="h-5 w-auto opacity-95" />
+              <button
+                type="button"
+                onClick={() => document.getElementById("reserve")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" })}
+                className="flex items-center gap-1.5 bg-white px-5 py-2 text-[13px] font-medium text-[#231E1A] transition-opacity duration-300 hover:opacity-90"
+                style={{ borderRadius: "999px", fontFamily: "Abel, sans-serif" }}
+              >
+                Reserve
+                <span aria-hidden="true">→</span>
+              </button>
             </div>
+          </div>
+        ) : null}
 
-            <div className="w-full lg:w-[55%] px-6 sm:px-10 lg:px-16 lg:pr-10 pt-20 sm:pt-28 lg:pt-32 pb-24" style={{ wordWrap: "break-word", overflowWrap: "break-word" }}>
+        <div className="grid min-h-[calc(100vh-64px)] items-start gap-10 lg:grid-cols-[minmax(320px,0.88fr)_minmax(380px,1.12fr)] lg:gap-6 xl:gap-10">
+          <div className="flex min-h-full flex-col justify-between lg:py-6 xl:py-10">
+            <div>
               {showHeader ? (
-                <div className="mb-16 sm:mb-20">
+                <div className="mb-10 sm:mb-12">
                   <p
-                    className="font-body text-xs tracking-[0.3em] uppercase mb-4"
-                    style={{ color: "#8B7355" }}
+                    className="text-[11px] uppercase tracking-[0.34em] text-[#B89667]"
+                    style={{ fontFamily: "Abel, sans-serif" }}
                   >
                     Tasting Menu
                   </p>
-                  <h2
-                    className="font-display italic text-3xl sm:text-4xl mb-3 season-transition"
-                    style={{ color: "hsl(var(--season-dark))" }}
+                  <h1
+                    className="mt-2 text-[44px] leading-none sm:text-[54px]"
+                    style={{
+                      fontFamily: "Fraunces, serif",
+                      fontStyle: "italic",
+                      fontWeight: 400,
+                      color: "hsl(var(--season-dark))",
+                    }}
                   >
                     {seasonLabels[season]}
-                  </h2>
-                  <p
-                    className="font-accent text-base mb-3"
-                    style={{ color: "#B8B0A3" }}
-                  >
-                    {legacySeasonSubheadings[season]}
-                  </p>
-                  <p
-                    className="font-body text-[13px]"
-                    style={{ color: "#B8B0A3" }}
-                  >
-                    18 servings · €185 per guest
-                  </p>
+                  </h1>
                 </div>
               ) : null}
 
-              <div>
-                {menu.items.map((item, i) => (
-                  <MenuLine
-                    key={`${season}-${i}`}
-                    text={item}
-                    description={descriptions[i] || ""}
-                    index={i}
-                    onInView={handleInView}
-                  />
-                ))}
+              <div className="hidden lg:block lg:max-w-[420px] xl:max-w-[470px]">
+                <div className="relative py-6 xl:py-8">
+                  <span
+                    className="pointer-events-none absolute left-0 top-0 select-none text-[92px] leading-none text-[#EEE6DA] xl:text-[108px]"
+                    style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontWeight: 400 }}
+                  >
+                    {String(activeIndex + 1).padStart(2, "0")}
+                  </span>
+                  <div className="relative z-10 pt-10">
+                    <h2
+                      className="max-w-[360px] text-[34px] leading-[1.08] text-[#332925] xl:max-w-[420px] xl:text-[42px]"
+                      style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                    >
+                      {activeDish}
+                    </h2>
+                    <p
+                      className="mt-3 text-[16px] italic text-[#B89667] xl:text-[18px]"
+                      style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                    >
+                      {activeDescription}
+                    </p>
+                  </div>
+                </div>
               </div>
+            </div>
 
-              <div className="mt-8 pt-8">
-                <p
-                  className="font-body text-sm text-center"
-                  style={{ color: "#B8B0A3" }}
+            <div className="mt-8 space-y-3 sm:space-y-4 lg:mt-14">
+              <div className="flex items-center gap-2.5">
+                {progressDots.map((dot) => {
+                  const isActive = dot === activeIndex;
+                  return (
+                    <button
+                      key={dot}
+                      type="button"
+                      aria-label={`Go to dish ${dot + 1}`}
+                      onClick={() => {
+                        setActiveIndex(dot);
+                        lineRefs.current[dot]?.scrollIntoView({ block: "center", behavior: reducedMotion ? "auto" : "smooth" });
+                      }}
+                      className="transition-all duration-300"
+                      style={{
+                        width: isActive ? "22px" : "7px",
+                        height: "7px",
+                        borderRadius: "999px",
+                        backgroundColor: isActive ? "hsl(var(--season-dark))" : "#E4D7C5",
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <p className="text-[12px] text-[#B1A291]" style={{ fontFamily: "Abel, sans-serif" }}>
+                {menuMeta.servings} · {menuMeta.tastingPrice} · {menuMeta.pairingPrice}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid items-start gap-8 lg:grid-cols-[minmax(340px,0.95fr)_minmax(340px,0.95fr)] lg:gap-6 xl:gap-10">
+            <div className="order-2 lg:order-1 lg:pr-2 xl:pr-4">
+              <div className="space-y-8 pb-12 lg:space-y-10 lg:pb-24 lg:pt-[34vh]">
+                {menu.items.map((item, index) => {
+                  const isActive = index === activeIndex;
+                  return (
+                    <button
+                      key={`${season}-${index}`}
+                      ref={(node) => {
+                        lineRefs.current[index] = node;
+                      }}
+                      data-index={index}
+                      type="button"
+                      onMouseEnter={() => setActiveIndex(index)}
+                      onFocus={() => setActiveIndex(index)}
+                      onClick={() => setActiveIndex(index)}
+                      className="block w-full text-left outline-none"
+                      style={{
+                        opacity: isActive ? 1 : 0.58,
+                        transform: isActive ? "translateY(0)" : "translateY(0)",
+                        transition: "opacity 280ms ease",
+                      }}
+                    >
+                      <div className="relative py-3 lg:py-4">
+                        <span
+                          className="pointer-events-none absolute left-0 top-0 select-none text-[72px] leading-none text-[#EEE6DA] sm:text-[82px]"
+                          style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontWeight: 400 }}
+                        >
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <div className="relative z-10 pl-1 pt-8 sm:pt-9">
+                          <h3
+                            className="max-w-[360px] text-[28px] leading-[1.12] text-[#332925] sm:text-[32px]"
+                            style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                          >
+                            {item}
+                          </h3>
+                          <p
+                            className="mt-2 text-[15px] italic text-[#B89667] sm:text-[16px]"
+                            style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                          >
+                            {descriptions[index] || ""}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="order-1 lg:order-2 lg:sticky lg:top-0 lg:flex lg:min-h-screen lg:items-center lg:justify-center lg:py-10">
+              <div className="relative mx-auto h-[560px] w-full max-w-[520px] sm:h-[620px] lg:h-[680px] lg:max-w-[560px] xl:h-[720px]">
+                <div
+                  className="absolute left-[20%] top-[3%] h-[24%] w-[58%] overflow-hidden border border-white/20 bg-[#c4b7a4]/40"
+                  style={{
+                    opacity: 0.7,
+                    transform: "translateZ(0)",
+                  }}
                 >
-                  Wine pairing €110 · Non-alcoholic pairing €100
-                </p>
-              </div>
-
-              {showCta ? (
-                <div className="mt-12 text-center">
-                  <button
-                    onClick={() =>
-                      document
-                        .getElementById("reserve")
-                        ?.scrollIntoView({ behavior: "smooth" })
-                    }
-                    className="inline-block px-10 py-4 font-display text-sm tracking-[0.12em] uppercase rounded-sm transition-colors duration-300"
-                    style={{
-                      backgroundColor: "#2A1F18",
-                      color: "#F7F3ED",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = `hsl(var(--season-dark))`;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#2A1F18";
-                    }}
-                  >
-                    Reserve Your Evening
-                  </button>
+                  <img src={legacyDishImages[stackIndices[0]]} alt="" className="h-full w-full object-cover blur-[1px] saturate-[0.8]" />
                 </div>
-              ) : null}
+
+                <div
+                  className="absolute left-[16%] top-[20%] h-[58%] w-[68%] overflow-hidden bg-[#c6b8a5]/30"
+                  style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.12)" }}
+                >
+                  <img
+                    src={legacyDishImages[stackIndices[1]]}
+                    alt={activeDish}
+                    className="h-full w-full object-cover"
+                    style={{ transition: reducedMotion ? "none" : "transform 360ms ease, opacity 260ms ease" }}
+                  />
+                </div>
+
+                <div className="absolute left-[20%] top-[73%] h-[20%] w-[58%] overflow-hidden bg-[#b9a997]/35 opacity-65">
+                  <img src={legacyDishImages[stackIndices[2]]} alt="" className="h-full w-full object-cover" />
+                </div>
+
+                <div className="absolute left-[24%] top-[86%] h-[12%] w-[50%] overflow-hidden bg-[#d9d2c6]/70 opacity-60">
+                  <img src={legacyDishImages[stackIndices[3]]} alt="" className="h-full w-full object-cover" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
