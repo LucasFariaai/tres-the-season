@@ -286,7 +286,7 @@ export function useVisualSiteEditor() {
       return { error: historyError.message };
     }
 
-    const publishedPayload: SiteSnapshotInsert | SiteSnapshotUpdate = {
+    const publishedPayload: SiteSnapshotUpdate = {
       name: "Published site",
       kind: "published" as const,
       content: toJson(snapshot.content),
@@ -298,7 +298,7 @@ export function useVisualSiteEditor() {
 
     const publishedResult = idsRef.current.published
       ? await supabase.from("site_snapshots").update(publishedPayload).eq("id", idsRef.current.published).select("id").single()
-      : await supabase.from("site_snapshots").insert(publishedPayload).select("id").single();
+      : await supabase.from("site_snapshots").insert(publishedPayload satisfies SiteSnapshotInsert).select("id").single();
 
     if (publishedResult.error) {
       setState((current) => ({ ...current, publishing: false }));
@@ -389,7 +389,7 @@ export function useVisualSiteEditor() {
   const defineCurrentAsBaseline = useCallback(async () => {
     if (!state.session || !state.isAdmin) return { error: "Unauthorized" };
 
-    const payload: SiteSnapshotInsert | SiteSnapshotUpdate = {
+    const payload: SiteSnapshotUpdate = {
       name: "Baseline",
       kind: "baseline" as const,
       content: toJson(state.content),
@@ -400,7 +400,7 @@ export function useVisualSiteEditor() {
 
     const result = idsRef.current.baseline
       ? await supabase.from("site_snapshots").update(payload).eq("id", idsRef.current.baseline).select("id").single()
-      : await supabase.from("site_snapshots").insert(payload).select("id").single();
+      : await supabase.from("site_snapshots").insert(payload satisfies SiteSnapshotInsert).select("id").single();
 
     if (result.error) return { error: result.error.message };
 
