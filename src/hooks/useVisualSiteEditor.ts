@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import type { Json } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 import { uploadSiteImage } from "@/lib/imageUpload";
 import { defaultHomeCmsContent, defaultMediaLibrary, defaultSiteTheme } from "@/lib/site-editor/defaults";
 import {
@@ -50,6 +50,8 @@ const sanitizeFileName = (name: string) =>
     .replace(/(^-|-$)+/g, "") || "image";
 
 const toJson = (value: unknown) => value as Json;
+type SiteSnapshotInsert = Database["public"]["Tables"]["site_snapshots"]["Insert"];
+type SiteSnapshotUpdate = Database["public"]["Tables"]["site_snapshots"]["Update"];
 
 export function useVisualSiteEditor() {
   const [state, setState] = useState<SiteEditorState>({
@@ -263,17 +265,19 @@ export function useVisualSiteEditor() {
     setState((current) => ({ ...current, publishing: true }));
     const snapshot = { content: state.content, theme: state.theme, media: state.mediaLibrary };
 
+    const historyPayload: SiteSnapshotInsert = {
+      name: `Published ${new Date().toLocaleString()}`,
+      kind: "history",
+      content: toJson(snapshot.content),
+      theme: toJson(snapshot.theme),
+      media: toJson(snapshot.media),
+      restored_from: idsRef.current.published,
+      created_by: state.session.user.id,
+    };
+
     const { data: historySnapshot, error: historyError } = await supabase
       .from("site_snapshots")
-      .insert({
-        name: `Published ${new Date().toLocaleString()}`,
-        kind: "history",
-        content: snapshot.content as unknown as Record<string, unknown>,
-        theme: snapshot.theme as unknown as Record<string, unknown>,
-        media: snapshot.media as unknown as Record<string, unknown>,
-        restored_from: idsRef.current.published,
-        created_by: state.session.user.id,
-      })
+      .insert(historyPayload)
       .select("id")
       .single();
 
@@ -282,12 +286,12 @@ export function useVisualSiteEditor() {
       return { error: historyError.message };
     }
 
-    const publishedPayload = {
+    const publishedPayload: SiteSnapshotInsert | SiteSnapshotUpdate = {
       name: "Published site",
       kind: "published" as const,
-      content: snapshot.content as unknown as Record<string, unknown>,
-      theme: snapshot.theme as unknown as Record<string, unknown>,
-      media: snapshot.media as unknown as Record<string, unknown>,
+      content: toJson(snapshot.content),
+      theme: toJson(snapshot.theme),
+      media: toJson(snapshot.media),
       created_by: state.session.user.id,
       restored_from: historySnapshot.id,
     };
@@ -344,7 +348,7 @@ export function useVisualSiteEditor() {
 
       if (readError) return { error: readError.message };
 
-      const next = normalizeSnapshot(data as Partial<EditorSnapshotPayload>);
+      const next = normalizeSnapshot(data as unknown as Partial<EditorSnapshotPayload>);
       setState((current) => ({ ...current, content: next.content, theme: next.theme, mediaLibrary: next.media }));
 
       await supabase.from("site_change_log").insert({
@@ -385,12 +389,12 @@ export function useVisualSiteEditor() {
   const defineCurrentAsBaseline = useCallback(async () => {
     if (!state.session || !state.isAdmin) return { error: "Unauthorized" };
 
-    const payload = {
+    const payload: SiteSnapshotInsert | SiteSnapshotUpdate = {
       name: "Baseline",
       kind: "baseline" as const,
-      content: state.content as unknown as Record<string, unknown>,
-      theme: state.theme as unknown as Record<string, unknown>,
-      media: state.mediaLibrary as unknown as Record<string, unknown>,
+      content: toJson(state.content),
+      theme: toJson(state.theme),
+      media: toJson(state.mediaLibrary),
       created_by: state.session.user.id,
     };
 
