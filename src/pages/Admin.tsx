@@ -15,7 +15,8 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useVisualSiteEditor } from "@/hooks/useVisualSiteEditor";
 import { resolveMediaUrl } from "@/lib/site-editor/mapper";
-import type { GalleryItemInput, SiteMediaItem } from "@/lib/site-editor/types";
+import type { TresGalleryItem } from "@/data/tresGalleryItems";
+import type { SiteMediaItem } from "@/lib/site-editor/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -195,7 +196,7 @@ export default function Admin() {
     toast({ title: "Media updated" });
   };
 
-  const updateGalleryItem = (index: number, updater: (item: GalleryItemInput) => GalleryItemInput) => {
+  const updateGalleryItem = (index: number, updater: (item: TresGalleryItem) => TresGalleryItem) => {
     editor.setContent((c) => ({
       ...c,
       gallery: {
@@ -297,7 +298,7 @@ export default function Admin() {
                               <div><Label>Label</Label><Input value={item.label ?? ""} onChange={(e) => updateGalleryItem(index, (current) => ({ ...current, label: e.target.value }))} /></div>
                               <div><Label>Caption</Label><Textarea value={item.caption ?? ""} onChange={(e) => updateGalleryItem(index, (current) => ({ ...current, caption: e.target.value }))} /></div>
                               <div><Label>Alt</Label><Input value={item.alt} onChange={(e) => updateGalleryItem(index, (current) => ({ ...current, alt: e.target.value }))} /></div>
-                              <div><Label>Width</Label><Input value={item.width} onChange={(e) => updateGalleryItem(index, (current) => ({ ...current, width: e.target.value as GalleryItemInput["width"] }))} /></div>
+                              <div><Label>Width</Label><Input value={item.width} onChange={(e) => updateGalleryItem(index, (current) => ({ ...current, width: e.target.value as TresGalleryItem["width"] }))} /></div>
                             </div>
                           </div>
                         ))}
