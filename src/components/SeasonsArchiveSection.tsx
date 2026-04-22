@@ -1,26 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { seasonLabels, seasonMenus, type Season, useSeason } from "@/lib/seasonContext";
+import { seasonLabels, type Season, useSeason } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import foodCotton from "@/assets/food-cotton.jpg";
 import foodTableSpread from "@/assets/food-table-spread.jpg";
 import foodDessert from "@/assets/food-dessert.jpg";
 import foodDryage from "@/assets/food-dryage.jpg";
-import dish01 from "@/assets/dishes/dish-01.jpg";
-import dish02 from "@/assets/dishes/dish-02.jpg";
-import dish03 from "@/assets/dishes/dish-03.jpg";
-import dish04 from "@/assets/dishes/dish-04.jpg";
-import dish05 from "@/assets/dishes/dish-05.jpg";
-import dish06 from "@/assets/dishes/dish-06.jpg";
-import dish07 from "@/assets/dishes/dish-07.jpg";
-import dish08 from "@/assets/dishes/dish-08.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const allSeasons: Season[] = ["spring", "summer", "autumn", "winter"];
-const dishImages = [dish01, dish02, dish03, dish04, dish05, dish06, dish07, dish08];
 
 const seasonMeta: Record<Season, { ordinal: string; teaser: string; year: string; image: string; video?: string | null }> = {
   spring: {
@@ -53,139 +44,20 @@ const seasonMeta: Record<Season, { ordinal: string; teaser: string; year: string
   },
 };
 
-const seasonDescriptions: Record<Season, string[]> = {
-  spring: [
-    "Spring pastures, first foraging.",
-    "The earth still cool, the stem still pale.",
-    "Hedgerow blossoms, morning milk.",
-    "Forest floor after rain.",
-    "The garden at its gentlest.",
-    "First warmth, first sweetness.",
-    "Wildflowers pressed into curd.",
-    "A whisper of citrus and herb.",
-  ],
-  summer: [
-    "Sun-warmed, hand-torn, still breathing.",
-    "Orchard heat trapped in juice.",
-    "Tide pools at golden hour.",
-    "Pollen dust on yellow petals.",
-    "The garden in full chorus.",
-    "Stone fruit, sun-split, fragrant.",
-    "Aged slowly, served simply.",
-    "The long day's last sweetness.",
-  ],
-  autumn: [
-    "Dark woods, cold morning, smoke.",
-    "Earth and age, nothing wasted.",
-    "Field to fire, butter to brown.",
-    "Preserved before the frost.",
-    "Raw edge, soft centre.",
-    "Roots, bark, deep forest.",
-    "Rind and rot, noble and true.",
-    "Bitterness tempered by heat.",
-  ],
-  winter: [
-    "Cold sea, patient hands.",
-    "Underground, unhurried.",
-    "Brightness against the grey.",
-    "River to smoke to silk.",
-    "What the earth gives slowly.",
-    "Ice crystals on crimson.",
-    "Time compressed into flavour.",
-    "Dark, salt, stillness.",
-  ],
-};
-
-function getDishRows(season: Season) {
-  const items = seasonMenus[season]?.items ?? [];
-  const descriptions = seasonDescriptions[season] ?? [];
-
-  if (!items.length) {
-    return Array.from({ length: 4 }, (_, index) => ({
-      id: `${season}-placeholder-${index}`,
-      number: String(index + 1).padStart(2, "0"),
-      name: "Coming soon",
-      description: "",
-      image: dishImages[index % dishImages.length],
-    }));
-  }
-
-  return items.map((item, index) => ({
-    id: `${season}-${index}`,
-    number: String(index + 1).padStart(2, "0"),
-    name: item,
-    description: descriptions[index] ?? "",
-    image: dishImages[index % dishImages.length],
-  }));
-}
-
 export default function SeasonsArchiveSection() {
   const { season, setSeason } = useSeason();
   const isMobile = useIsMobile();
   const [hoveredSeason, setHoveredSeason] = useState<Season | null>(null);
-  const [displayedSeason, setDisplayedSeason] = useState<Season>("spring");
-  const [dishPhase, setDishPhase] = useState<"in" | "out">("in");
-  const rowRefs = useRef<Array<HTMLElement | null>>([]);
-  const rowContentRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const rowWatermarkRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const chapterRef = useRef<HTMLDivElement | null>(null);
   const chapterLabelRef = useRef<HTMLParagraphElement | null>(null);
   const chapterLineRefs = useRef<Array<HTMLParagraphElement | null>>([]);
   const chapterSubtitleRef = useRef<HTMLParagraphElement | null>(null);
 
   const activeSeason = useMemo(() => hoveredSeason && !isMobile ? hoveredSeason : season, [hoveredSeason, isMobile, season]);
-  const dishRows = useMemo(() => getDishRows(displayedSeason), [displayedSeason]);
 
   useEffect(() => {
     setSeason("spring");
   }, [setSeason]);
-
-  useEffect(() => {
-    if (season === displayedSeason) return;
-
-    setDishPhase("out");
-    const timeout = window.setTimeout(() => {
-      setDisplayedSeason(season);
-      setDishPhase("in");
-    }, 420);
-
-    return () => window.clearTimeout(timeout);
-  }, [displayedSeason, season]);
-
-  useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      rowContentRefs.current.forEach((node) => node?.classList.add("is-visible"));
-      rowWatermarkRefs.current.forEach((node) => node?.classList.add("is-visible"));
-      return;
-    }
-
-    const triggers = rowRefs.current.map((row, index) => {
-      const content = rowContentRefs.current[index];
-      const watermark = rowWatermarkRefs.current[index];
-      if (!row || !content || !watermark) return null;
-
-      content.classList.remove("is-visible");
-      watermark.classList.remove("is-visible");
-
-      return ScrollTrigger.create({
-        trigger: row,
-        start: "top 82%",
-        onEnter: () => {
-          window.setTimeout(() => content.classList.add("is-visible"), index * 80);
-          window.setTimeout(() => watermark.classList.add("is-visible"), index * 80 + 200);
-        },
-        onLeaveBack: () => {
-          content.classList.remove("is-visible");
-          watermark.classList.remove("is-visible");
-        },
-      });
-    });
-
-    return () => {
-      triggers.forEach((trigger) => trigger?.kill());
-    };
-  }, [dishRows]);
 
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
