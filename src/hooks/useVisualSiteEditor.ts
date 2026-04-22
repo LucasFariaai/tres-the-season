@@ -436,6 +436,35 @@ export function useVisualSiteEditor() {
     [state.isAdmin, state.session],
   );
 
+  const updateMediaItem = useCallback(
+    async (itemId: string, updates: Partial<Pick<SiteMediaItem, "title" | "alt_text" | "tags">>) => {
+      if (!state.session || !state.isAdmin) return { error: "Unauthorized" };
+
+      const payload = {
+        ...(updates.title !== undefined ? { title: updates.title } : {}),
+        ...(updates.alt_text !== undefined ? { alt_text: updates.alt_text } : {}),
+        ...(updates.tags !== undefined ? { tags: updates.tags } : {}),
+      };
+
+      const { data, error: updateError } = await supabase
+        .from("site_media_library")
+        .update(payload)
+        .eq("id", itemId)
+        .select("id,file_path,title,alt_text,tags,metadata")
+        .single();
+
+      if (updateError) return { error: updateError.message };
+
+      setState((current) => ({
+        ...current,
+        mediaLibrary: current.mediaLibrary.map((item) => (item.id === itemId ? (data as SiteMediaItem) : item)),
+      }));
+
+      return { error: null };
+    },
+    [state.isAdmin, state.session],
+  );
+
   return {
     ...state,
     error,
@@ -448,6 +477,8 @@ export function useVisualSiteEditor() {
     resetToBaseline,
     defineCurrentAsBaseline,
     uploadMedia,
+    updateMediaItem,
+    saveNow: persistDraft,
     reload: () => reload(state.session),
   };
 }
