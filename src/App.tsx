@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
 import LegacyMenu from "./pages/LegacyMenu.tsx";
 import Reserve from "./pages/Reserve.tsx";
+import Seasons from "./pages/Seasons.tsx";
 import WineList from "./pages/WineList.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -22,6 +23,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/seasons" element={<Seasons />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/menu-legacy" element={<LegacyMenu />} />
             <Route path="/reserve" element={<Reserve />} />
