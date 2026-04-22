@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Loader2, LogOut, RefreshCw, Save, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -141,7 +141,7 @@ export default function Admin() {
     });
   }, [rows]);
 
-  const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSigningIn(true);
 
@@ -364,10 +364,10 @@ export default function Admin() {
                             />
                             <p className="text-xs text-muted-foreground">Storage path: {IMAGE_PATHS[identity] ?? "Not configured"}</p>
                           </div>
-                          <Button type="button" variant="outline" disabled={isUploading}>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                            {isUploading ? "Uploading" : "Upload handled above"}
-                          </Button>
+                            {isUploading ? "Uploading image" : "Selecting a file uploads it immediately"}
+                          </div>
                         </>
                       ) : isLongText(value) ? (
                         <Textarea value={value} onChange={(event) => setDrafts((current) => ({ ...current, [identity]: event.target.value }))} />
