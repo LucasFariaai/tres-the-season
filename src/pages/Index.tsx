@@ -5,6 +5,7 @@ import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
 import ConceptSection from "@/components/ConceptSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
+import DarkToCreamTransition from "@/components/DarkToCreamTransition";
 import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
@@ -37,6 +38,7 @@ const Index = () => {
       <div aria-hidden="true" className="w-full" style={{ height: "400px", background: content.bands.zoomToProducers || theme.bandZoomToProducers }} />
       <ProducersSection content={content.producers} theme={theme} />
       <ReserveSection content={content.reserve} theme={theme} />
+      <DarkToCreamTransition />
       <TresGallerySection content={content.gallery} theme={theme} />
       <FooterSection content={content.footer} theme={theme} />
 
@@ -46,7 +48,6 @@ const Index = () => {
             height: 340px !important;
             background: radial-gradient(ellipse 80% 55% at 50% 40%, transparent 0%, rgba(26,20,16,0.95) 100%), linear-gradient(to bottom, #1A1410 0%, #1A1410 8%, #2B1A14 18%, #3A2820 30%, #5A4A3A 44%, #8A7D6A 58%, #B8AE9C 72%, #D8CFBE 84%, #EDE5D4 93%, #F5EFE6 100%);
           }
-          .min-h-screen > div[aria-hidden="true"]:last-of-type { height: 260px; }
         }
       `}</style>
     </div>
