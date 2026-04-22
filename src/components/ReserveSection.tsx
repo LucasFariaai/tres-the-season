@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { useSeason, seasonLabels } from "@/lib/seasonContext";
-import DateTimePicker from "@/components/reservations/DateTimePicker";
-import PartySizeSelector from "@/components/reservations/PartySizeSelector";
-import ConfirmationCelebration from "@/components/reservations/ConfirmationCelebration";
+import OrganicReserveButton from "@/components/OrganicReserveButton";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
 import type { ReserveContent, SiteThemeTokens } from "@/lib/site-editor/types";
 
@@ -13,21 +10,9 @@ interface ReserveSectionProps {
 
 export default function ReserveSection({ content, theme }: ReserveSectionProps) {
   const { season } = useSeason();
-  const [date, setDate] = useState<Date | null>(null);
-  const [time, setTime] = useState<string | null>(null);
-  const [partySize, setPartySize] = useState(2);
-  const [confirmed, setConfirmed] = useState(false);
-  const [confirmationCode, setConfirmationCode] = useState("");
   const reserveContent = content ?? defaultHomeCmsContent.reserve;
   const reserveTheme = theme ?? defaultSiteTheme;
-  const canSubmit = !!date && !!time;
-
-  const handleSubmit = () => {
-    if (!canSubmit) return;
-    const code = "TRES-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-    setConfirmationCode(code);
-    setConfirmed(true);
-  };
+  const tastingSeason = seasonLabels[season] || "Spring";
 
   return (
     <section id="reserve" className="season-transition py-24 sm:py-32" style={{ backgroundColor: reserveTheme.reserveBackground }}>
@@ -53,22 +38,46 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
           </div>
 
           <div className="flex flex-col justify-center">
-            <div className="season-transition rounded-3xl p-6 sm:p-8" style={{ backgroundColor: "rgba(247, 243, 237, 0.1)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", border: "1px solid rgba(255, 255, 255, 0.15)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)" }}>
-              <p className="mb-1 font-accent text-lg text-season-dark season-transition">{seasonLabels[season]} Tasting Menu</p>
-              <p className="mb-6 font-display text-3xl text-season-darkest season-transition">{reserveContent.price}</p>
-              <DateTimePicker selectedDate={date} selectedTime={time} onDateChange={setDate} onTimeChange={setTime} />
-              <div className="my-2 border-t border-white/10" />
-              <PartySizeSelector partySize={partySize} onChange={setPartySize} />
-              <button onClick={handleSubmit} disabled={!canSubmit} className={`season-transition mt-6 w-full rounded-2xl py-4 font-body text-sm uppercase tracking-widest transition-all duration-300 ${canSubmit ? "bg-season-dark text-season-lightest hover:bg-season-darkest shadow-lg" : "bg-season-lighter/30 text-season-mid cursor-not-allowed"}`}>
-                {reserveContent.reserveButton}
-              </button>
-              <p className="season-transition mt-4 text-center text-xs text-season-mid">{reserveContent.note}</p>
+            <div className="flex h-full w-full flex-col items-center md:items-start md:justify-center">
+              <div className="w-full text-center md:max-w-[320px] md:text-left">
+                <p
+                  className="mb-2 text-[24px] font-normal italic leading-[1.2]"
+                  style={{ fontFamily: "Fraunces, serif", color: "#1A1410" }}
+                >
+                  {tastingSeason} Tasting Menu
+                </p>
+                <p
+                  className="mb-8 text-[14px] leading-[1.4]"
+                  style={{ fontFamily: "Abel, sans-serif", color: "rgba(26,20,16,0.5)" }}
+                >
+                  €185 per guest
+                </p>
+                <p
+                  className="text-[14px] leading-[1.6]"
+                  style={{ fontFamily: "Abel, sans-serif", color: "rgba(26,20,16,0.55)" }}
+                >
+                  18 servings. Alcoholic pairing €110. Non-alcoholic pairing €100. Reservations recommended 2 to 3 weeks ahead.
+                </p>
+              </div>
+
+              <div className="mt-12 flex w-full justify-center md:max-w-[320px] md:justify-center">
+                <OrganicReserveButton
+                  label="RESERVE"
+                  href="https://www.exploretock.com/tresrotterdam"
+                  accentColor="#1A1410"
+                />
+              </div>
+
+              <p
+                className="mt-6 text-center text-[11px] leading-[1.4]"
+                style={{ fontFamily: "Abel, sans-serif", color: "rgba(26,20,16,0.3)" }}
+              >
+                You will be redirected to Tock
+              </p>
             </div>
           </div>
         </div>
       </div>
-
-      <ConfirmationCelebration show={confirmed} date={date} time={time} partySize={partySize} confirmationCode={confirmationCode} />
     </section>
   );
 }
