@@ -1,17 +1,19 @@
-import React from 'react';
+import { useIsMobile } from "@/hooks/use-mobile";
 
-const DarkToCreamTransition: React.FC = () => {
+const DarkToCreamTransition = () => {
+  const isMobile = useIsMobile();
+
   return (
     <div
       style={{
-        position: 'relative',
-        width: '100%',
-        height: '600px',
-        overflow: 'hidden',
-        background: 'linear-gradient(to bottom, #1A1410 0%, #1A1410 5%, #1D1712 10%, #211B15 16%, #271F18 22%, #30261D 29%, #3D3224 36%, #4F4332 44%, #675A48 52%, #847660 60%, #A29580 68%, #BDB09A 75%, #D4C9B4 82%, #E4DBC8 88%, #EDE5D4 93%, #F5EFE6 100%)',
+        position: "relative",
+        width: "100%",
+        height: isMobile ? "400px" : "600px",
+        overflow: "hidden",
+        background:
+          "linear-gradient(to bottom, #1A1410 0%, #1A1410 5%, #1D1712 10%, #211B15 16%, #271F18 22%, #30261D 29%, #3D3224 36%, #4F4332 44%, #675A48 52%, #847660 60%, #A29580 68%, #BDB09A 75%, #D4C9B4 82%, #E4DBC8 88%, #EDE5D4 93%, #F5EFE6 100%)",
       }}
     >
-      {/* Left edge shadow */}
       <div
         style={{
           position: 'absolute',
@@ -23,7 +25,6 @@ const DarkToCreamTransition: React.FC = () => {
           pointerEvents: 'none',
         }}
       />
-      {/* Right edge shadow */}
       <div
         style={{
           position: 'absolute',
@@ -35,7 +36,6 @@ const DarkToCreamTransition: React.FC = () => {
           pointerEvents: 'none',
         }}
       />
-      {/* Bottom corners extra hold */}
       <div
         style={{
           position: 'absolute',
