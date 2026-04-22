@@ -1,80 +1,67 @@
 
+Objetivo: preservar a forma antiga de apresentar os cardápios e pratos como um padrão reutilizável, sem mexer na navegação principal e sem recolocar esse formato na home atual.
 
-## Smoother, rounder fade between chapter panel and photo grid
+1. Extrair o formato antigo para um componente reutilizável
+- Transformar a lógica antiga de cardápio em um componente próprio de apresentação legado, reaproveitando a estrutura que já existe em `MenuPoem.tsx`.
+- Separar esse componente da página principal para que ele possa ser chamado depois em qualquer outra tela.
+- Deixar a API do componente simples, com props como:
+  - temporada inicial
+  - mostrar ou não o cabeçalho da seção
+  - mostrar ou não CTA final
+  - classe externa para encaixe em outras páginas
+- Manter a forma antiga de passar os pratos baseada em `seasonMenus` e descrições por estação, para que o time consiga reutilizar o mesmo padrão depois.
 
-### Problem
-The current fade still shows a visible seam/band because:
-1. The gradient uses linear color interpolation in sRGB, which produces a perceived "muddy middle" stripe
-2. The transition from dark to cream happens too abruptly in the middle zone
-3. The `<style>` tag inside the component may not be overriding cleanly on rebuild
+2. Criar uma tela oculta para preservar e revisar esse formato
+- Adicionar uma rota escondida, sem link na navegação, algo como `/menu-legacy` ou `/archive-menu-pattern`.
+- Essa página vai servir como biblioteca viva do formato antigo.
+- Nela, renderizar o componente reutilizável já funcionando com os pratos por estação.
+- Não incluir essa rota em `SeasonBar`, header, footer ou qualquer navegação pública.
 
-### Fix — Replace the bottom fade strip with a "rounder" easing curve
+3. Organizar melhor os dados para reuso futuro
+- Tirar do componente qualquer conteúdo estático que hoje esteja “colado” na UI antiga e mover para uma estrutura exportável.
+- Consolidar:
+  - títulos dos pratos
+  - subtítulos
+  - descrições poéticas
+  - imagens associadas
+- Assim, em outra situação futura, será possível reaproveitar a mesma “forma de passar os pratos” sem copiar bloco de JSX inteiro.
 
-**1. Use a perceptually smooth easing (S-curve in luminance, not linear)**
+4. Preservar o comportamento visual antigo
+- Manter a leitura editorial anterior: lista de pratos por estação, imagem destacada, mudança conforme a estação ativa e entrada suave dos itens.
+- Garantir que esse formato continue independente da nova `SeasonsArchiveSection`, para coexistirem sem conflito.
+- Respeitar os limites já definidos no projeto:
+  - sem em dash
+  - sem adicionar rota na navegação
+  - responsivo em 375px
+  - sem alterar a seção nova da home
 
-Instead of 15 hand-picked stops, use a denser, ease-in-out distribution so brightness ramps slowly at both ends and faster through the middle. This is what makes a fade feel "round" instead of striped.
+5. Ajustar a arquitetura para reuso real
+- O componente legado ficará pronto para ser importado depois em qualquer tela futura, por exemplo:
+  - uma landing editorial
+  - uma página de campanha sazonal
+  - uma tela interna de apresentação
+- A página oculta funcionará como referência pronta e também como ambiente de validação desse padrão.
 
-New gradient (24 stops, smooth-step distribution, neutral warm taupe mids — no caramel):
+Arquivos que devem entrar no trabalho
+- `src/components/MenuPoem.tsx`
+  - refatorar para virar base do componente reutilizável legado
+- novo arquivo de componente reutilizável
+  - ex.: `src/components/legacy/LegacySeasonMenu.tsx`
+- novo arquivo de página oculta
+  - ex.: `src/pages/LegacyMenu.tsx`
+- `src/App.tsx`
+  - adicionar a rota oculta
+- possivelmente um arquivo de dados auxiliar
+  - ex.: `src/data/legacySeasonMenus.ts` ou mover a parte editorial para um módulo compartilhado
 
-```css
-background: linear-gradient(
-  to bottom,
-  #2A1810 0%,
-  #2A1810 12%,
-  #2B1911 18%,
-  #2D1B13 24%,
-  #301E15 30%,
-  #352218 36%,
-  #3C281E 42%,
-  #463224 48%,
-  #523D2D 54%,
-  #614C39 60%,
-  #725D48 65%,
-  #847058 70%,
-  #96847 0%, /* removed */
-  #978670 75%,
-  #AA9B86 80%,
-  #BDB09C 84%,
-  #CFC4B2 88%,
-  #DED5C5 91%,
-  #E9E2D4 94%,
-  #F0EADD 96%,
-  #F4EEE3 98%,
-  #F5EFE6 100%
-);
-```
+Resultado esperado
+- A home continua com a seção nova atual.
+- O formato antigo de cardápios e pratos fica salvo de forma limpa e reaproveitável.
+- Existe uma rota oculta para abrir esse padrão diretamente.
+- No futuro, basta importar esse componente em outra situação, sem reconstruir a lógica do zero.
 
-(Final clean version, no typo, will be in implementation.)
-
-**2. Make it taller and "rounder"**
-
-- Desktop (≥1024px): **640px** (was 500px)
-- Tablet (≥640px): **420px** (was 320px)
-- Mobile (<640px): **280px** (was 220px)
-
-More vertical room = each color step occupies more pixels = the eye reads it as a dissolve, not a band.
-
-**3. Add a subtle blur layer for true "roundness"**
-
-Stack two elements:
-- Base: the gradient strip (above)
-- Overlay: a `backdrop-filter: blur(0)` is useless here, so instead add a second absolutely-positioned div with `background: radial-gradient(ellipse at center top, rgba(42,24,16,0.4) 0%, transparent 70%)` to soften the top edge meeting the panel, and another `radial-gradient(ellipse at center bottom, rgba(245,239,230,0.3) 0%, transparent 70%)` to soften the bottom edge meeting the photo grid.
-
-This kills any residual seam at the junctions.
-
-**4. Ensure no parent wrapper interferes**
-
-Verify in `Index.tsx` that `<HeroSection />`, `<ChapterBreak />`, and `<ZoomParallaxSection />` are direct siblings with no wrapping `<div>` adding background or padding. (Quick check during implementation.)
-
-**5. Force cache bust**
-
-The previous edits may not be visible due to HMR caching the inline `<style>` block. Move the responsive heights from the inline `<style>` into Tailwind utility classes on the div itself (e.g. `h-[280px] sm:h-[420px] lg:h-[640px]`) so Vite recompiles cleanly.
-
-### File affected
-- `src/components/ChapterBreak.tsx` — replace the bottom fade strip section (gradient, heights, add soft radial overlays, switch to Tailwind responsive height classes)
-
-### What stays the same
-- Top 25px transition strip — unchanged
-- Main chapter panel (`#2A1810`, typography, GSAP animations, "NO. 01 · THE LARDER", "Winter", subtitle) — unchanged
-- Hero section above and photo grid below — unchanged
-
+Detalhes técnicos
+- Fonte dos pratos: continuar usando `seasonMenus` de `seasonContext` ou extrair para um módulo compartilhado se isso deixar o reuso mais limpo.
+- Controle de estação: manter compatível com `useSeason`, mas permitir override por prop se a tela futura precisar controlar isso localmente.
+- Rota: usar `BrowserRouter` já existente, apenas adicionando o path novo.
+- Navegação: nenhuma alteração visual no site público.
