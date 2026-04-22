@@ -30,7 +30,7 @@ import { toast } from "@/components/ui/use-toast";
 import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import ConceptSection from "@/components/ConceptSection";
-import TresGallerySection from "@/components/TresGallerySection";
+import MenuPoemSection from "@/components/MenuPoemSection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
 import FooterSection from "@/components/FooterSection";
@@ -461,7 +461,7 @@ export default function Admin() {
               <div aria-hidden="true" className="w-full" style={{ height: "120px", background: editor.content.bands.heroToZoom || editor.theme.bandHeroToZoom }} />
               <ZoomParallaxSection content={editor.content.zoom} theme={editor.theme} />
               <ConceptSection content={editor.content.concept} theme={editor.theme} />
-              <TresGallerySection content={editor.content.gallery} theme={editor.theme} />
+              <MenuPoemSection />
               <div aria-hidden="true" className="w-full" style={{ height: "220px", background: editor.content.bands.zoomToProducers || editor.theme.bandZoomToProducers }} />
               <ProducersSection content={editor.content.producers} theme={editor.theme} />
               <ReserveSection content={editor.content.reserve} theme={editor.theme} />
