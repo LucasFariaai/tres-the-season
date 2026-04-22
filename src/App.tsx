@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SeasonProvider } from "@/lib/seasonContext";
 import Index from "./pages/Index.tsx";
+import LegacyMenu from "./pages/LegacyMenu.tsx";
 import Reserve from "./pages/Reserve.tsx";
 import WineList from "./pages/WineList.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -20,6 +21,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/menu-legacy" element={<LegacyMenu />} />
             <Route path="/reserve" element={<Reserve />} />
             <Route path="/wine-list" element={<WineList />} />
             <Route path="*" element={<NotFound />} />
