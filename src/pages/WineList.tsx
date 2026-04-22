@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import SeasonBar from "@/components/SeasonBar";
@@ -219,7 +219,7 @@ function RevealBlock({
   delay = 0,
   disabled,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   delay?: number;
   disabled: boolean;
@@ -450,7 +450,7 @@ export default function WineListPage() {
           <div className="mx-auto max-w-[1400px]">
             <div
               className={cn(
-                "z-30 transition-all duration-400",
+                "z-30 transition-all duration-[400ms]",
                 isSearching
                   ? "sticky top-0 border-b border-[hsl(var(--wine-text)/0.06)] bg-[hsl(var(--wine-bg)/0.95)] py-4 backdrop-blur-[12px]"
                   : "relative py-0",
