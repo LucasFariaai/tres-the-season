@@ -16,6 +16,7 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.CircleMarker[]>([]);
   const popupsRef = useRef<L.Popup[]>([]);
+  const invalidateTimerRef = useRef<number | null>(null);
 
   // Initialize map once
   useEffect(() => {
@@ -41,7 +42,14 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
     }).addTo(map);
 
     // Ensure tiles load after container is laid out
-    setTimeout(() => map.invalidateSize(), 100);
+    invalidateTimerRef.current = window.setTimeout(() => {
+      if (!containerRef.current || mapRef.current !== map) return;
+      try {
+        map.invalidateSize(false);
+      } catch (_) {
+        return;
+      }
+    }, 100);
 
     // Tres marker
     const tresIcon = L.divIcon({
@@ -82,6 +90,10 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
     mapRef.current = map;
 
     return () => {
+      if (invalidateTimerRef.current !== null) {
+        window.clearTimeout(invalidateTimerRef.current);
+        invalidateTimerRef.current = null;
+      }
       map.remove();
       mapRef.current = null;
       markersRef.current = [];

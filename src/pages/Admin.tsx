@@ -31,6 +31,7 @@ import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import ConceptSection from "@/components/ConceptSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
+import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
 import FooterSection from "@/components/FooterSection";
@@ -465,6 +466,7 @@ export default function Admin() {
               <div aria-hidden="true" className="w-full" style={{ height: "220px", background: editor.content.bands.zoomToProducers || editor.theme.bandZoomToProducers }} />
               <ProducersSection content={editor.content.producers} theme={editor.theme} />
               <ReserveSection content={editor.content.reserve} theme={editor.theme} />
+              <TresGallerySection content={editor.content.gallery} theme={editor.theme} />
               <FooterSection content={editor.content.footer} theme={editor.theme} />
             </div>
           </ScrollArea>
