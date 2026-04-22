@@ -1,49 +1,67 @@
 
-Objetivo: corrigir a home para voltar a usar o menu legado real, em vez da seção atual que está visualmente errada.
+Objetivo: remover a seção de menu atual duplicada/errada do fluxo, usar o menu legado apenas no ponto correto acima de “The Circle”, e fazer a grade de fotos virar a última seção de conteúdo antes do footer.
 
-O que será feito
+O que será implementado
 
-1. Restaurar o menu legado na home pública
-- Substituir a seção atual da home que está ocupando esse espaço pelo componente legado real.
-- Em `src/pages/Index.tsx`, remover o uso de `TresGallerySection` nesse trecho da home e inserir `MenuPoemSection` na posição correta do fluxo.
-- Preservar a ordem visual do restante da home sem quebrar hero, zoom, concept, producers, reserve e footer.
+1. Reorganizar a ordem das seções na home
+- Em `src/pages/Index.tsx`, remover o menu legado da posição atual onde ele está aparecendo como seção intermediária indevida.
+- Manter apenas uma instância do menu legado, posicionada imediatamente acima de `ProducersSection` (“The Circle”), como você pediu.
+- Reintroduzir `TresGallerySection` no fluxo principal como a última seção de conteúdo antes do footer.
+- A ordem final ficará assim:
 
-2. Usar o componente legado original, sem recriação aproximada
-- Garantir que a home renderize `MenuPoemSection` -> `MenuPoem` diretamente, reaproveitando a implementação já existente.
-- Não manter uma “versão parecida” feita com a galeria CMS no lugar do menu.
-- O objetivo é voltar para a estrutura antiga de seção, não simular isso com os blocos da galeria.
+```text
+Hero
+→ transição dark/cream
+→ Zoom
+→ Seasons Archive
+→ Concept
+→ faixa para producers/menu
+→ Menu legado
+→ The Circle
+→ Reserve
+→ Grade de fotos
+→ Footer
+```
 
-3. Corrigir o visual para ficar igual ao legado
-- Revisar `src/components/MenuPoem.tsx` para bater com o layout anterior:
-  - bordas arredondadas nas imagens/cards
-  - proporções e empilhamento visual corretos
-  - espaçamento entre número, título, descrição e imagens
-  - CTA e cabeçalho no mesmo padrão do legado
-- Validar que o fundo, contraste e o clima visual continuem quentes/escuros quando inseridos no fluxo da home.
+2. Fazer a grade de fotos ser a última seção de conteúdo
+- Inserir `TresGallerySection` no fim da home, abaixo de `ReserveSection` e acima de `FooterSection`.
+- Garantir que ela não substitua mais o menu legado.
+- Preservar o conteúdo CMS da galeria (`content.gallery`) e o tema, já que essa seção volta a ter um papel próprio no site.
 
-4. Fazer o preview do admin refletir a home real
-- Em `src/pages/Admin.tsx`, trocar também a seção de preview correspondente para usar `MenuPoemSection`/`MenuPoem` no lugar de `TresGallerySection`.
-- Assim, o editor passa a espelhar o que o usuário vê em `/`, sem divergência entre preview e site público.
+3. Ajustar o preview do admin para espelhar exatamente a home
+- Em `src/pages/Admin.tsx`, aplicar a mesma nova ordem de seções do site público.
+- Remover a posição errada do menu no preview.
+- Colocar a galeria no final do preview, antes do footer, para não haver divergência entre `/admin` e `/`.
 
-5. Tratar a seção de galeria atual para não conflitar com a correção
-- Remover a galeria do fluxo principal da home por enquanto, já que hoje ela está ocupando o espaço do menu legado.
-- Manter a base CMS/galeria no código para uso posterior, sem apagá-la da arquitetura.
-- Se necessário, deixar a galeria temporariamente fora do preview principal até ela voltar a ter um papel separado da seção de menu.
+4. Tratar as faixas/transition bands para a nova ordem
+- Revisar os divisores atuais em `Index.tsx` e `Admin.tsx`, porque hoje o band `zoomToProducers` está sendo usado junto da composição errada.
+- Manter somente a transição visual necessária para a entrada correta do menu legado antes de “The Circle”.
+- Evitar criar uma faixa extra indevida entre reserve e gallery, a menos que o layout existente precise de uma separação mínima coerente com o visual atual.
 
-6. Ajustar o editor para não induzir erro operacional
-- Atualizar o admin para não sugerir que aquela seção da home ainda é a galeria principal.
-- Se a aba “Gallery” continuar existindo nesta etapa, ela deve ficar claramente desacoplada da home principal, evitando nova inconsistência visual.
-- Numa etapa seguinte, a galeria pode voltar como seção própria, sem substituir o menu legado.
+5. Corrigir a inconsistência operacional do editor
+- Como a galeria volta a existir na home como última seção, a aba “Gallery” do admin volta a fazer sentido no fluxo real.
+- O preview deixará de induzir erro ao mostrar menu e galeria em posições divergentes da home publicada.
+
+6. Corrigir o erro de runtime do mapa do Producers
+- Em `src/components/producers/ProducerMap.tsx`, ajustar a lógica de `invalidateSize()` que hoje roda com `setTimeout` mesmo quando o mapa/container pode já ter sido desmontado ou ainda não estar estável.
+- Proteger a chamada com checagem de existência do mapa e do container, além de limpar corretamente qualquer timer no cleanup.
+- Manter a estabilidade ao alternar layouts responsivos e ao montar/desmontar o mapa no fluxo do preview.
 
 Arquivos principais
 - `src/pages/Index.tsx`
 - `src/pages/Admin.tsx`
-- `src/components/MenuPoem.tsx`
-- `src/components/MenuPoemSection.tsx`
+- `src/components/TresGallerySection.tsx`
+- `src/components/producers/ProducerMap.tsx`
+
+Detalhes técnicos
+- `Index.tsx`: mover `MenuPoemSection` para ficar imediatamente antes de `ProducersSection`; adicionar `TresGallerySection` antes de `FooterSection`.
+- `Admin.tsx`: refletir a mesma sequência no painel de preview.
+- `ProducerMap.tsx`: substituir o `setTimeout(() => map.invalidateSize(), 100)` por uma versão segura com cleanup e guarda contra mapa desmontado.
+- Não alterar o conteúdo interno do menu legado nesta etapa, apenas sua posição no fluxo e a restauração da galeria como seção final.
 
 Resultado esperado
-- a home volta a exibir o menu legado verdadeiro
-- a estrutura visual deixa de parecer uma adaptação incorreta
-- as bordas arredondadas e o empilhamento visual ficam corretos
-- o preview do admin passa a bater com a home pública
-- a galeria atual deixa de “substituir” o menu na home
+- a seção de menu errada/de mais deixa de existir
+- o menu legado fica somente acima de “The Circle”
+- a última seção de conteúdo passa a ser a grade de fotos
+- o admin preview volta a bater com a home pública
+- o erro `_leaflet_pos` do mapa deixa de ocorrer por invalidação fora de hora
