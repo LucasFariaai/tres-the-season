@@ -173,6 +173,13 @@
     line-height: 1.02;
   }
 
+  .wine-list-display-roman {
+    font-family: 'Fraunces', serif;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.02;
+  }
+
   .wine-list-body {
     font-family: 'Abel', sans-serif;
     font-weight: 400;
@@ -183,6 +190,29 @@
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+
+  .wine-list-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition-property: opacity, transform;
+    will-change: opacity, transform;
+  }
+
+  .wine-list-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .wine-input-number::-webkit-outer-spin-button,
+  .wine-input-number::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .wine-input-number {
+    -moz-appearance: textfield;
+    appearance: textfield;
   }
 
   .tres-editorial-theme {

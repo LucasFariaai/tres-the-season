@@ -249,8 +249,8 @@ function HighlightRow({ wine, index }: { wine: WineItem; index: number }) {
   return (
     <article className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-5 border-b border-[hsl(var(--wine-text)/0.06)] py-5">
       <div className="min-w-0">
-        <div className="flex items-start gap-4">
-          <span className="wine-list-body pt-0.5 text-[13px] text-[hsl(var(--wine-muted)/0.25)]">{String(index + 1).padStart(2, "0")}</span>
+          <div className="flex items-start gap-4">
+          <span className="wine-list-body pt-0.5 text-[13px] text-[hsl(var(--wine-muted)/0.25)]">({String(index + 1).padStart(2, "0")})</span>
           <div className="min-w-0 space-y-1">
             <p className="wine-list-body text-[11px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.5)]">{wine.producer}</p>
             <h3 className="wine-list-display text-[20px] text-wine-text">{wine.name}</h3>
@@ -262,7 +262,7 @@ function HighlightRow({ wine, index }: { wine: WineItem; index: number }) {
       <div className="min-w-[82px] text-right">
         <p className="wine-list-body text-[13px] text-wine-muted">{formatVintage(wine.vintage)}</p>
         <p className="mt-1 wine-list-body text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.3)]">{formatRegionLine(wine)}</p>
-        <p className="mt-3 font-['Fraunces'] text-[20px] font-normal text-wine-text">{formatPrice(wine.price)}</p>
+        <p className="wine-list-display-roman mt-3 text-[20px] text-wine-text">{formatPrice(wine.price)}</p>
       </div>
     </article>
   );
@@ -308,7 +308,7 @@ function WineListRow({ wine }: { wine: WineItem }) {
         <p className="wine-list-body text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.2)]">{formatRegionLine(wine)}</p>
       </div>
 
-      <div className="font-['Fraunces'] text-right text-[16px] font-normal text-wine-muted">{formatPrice(wine.price)}</div>
+      <div className="wine-list-display-roman text-right text-[16px] text-wine-muted">{formatPrice(wine.price)}</div>
     </article>
   );
 }
@@ -452,7 +452,7 @@ export default function WineListPage() {
               className={cn(
                 "z-30 transition-all duration-[400ms]",
                 isSearching
-                  ? "sticky top-0 border-b border-[hsl(var(--wine-text)/0.06)] bg-[hsl(var(--wine-bg)/0.95)] py-4 backdrop-blur-[12px]"
+                  ? "sticky top-0 -mx-[8%] border-b border-[hsl(var(--wine-text)/0.06)] bg-[hsl(var(--wine-bg)/0.95)] px-[8%] py-4 backdrop-blur-[12px]"
                   : "relative py-0",
               )}
             >
