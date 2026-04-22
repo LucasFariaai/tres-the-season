@@ -1,393 +1,255 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
+import { History, ImagePlus, Loader2, LogOut, Palette, RefreshCw, RotateCcw, Save, Sparkles, UploadCloud } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
-import { Loader2, LogOut, RefreshCw, Save, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
-import { uploadSiteImage, getImageUrl } from "@/lib/imageUpload";
+import { useVisualSiteEditor } from "@/hooks/useVisualSiteEditor";
+import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
+import HeroSection from "@/components/HeroSection";
+import ZoomParallaxSection from "@/components/ZoomParallaxSection";
+import ConceptSection from "@/components/ConceptSection";
+import ProducersSection from "@/components/ProducersSection";
+import ReserveSection from "@/components/ReserveSection";
+import FooterSection from "@/components/FooterSection";
 
-type SiteContentRow = Tables<"site_content">;
-
-const SECTION_ORDER = ["hero", "about", "menu", "hours", "location", "contact", "cancellation", "reservation", "footer", "nav", "photo_grid", "chapter_01"];
-
-const SECTION_LABELS: Record<string, string> = {
-  hero: "Hero",
-  about: "About",
-  menu: "Menu",
-  hours: "Hours",
-  location: "Location",
-  contact: "Contact",
-  cancellation: "Cancellation",
-  reservation: "Reservation",
-  footer: "Footer",
-  nav: "Navigation",
-  photo_grid: "Photo grid",
-  chapter_01: "Chapter 01",
-};
-
-const IMAGE_PATHS: Record<string, string> = {
-  "hero.background_image": "hero/background.jpg",
-  "photo_grid.slot_01": "photo_grid/slot_01.jpg",
-  "photo_grid.slot_02": "photo_grid/slot_02.jpg",
-  "photo_grid.slot_03": "photo_grid/slot_03.jpg",
-  "photo_grid.slot_04": "photo_grid/slot_04.jpg",
-  "photo_grid.slot_05": "photo_grid/slot_05.jpg",
-  "photo_grid.slot_06": "photo_grid/slot_06.jpg",
-  "about.image_01": "about/image_01.jpg",
-  "about.image_02": "about/image_02.jpg",
-  "menu.image_01": "menu/image_01.jpg",
-};
-
-const isLongText = (value: string | null) => (value?.length ?? 0) > 120;
-
-export default function Admin() {
-  const [session, setSession] = useState<Session | null>(null);
+function AdminSignIn({ onSignedIn }: { onSignedIn: (session: Session) => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loadingAuth, setLoadingAuth] = useState(true);
-  const [signingIn, setSigningIn] = useState(false);
-  const [loadingContent, setLoadingContent] = useState(false);
-  const [savingKey, setSavingKey] = useState<string | null>(null);
-  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
-  const [rows, setRows] = useState<SiteContentRow[]>([]);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-
-    const bootstrap = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (mounted) {
-        setSession(data.session);
-        setLoadingAuth(false);
-      }
-    };
-
-    bootstrap();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (mounted) {
-        setSession(nextSession);
-        setLoadingAuth(false);
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const loadContent = async () => {
-    setLoadingContent(true);
-
-    const { data, error } = await supabase
-      .from("site_content")
-      .select("id, section, key, content_type, value, updated_at")
-      .order("section")
-      .order("key");
-
-    setLoadingContent(false);
-
-    if (error) {
-      toast({
-        title: "Could not load content",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setRows(data ?? []);
-    setDrafts(
-      Object.fromEntries(
-        (data ?? []).map((row) => [`${row.section}.${row.key}`, row.value ?? ""]),
-      ),
-    );
-  };
-
-  useEffect(() => {
-    if (!session) {
-      setRows([]);
-      setDrafts({});
-      return;
-    }
-
-    loadContent();
-  }, [session]);
-
-  const groupedRows = useMemo(() => {
-    const groups = new Map<string, SiteContentRow[]>();
-
-    rows.forEach((row) => {
-      if (!groups.has(row.section)) groups.set(row.section, []);
-      groups.get(row.section)?.push(row);
-    });
-
-    return Array.from(groups.entries()).sort(([a], [b]) => {
-      const aIndex = SECTION_ORDER.indexOf(a);
-      const bIndex = SECTION_ORDER.indexOf(b);
-
-      if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-      if (aIndex === -1) return 1;
-      if (bIndex === -1) return -1;
-      return aIndex - bIndex;
-    });
-  }, [rows]);
-
-  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSigningIn(true);
-
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    setSigningIn(false);
-
+    setSubmitting(true);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    setSubmitting(false);
     if (error) {
-      toast({
-        title: "Sign in failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
       return;
     }
-
-    setPassword("");
-    toast({ title: "Signed in", description: "Admin access is now available." });
+    if (data.session) onSignedIn(data.session);
   };
+
+  return (
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-8 border border-border bg-card p-8 shadow-sm">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Visual admin</p>
+          <h1 className="text-3xl font-semibold text-foreground">Sign in</h1>
+          <p className="text-sm leading-6 text-muted-foreground">Use your admin account to edit the published home visually.</p>
+        </div>
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="space-y-2"><Label htmlFor="email">Email</Label><Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
+          <div className="space-y-2"><Label htmlFor="password">Password</Label><Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
+          <Button className="w-full" type="submit" disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}{submitting ? "Signing in" : "Open editor"}</Button>
+        </form>
+      </div>
+    </main>
+  );
+}
+
+export default function Admin() {
+  const editor = useVisualSiteEditor();
+  const [tab, setTab] = useState("content");
+
+  const mediaOptions = useMemo(() => editor.mediaLibrary.map((item) => ({ ...item, url: resolveMediaUrl(item.file_path, 800, 80) ?? item.file_path })), [editor.mediaLibrary]);
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      toast({ title: "Could not sign out", description: error.message, variant: "destructive" });
-      return;
-    }
-
+    await supabase.auth.signOut();
     toast({ title: "Signed out" });
   };
 
-  const handleSave = async (row: SiteContentRow) => {
-    const identity = `${row.section}.${row.key}`;
-    setSavingKey(identity);
-
-    const { error } = await supabase.from("site_content").upsert(
-      {
-        id: row.id,
-        section: row.section,
-        key: row.key,
-        content_type: row.content_type,
-        value: drafts[identity] ?? "",
-      },
-      { onConflict: "section,key" },
-    );
-
-    setSavingKey(null);
-
-    if (error) {
-      toast({ title: "Could not save field", description: error.message, variant: "destructive" });
-      return;
-    }
-
-    setRows((current) =>
-      current.map((entry) =>
-        entry.id === row.id ? { ...entry, value: drafts[identity] ?? "", updated_at: new Date().toISOString() } : entry,
-      ),
-    );
-
-    toast({ title: "Saved", description: `${row.section} / ${row.key} updated.` });
+  const handlePublish = async () => {
+    const result = await editor.publish();
+    if (result.error) return toast({ title: "Could not publish", description: result.error, variant: "destructive" });
+    toast({ title: "Published", description: "The public home is now updated." });
   };
 
-  const handleImageUpload = async (row: SiteContentRow, file: File | null) => {
+  const handleReset = async () => {
+    const result = await editor.resetToBaseline();
+    if (result.error) return toast({ title: "Reset failed", description: result.error, variant: "destructive" });
+    toast({ title: "Draft reset", description: "The draft was restored to the baseline." });
+  };
+
+  const handleSetBaseline = async () => {
+    const result = await editor.defineCurrentAsBaseline();
+    if (result.error) return toast({ title: "Could not define baseline", description: result.error, variant: "destructive" });
+    toast({ title: "Baseline updated", description: "Current draft is now the reset point." });
+  };
+
+  const handleUpload = async (file: File | null, tags: string[]) => {
     if (!file) return;
-
-    const identity = `${row.section}.${row.key}`;
-    const uploadPath = IMAGE_PATHS[identity];
-
-    if (!uploadPath) {
-      toast({
-        title: "Upload path missing",
-        description: `This image field is not mapped yet: ${identity}.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setUploadingKey(identity);
-
-    try {
-      const path = await uploadSiteImage(file, uploadPath);
-      setDrafts((current) => ({ ...current, [identity]: path }));
-
-      const { error } = await supabase.from("site_content").upsert(
-        {
-          id: row.id,
-          section: row.section,
-          key: row.key,
-          content_type: row.content_type,
-          value: path,
-        },
-        { onConflict: "section,key" },
-      );
-
-      if (error) throw error;
-
-      setRows((current) =>
-        current.map((entry) => (entry.id === row.id ? { ...entry, value: path, updated_at: new Date().toISOString() } : entry)),
-      );
-
-      toast({ title: "Image uploaded", description: `${row.section} / ${row.key} updated.` });
-    } catch (error) {
-      toast({
-        title: "Could not upload image",
-        description: error instanceof Error ? error.message : "Unknown upload error.",
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingKey(null);
-    }
+    const result = await editor.uploadMedia(file, tags);
+    if (result.error) return toast({ title: "Upload failed", description: result.error, variant: "destructive" });
+    toast({ title: "Media added", description: "Image added to your library." });
   };
 
-  if (loadingAuth) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-6 text-foreground">
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading admin
-        </div>
-      </main>
-    );
-  }
-
-  if (!session) {
-    return (
-      <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-        <div className="mx-auto flex w-full max-w-md flex-col gap-8 border border-border bg-card p-8 shadow-sm">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Content admin</p>
-            <h1 className="text-3xl font-semibold text-foreground">Sign in</h1>
-            <p className="text-sm leading-6 text-muted-foreground">Use an authenticated Supabase account to manage the site content.</p>
-          </div>
-
-          <form className="space-y-5" onSubmit={handleSignIn}>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
-            </div>
-
-            <Button className="w-full" type="submit" disabled={signingIn}>
-              {signingIn ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              {signingIn ? "Signing in" : "Open admin"}
-            </Button>
-          </form>
-        </div>
-      </main>
-    );
-  }
+  if (!editor.session && !editor.loading) return <AdminSignIn onSignedIn={() => void editor.reload()} />;
+  if (editor.loading) return <main className="flex min-h-screen items-center justify-center"><div className="flex items-center gap-3 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Loading visual editor</div></main>;
+  if (!editor.isAdmin) return <main className="flex min-h-screen items-center justify-center px-6"><Card className="max-w-xl"><CardHeader><CardTitle>Admin access required</CardTitle></CardHeader><CardContent className="space-y-4"><p className="text-sm text-muted-foreground">This route is protected by your Supabase admin role.</p><div className="flex gap-3"><Button onClick={() => void editor.reload()} variant="outline"><RefreshCw className="h-4 w-4" />Refresh</Button><Button onClick={handleSignOut} variant="outline"><LogOut className="h-4 w-4" />Sign out</Button></div></CardContent></Card></main>;
 
   return (
-    <main className="min-h-screen bg-background px-4 py-6 text-foreground sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <header className="flex flex-col gap-4 border border-border bg-card p-6 shadow-sm sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Content admin</p>
-            <h1 className="text-3xl font-semibold text-foreground">Site content management</h1>
-            <p className="text-sm leading-6 text-muted-foreground">Signed in as {session.user.email}</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <Button type="button" variant="outline" onClick={loadContent} disabled={loadingContent}>
-              {loadingContent ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-              Refresh
-            </Button>
-            <Button type="button" variant="outline" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </Button>
-          </div>
-        </header>
-
-        <div className="grid gap-6">
-          {groupedRows.map(([section, sectionRows]) => (
-            <section key={section} className="border border-border bg-card p-6 shadow-sm">
-              <div className="mb-5 space-y-1 border-b border-border pb-4">
-                <h2 className="text-xl font-semibold text-foreground">{SECTION_LABELS[section] ?? section}</h2>
-                <p className="text-sm text-muted-foreground">{sectionRows.length} fields</p>
+    <main className="min-h-screen bg-background text-foreground">
+      <div className="grid min-h-screen lg:grid-cols-[380px_minmax(0,1fr)]">
+        <aside className="border-r border-border bg-card">
+          <ScrollArea className="h-screen">
+            <div className="space-y-6 p-5">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Site editor</p>
+                    <h1 className="text-2xl font-semibold">Home visual editor</h1>
+                    <p className="text-sm text-muted-foreground">Signed in as {editor.session?.user.email}</p>
+                  </div>
+                  <Badge variant="outline">{editor.saving ? "Saving" : "Draft"}</Badge>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" onClick={handlePublish} disabled={editor.publishing}><Sparkles className="h-4 w-4" />{editor.publishing ? "Publishing" : "Publish"}</Button>
+                  <Button size="sm" variant="outline" onClick={handleReset}><RotateCcw className="h-4 w-4" />Reset</Button>
+                  <Button size="sm" variant="outline" onClick={handleSetBaseline}><Save className="h-4 w-4" />Set baseline</Button>
+                  <Button size="sm" variant="outline" onClick={() => void editor.reload()}><RefreshCw className="h-4 w-4" />Reload</Button>
+                  <Button size="sm" variant="outline" onClick={handleSignOut}><LogOut className="h-4 w-4" />Exit</Button>
+                </div>
               </div>
 
-              <div className="grid gap-5 lg:grid-cols-2">
-                {sectionRows.map((row) => {
-                  const identity = `${row.section}.${row.key}`;
-                  const value = drafts[identity] ?? "";
-                  const imageUrl = row.content_type === "image" ? getImageUrl(value || null, 1200, 82) : null;
-                  const isSaving = savingKey === identity;
-                  const isUploading = uploadingKey === identity;
+              <Tabs value={tab} onValueChange={setTab} className="space-y-4">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="content">Content</TabsTrigger>
+                  <TabsTrigger value="media">Media</TabsTrigger>
+                  <TabsTrigger value="colors">Colors</TabsTrigger>
+                  <TabsTrigger value="history">History</TabsTrigger>
+                </TabsList>
 
-                  return (
-                    <article key={row.id} className="flex flex-col gap-3 border border-border p-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between gap-3">
-                          <h3 className="text-sm font-medium text-foreground">{row.key}</h3>
-                          <span className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{row.content_type}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">Updated {new Date(row.updated_at).toLocaleString()}</p>
+                <TabsContent value="content" className="space-y-4">
+                  <Card>
+                    <CardHeader><CardTitle>Hero</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                      <div><Label>Tagline</Label><Textarea value={editor.content.hero.tagline} onChange={(e) => editor.setContent((c) => ({ ...c, hero: { ...c.hero, tagline: e.target.value } }))} /></div>
+                      <div><Label>Location</Label><Input value={editor.content.hero.location} onChange={(e) => editor.setContent((c) => ({ ...c, hero: { ...c.hero, location: e.target.value } }))} /></div>
+                      <div><Label>Reserve label</Label><Input value={editor.content.hero.reserveLabel} onChange={(e) => editor.setContent((c) => ({ ...c, hero: { ...c.hero, reserveLabel: e.target.value } }))} /></div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader><CardTitle>Concept</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                      <div><Label>Eyebrow</Label><Input value={editor.content.concept.eyebrow} onChange={(e) => editor.setContent((c) => ({ ...c, concept: { ...c.concept, eyebrow: e.target.value } }))} /></div>
+                      <div><Label>Title</Label><Textarea value={editor.content.concept.title} onChange={(e) => editor.setContent((c) => ({ ...c, concept: { ...c.concept, title: e.target.value } }))} /></div>
+                      <div><Label>Body</Label><Textarea value={editor.content.concept.body} onChange={(e) => editor.setContent((c) => ({ ...c, concept: { ...c.concept, body: e.target.value } }))} /></div>
+                      <div><Label>Quote</Label><Textarea value={editor.content.concept.quote} onChange={(e) => editor.setContent((c) => ({ ...c, concept: { ...c.concept, quote: e.target.value } }))} /></div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader><CardTitle>Reserve</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                      <div><Label>Section title</Label><Input value={editor.content.reserve.title} onChange={(e) => editor.setContent((c) => ({ ...c, reserve: { ...c.reserve, title: e.target.value } }))} /></div>
+                      <div><Label>Price</Label><Input value={editor.content.reserve.price} onChange={(e) => editor.setContent((c) => ({ ...c, reserve: { ...c.reserve, price: e.target.value } }))} /></div>
+                      <div><Label>Button</Label><Input value={editor.content.reserve.reserveButton} onChange={(e) => editor.setContent((c) => ({ ...c, reserve: { ...c.reserve, reserveButton: e.target.value } }))} /></div>
+                      <div><Label>Footer quote</Label><Textarea value={editor.content.footer.quote} onChange={(e) => editor.setContent((c) => ({ ...c, footer: { ...c.footer, quote: e.target.value } }))} /></div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="media" className="space-y-4">
+                  <Card>
+                    <CardHeader><CardTitle>Upload to library</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                      <Input type="file" accept="image/*" onChange={(e) => void handleUpload(e.target.files?.[0] ?? null, ["library"])} />
+                      <Separator />
+                      <div className="grid grid-cols-2 gap-3">
+                        {mediaOptions.slice(0, 12).map((item) => (
+                          <button key={item.id ?? item.file_path} type="button" className="overflow-hidden rounded-md border border-border text-left" onClick={() => editor.setContent((c) => ({ ...c, concept: { ...c.concept, chefImage: item.file_path, chefAlt: item.alt_text ?? c.concept.chefAlt } }))}>
+                            <img src={item.url} alt={item.alt_text ?? item.title ?? "Media item"} className="aspect-square w-full object-cover" />
+                            <div className="p-2 text-xs text-muted-foreground">{item.title ?? item.file_path}</div>
+                          </button>
+                        ))}
                       </div>
+                      <p className="text-xs text-muted-foreground">Click any image to use it as the concept chef image for now.</p>
+                    </CardContent>
+                  </Card>
 
-                      {row.content_type === "image" ? (
-                        <>
-                          <div className="overflow-hidden border border-border bg-muted">
-                            {imageUrl ? (
-                              <img src={imageUrl} alt={`${row.section} ${row.key}`} className="h-56 w-full object-cover" loading="lazy" />
-                            ) : (
-                              <div className="flex h-56 items-center justify-center text-sm text-muted-foreground">No image uploaded</div>
-                            )}
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`upload-${identity}`}>Upload image</Label>
-                            <Input
-                              id={`upload-${identity}`}
-                              type="file"
-                              accept="image/*"
-                              onChange={(event) => void handleImageUpload(row, event.target.files?.[0] ?? null)}
-                              disabled={isUploading}
-                            />
-                            <p className="text-xs text-muted-foreground">Storage path: {IMAGE_PATHS[identity] ?? "Not configured"}</p>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                            {isUploading ? "Uploading image" : "Selecting a file uploads it immediately"}
-                          </div>
-                        </>
-                      ) : isLongText(value) ? (
-                        <Textarea value={value} onChange={(event) => setDrafts((current) => ({ ...current, [identity]: event.target.value }))} />
-                      ) : (
-                        <Input value={value} onChange={(event) => setDrafts((current) => ({ ...current, [identity]: event.target.value }))} />
-                      )}
+                  <Card>
+                    <CardHeader><CardTitle>Quick image targets</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label>Concept chef image</Label>
+                        <Input value={editor.content.concept.chefImage} onChange={(e) => editor.setContent((c) => ({ ...c, concept: { ...c.concept, chefImage: e.target.value } }))} />
+                      </div>
+                      <div>
+                        <Label>Concept founders image</Label>
+                        <Input value={editor.content.concept.foundersImage} onChange={(e) => editor.setContent((c) => ({ ...c, concept: { ...c.concept, foundersImage: e.target.value } }))} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-                      {row.content_type !== "image" ? (
-                        <Button type="button" onClick={() => void handleSave(row)} disabled={isSaving}>
-                          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                          {isSaving ? "Saving" : "Save field"}
-                        </Button>
-                      ) : null}
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
-        </div>
+                <TabsContent value="colors" className="space-y-4">
+                  <Card>
+                    <CardHeader><CardTitle>Background tokens</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                      <div><Label>Concept background</Label><Input value={editor.theme.conceptBackground} onChange={(e) => editor.setTheme((t) => ({ ...t, conceptBackground: e.target.value }))} /></div>
+                      <div><Label>Zoom background</Label><Input value={editor.theme.zoomBackground} onChange={(e) => editor.setTheme((t) => ({ ...t, zoomBackground: e.target.value }))} /></div>
+                      <div><Label>Producers background</Label><Input value={editor.theme.producersBackground} onChange={(e) => editor.setTheme((t) => ({ ...t, producersBackground: e.target.value }))} /></div>
+                      <div><Label>Reserve background</Label><Input value={editor.theme.reserveBackground} onChange={(e) => editor.setTheme((t) => ({ ...t, reserveBackground: e.target.value }))} /></div>
+                      <div><Label>Footer background</Label><Input value={editor.theme.footerBackground} onChange={(e) => editor.setTheme((t) => ({ ...t, footerBackground: e.target.value }))} /></div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="history" className="space-y-4">
+                  <Card>
+                    <CardHeader><CardTitle>Snapshot history</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                      {editor.history.slice(0, 12).map((entry) => (
+                        <div key={entry.id} className="rounded-md border border-border p-3">
+                          <div className="flex items-center justify-between gap-2"><div><p className="text-sm font-medium">{entry.name ?? entry.kind}</p><p className="text-xs text-muted-foreground">{new Date(entry.created_at).toLocaleString()}</p></div><Button size="sm" variant="outline" onClick={() => void editor.restoreToDraft(entry.id)}><RotateCcw className="h-4 w-4" />Restore</Button></div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader><CardTitle>Recent actions</CardTitle></CardHeader>
+                    <CardContent className="space-y-2">
+                      {editor.changeLog.slice(0, 10).map((entry) => <div key={entry.id} className="flex items-center justify-between gap-3 text-sm"><span>{entry.action}</span><span className="text-xs text-muted-foreground">{new Date(entry.created_at).toLocaleString()}</span></div>)}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </ScrollArea>
+        </aside>
+
+        <section className="bg-background">
+          <div className="sticky top-0 z-20 border-b border-border bg-background/95 px-6 py-4 backdrop-blur">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-2"><Palette className="h-4 w-4" />Colors</span>
+              <span className="inline-flex items-center gap-2"><ImagePlus className="h-4 w-4" />Media library</span>
+              <span className="inline-flex items-center gap-2"><History className="h-4 w-4" />History</span>
+              <span className="inline-flex items-center gap-2"><UploadCloud className="h-4 w-4" />Autosave #{editor.saveTick}</span>
+            </div>
+          </div>
+          <ScrollArea className="h-[calc(100vh-65px)]">
+            <div className="min-h-screen">
+              <HeroSection shouldPlay={false} content={editor.content.hero} theme={editor.theme} />
+              <div aria-hidden="true" className="w-full" style={{ height: "120px", background: editor.content.bands.heroToZoom || editor.theme.bandHeroToZoom }} />
+              <ZoomParallaxSection content={editor.content.zoom} theme={editor.theme} />
+              <ConceptSection content={editor.content.concept} theme={editor.theme} />
+              <div aria-hidden="true" className="w-full" style={{ height: "220px", background: editor.content.bands.zoomToProducers || editor.theme.bandZoomToProducers }} />
+              <ProducersSection content={editor.content.producers} theme={editor.theme} />
+              <ReserveSection content={editor.content.reserve} theme={editor.theme} />
+              <FooterSection content={editor.content.footer} theme={editor.theme} />
+            </div>
+          </ScrollArea>
+        </section>
       </div>
     </main>
   );
