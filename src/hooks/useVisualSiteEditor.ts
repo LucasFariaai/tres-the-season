@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { uploadSiteImage } from "@/lib/imageUpload";
 import { defaultHomeCmsContent, defaultMediaLibrary, defaultSiteTheme } from "@/lib/site-editor/defaults";
 import {
@@ -48,6 +49,8 @@ const sanitizeFileName = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "") || "image";
 
+const toJson = (value: unknown) => value as Json;
+
 export function useVisualSiteEditor() {
   const [state, setState] = useState<SiteEditorState>({
     session: null,
@@ -90,9 +93,9 @@ export function useVisualSiteEditor() {
     const payload = {
       name: "Draft workspace",
       kind: "draft" as const,
-      content: draftSnapshot.content as unknown as Record<string, unknown>,
-      theme: draftSnapshot.theme as unknown as Record<string, unknown>,
-      media: draftSnapshot.media as unknown as Record<string, unknown>,
+      content: toJson(draftSnapshot.content),
+      theme: toJson(draftSnapshot.theme),
+      media: toJson(draftSnapshot.media),
       created_by: state.session.user.id,
     };
 
