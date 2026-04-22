@@ -1,161 +1,139 @@
 
-Objetivo: concluir a transformação de `/admin` em um editor visual da home, agora aproveitando a base já criada no Supabase (`site_snapshots`, `site_editor_state`, `site_media_library`, `site_theme_tokens`, `site_change_log`, `user_roles`) e substituindo o fluxo atual baseado apenas em `site_content`.
+Objetivo desta retomada: sair do “MVP funcional” do editor e fechar a próxima etapa para que `/admin` vire de fato um espelho editável da home, com cobertura muito maior de conteúdo, mídia, cores, histórico e preview.
 
-O que será implementado
+O que já está pronto e será preservado
+- base de snapshots, baseline, draft, published e histórico no Supabase
+- proteção por `user_roles`
+- autosave do draft
+- publicação para o site público
+- home pública já lendo conteúdo publicado para partes principais
+- editor visual inicial com preview e abas
 
-1. Criar a camada de CMS versionado no frontend
-- Adicionar um conjunto de tipos e utilitários para representar:
-  - conteúdo estruturado da home
-  - biblioteca de mídia
-  - tokens de tema
-  - snapshots `draft`, `published`, `baseline` e `history`
-- Criar hooks para:
-  - carregar o estado atual do editor a partir de `site_editor_state`
-  - buscar o snapshot `draft` e o `published`
-  - listar histórico em `site_snapshots` + `site_change_log`
-  - salvar novo snapshot histórico e atualizar o `draft`
-  - restaurar snapshot anterior
-  - resetar para o `baseline`
-- Manter compatibilidade temporária com `site_content` só como fallback de leitura, para evitar quebra enquanto a home migra por completo.
+O que falta para continuar progredindo agora
 
-2. Definir um schema único da home editável
-- Consolidar a home em um único objeto CMS, em vez de campos soltos por seção.
-- Estruturar blocos editáveis para as áreas mais importantes da página pública:
-  - hero
+1. Completar a ligação da home pública com o CMS
+- Conectar as áreas que ainda estão hardcoded ou parcialmente desconectadas:
+  - `TresGallerySection`
   - faixas/gradientes entre seções
-  - concept/philosophy
-  - gallery
-  - producers intro/copy
-  - reserve/info
-  - footer
-- Cada bloco terá:
-  - textos
-  - imagens
-  - cores de fundo/superfície
-  - metadados mínimos de edição
-- O schema será pensado para crescer sem obrigar nova refatoração quando você definir o “padrão final”.
+  - blocos secundários de texto ainda não expostos no admin
+- Fazer `Index.tsx` passar também o conteúdo da galeria para o componente de galeria.
+- Garantir que toda seção visível da home tenha fallback robusto, mas priorize o conteúdo publicado do CMS.
 
-3. Reescrever `/admin` como editor visual
-- Substituir a página administrativa atual em formulário por uma interface em duas partes:
-  - coluna lateral de edição
-  - preview principal com aparência próxima da home
-- O preview usará os mesmos componentes visuais da home sempre que possível, para evitar divergência entre edição e site público.
-- A sidebar do admin terá áreas claras:
-  - Conteúdo
-  - Imagens
-  - Cores
-  - Histórico
-  - Reset padrão
-- O editor continuará protegido por autenticação Supabase e role `admin`.
+2. Expandir o schema editável da home
+- Ampliar o editor para cobrir os campos que hoje ainda não são editáveis:
+  - `concept.handsTitle`, `handsBody`, `placeTitle`, `placeBody`
+  - `reserve.eyebrow`, `hoursTitle`, `hoursLines`, `locationTitle`, `locationLines`, `travelTitle`, `travelLines`, `note`
+  - `footer.instagramUrl`, `facebookUrl`, `logoAlt`
+  - `bands.heroToZoom`, `bands.zoomToProducers`
+  - `gallery.eyebrow`, `gallery.subtitle`, `gallery.items`
+  - `producers.items`
+  - `zoom.images`
+- Manter o schema compatível com o baseline atual.
 
-4. Tornar textos editáveis por seção
-- Em cada seção do preview, expor controles para editar:
-  - headings
-  - subheadings
-  - body copy
-  - labels/eyebrows
-  - CTA text quando aplicável
-- Usar inputs/textarea contextuais no painel lateral, vinculados ao bloco selecionado.
-- Implementar autosave em draft com feedback visual de “não salvo / salvando / salvo”.
-- Cada salvamento relevante gera entrada em `site_change_log`.
+3. Transformar a galeria em conteúdo realmente editável
+- Reescrever `TresGallerySection` para aceitar props de `content` e eventualmente `theme`, em vez de usar `tresGalleryItems` fixo.
+- Permitir no admin:
+  - trocar imagem de cada item
+  - editar `label`
+  - editar `caption`
+  - editar `alt`
+  - ajustar `width`
+  - reordenar itens
+- Usar o snapshot como fonte da verdade da galeria.
 
-5. Tornar imagens totalmente gerenciáveis
-- Substituir o mapeamento fixo de `IMAGE_PATHS` por referências à `site_media_library`.
-- Permitir:
-  - trocar imagem existente
-  - subir nova imagem
-  - escolher imagem já existente na biblioteca
-  - editar título/alt/tags
-- Criar uma “biblioteca de fotos” no admin com:
-  - grid de miniaturas
-  - filtros básicos por tag/seção
+4. Abrir edição real da biblioteca de mídia
+- Evoluir a aba de mídia para virar uma biblioteca de fotos completa:
+  - grade com todas as imagens
+  - preview maior
+  - filtro por tag/seção
+  - edição de `title`, `alt_text`, `tags`
   - ação “usar nesta seção”
-- O preview passará a renderizar imagens via referência do snapshot, não via imports fixos quando a seção estiver migrada.
+- Remover o comportamento provisório de “clicar em qualquer imagem só troca a foto do chef”.
+- Adicionar mapeamentos de uso para:
+  - concept chef/founders
+  - zoom images
+  - gallery items
+  - producer cards
 
-6. Tornar as cores de fundo editáveis
-- Conectar os fundos e tons principais da home a tokens armazenados em `site_theme_tokens` e refletidos dentro do snapshot.
-- Expor no admin uma biblioteca de cores com:
-  - grupos semânticos, por exemplo `background.primary`, `background.secondary`, `text.primary`, `accent.primary`
-  - amostras visuais
-  - editor por valor
-- Permitir aplicar cor por seção sem quebrar a direção visual existente.
-- Incluir ação “restaurar paleta padrão”.
+5. Permitir troca completa das fotos da home
+- Adicionar controles específicos por área:
+  - `zoom.images[]`
+  - `concept.chefImage`
+  - `concept.foundersImage`
+  - `gallery.items[]`
+  - `producers.items[].image`
+- Exibir preview da imagem atual e botão claro para substituir por item da biblioteca ou novo upload.
+- Continuar usando `resolveMediaUrl` para assets locais e do bucket `tres-images`.
 
-7. Implementar histórico, restauração e baseline
-- Cada ação editorial importante criará novo snapshot `history`.
-- O admin terá um painel de histórico com:
-  - nome/data
-  - autor quando disponível
-  - tipo de mudança
-  - ação para restaurar
-- Implementar dois resets distintos:
-  - restaurar uma versão histórica específica
-  - resetar tudo para o `baseline`
-- O baseline atual continua sendo o padrão técnico até você definir o padrão oficial final.
+6. Melhorar a edição de cores e paleta
+- Evoluir a aba de cores para uma biblioteca visual, não apenas inputs crus.
+- Expor pelo menos:
+  - `heroOverlay`
+  - `conceptBackground`
+  - `zoomBackground`
+  - `producersBackground`
+  - `reserveBackground`
+  - `footerBackground`
+  - `bandHeroToZoom`
+  - `bandZoomToProducers`
+- Adicionar swatches, preview imediato e uma ação separada de “restaurar paleta do baseline”.
+- Preservar a direção visual quente e escura do projeto, evitando tons frios.
 
-8. Migrar a home pública para consumir o CMS novo
-- Criar um provider/hook para a home ler o snapshot `published`.
-- Atualizar progressivamente os componentes da home para ler:
-  - texto do snapshot publicado
-  - imagens da mídia publicada
-  - cores/tokens publicados
-- Preservar o visual atual como fallback quando um bloco ainda não estiver preenchido.
-- Garantir que `/` continue estável durante a migração.
+7. Melhorar o histórico de versões
+- Tornar o histórico mais útil para operação:
+  - mostrar tipo da mudança
+  - identificar baseline, published e history
+  - mostrar origem de restauração quando existir
+- Diferenciar claramente:
+  - restaurar para draft
+  - resetar para baseline
+  - publicar draft atual
+- Reduzir ruído do `site_change_log` no frontend, agrupando ou rotulando melhor autosaves.
 
-9. Separar claramente draft e published
-- O admin editará sempre o `draft`.
-- Adicionar ação explícita de publicar para copiar/promover o draft ao estado `published`.
-- O site público lerá apenas o `published`.
-- Isso evita que mudanças parciais do admin apareçam ao vivo antes da hora.
+8. Fazer o preview do admin ficar mais próximo da home real
+- Incluir no preview tudo que hoje ficou de fora do fluxo principal, especialmente a galeria.
+- Reusar os mesmos componentes públicos sempre que possível.
+- Adicionar seleção de seção ativa no editor para facilitar a navegação lateral e contextualizar os campos que estão sendo alterados.
+- Manter o layout em duas áreas, mas com comportamento melhor em telas menores.
 
-10. Endurecimento e acabamento
-- Validar acesso administrativo com backend/Supabase, nunca por estado no cliente.
-- Manter `user_roles` como fonte oficial de permissão.
-- Ajustar mensagens de erro, estados vazios, loading e confirmação de reset/restauração.
-- Garantir que a experiência continue dentro da linguagem visual quente, escura e editorial do projeto.
+9. Refinar persistência e consistência
+- Garantir que restaurações e resets reflitam imediatamente no draft persistido, sem depender só do autosave temporizado.
+- Garantir que `published` e `baseline` sejam atualizados com feedback claro.
+- Revisar `usePublishedHome` e `useVisualSiteEditor` para manter uma estratégia consistente entre:
+  - snapshot versionado
+  - `site_content`
+  - `site_theme_tokens`
+- Continuar usando `site_content`/`site_theme_tokens` como camada pública publicada, mas centralizar a transformação em utilitários claros.
 
-Arquivos e áreas que serão afetados
-- `src/pages/Admin.tsx` — reescrita completa para editor visual
-- `src/pages/Index.tsx` — início da leitura do snapshot publicado
-- componentes da home como:
-  - `HeroSection.tsx`
-  - `ConceptSection.tsx`
-  - `TresGallerySection.tsx`
-  - `ReserveSection.tsx`
-  - `FooterSection.tsx`
-  - e demais seções que forem conectadas ao CMS nesta etapa
-- novos hooks/utilitários para CMS versionado
-- `src/lib/imageUpload.ts` — adaptar para biblioteca de mídia
-- eventuais componentes novos para:
-  - painel lateral
-  - media picker
-  - color token editor
-  - history panel
-  - reset/publish actions
+10. Acabamento de UX e segurança
+- Adicionar confirmações para:
+  - reset para baseline
+  - restaurar snapshot
+  - publicar
+  - redefinir baseline
+- Melhorar estados de erro, vazio, carregamento e sucesso.
+- Manter a checagem de admin sempre no backend/Supabase via `user_roles`.
 
-Detalhes técnicos
-- Fonte de verdade do editor:
-  - `site_editor_state` aponta para `draft_snapshot_id`, `published_snapshot_id`, `baseline_snapshot_id`
-- Snapshots:
-  - `site_snapshots.content` guarda estrutura da home
-  - `site_snapshots.theme` guarda tokens por seção
-  - `site_snapshots.media` guarda referências de assets usados
-- Biblioteca:
-  - `site_media_library` vira catálogo reutilizável, não apenas consequência de upload
-- Histórico:
-  - `site_change_log` registra ações editoriais e associações com snapshot
-- Segurança:
-  - acesso administrativo apenas para usuários com `has_role(auth.uid(), 'admin')`
-- Compatibilidade:
-  - onde ainda não houver conteúdo migrado, a UI usa fallback do estado atual/imports existentes
-- Publicação:
-  - `/admin` trabalha em draft
-  - `/` lê published
+Arquivos principais da próxima etapa
+- `src/pages/Admin.tsx`
+- `src/pages/Index.tsx`
+- `src/components/TresGallerySection.tsx`
+- `src/components/ConceptSection.tsx`
+- `src/components/ReserveSection.tsx`
+- `src/components/FooterSection.tsx`
+- `src/components/ProducersSection.tsx`
+- `src/components/ZoomParallaxSection.tsx`
+- `src/hooks/useVisualSiteEditor.ts`
+- `src/hooks/usePublishedHome.ts`
+- `src/lib/site-editor/types.ts`
+- `src/lib/site-editor/defaults.ts`
+- `src/lib/site-editor/mapper.ts`
 
-Resultado esperado
-- `/admin` deixa de ser um CRUD simples e vira um editor visual real
-- o admin consegue editar textos, trocar fotos, trocar fundos e reutilizar biblioteca
-- existe histórico de mudanças com restauração
-- existe reset para o padrão técnico atual
-- a home pública continua funcionando sem regressão
-- a base fica pronta para você definir depois o “padrão oficial” que será salvo como baseline final
+Resultado esperado desta continuação
+- `/admin` passa a editar muito mais da home real, não só um subconjunto
+- galeria vira conteúdo CMS de verdade
+- troca de fotos deixa de ser provisória e passa a cobrir toda a home
+- biblioteca de mídia fica reutilizável
+- cores e gradientes ficam administráveis de forma visual
+- histórico, reset e baseline ficam mais confiáveis
+- o preview do admin fica muito mais próximo da home publicada
