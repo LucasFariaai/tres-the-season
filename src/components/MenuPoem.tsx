@@ -255,7 +255,7 @@ export default function MenuPoem({
             <div className="order-1 lg:order-2 lg:sticky lg:top-0 lg:flex lg:min-h-screen lg:items-center lg:justify-center lg:py-10">
               <div className="relative mx-auto h-[560px] w-full max-w-[520px] sm:h-[620px] lg:h-[680px] lg:max-w-[560px] xl:h-[720px]">
                 <div
-                  className="absolute left-[20%] top-[3%] h-[24%] w-[58%] overflow-hidden border border-white/20 bg-[#c4b7a4]/40"
+                  className="absolute left-[20%] top-[3%] h-[24%] w-[58%] overflow-hidden rounded-2xl border border-white/20 bg-[#c4b7a4]/40"
                   style={{
                     opacity: 0.7,
                     transform: "translateZ(0)",
@@ -265,7 +265,7 @@ export default function MenuPoem({
                 </div>
 
                 <div
-                  className="absolute left-[16%] top-[20%] h-[58%] w-[68%] overflow-hidden bg-[#c6b8a5]/30"
+                  className="absolute left-[16%] top-[20%] h-[58%] w-[68%] overflow-hidden rounded-[28px] bg-[#c6b8a5]/30"
                   style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.12)" }}
                 >
                   <img
@@ -276,11 +276,11 @@ export default function MenuPoem({
                   />
                 </div>
 
-                <div className="absolute left-[20%] top-[73%] h-[20%] w-[58%] overflow-hidden bg-[#b9a997]/35 opacity-65">
+                <div className="absolute left-[20%] top-[73%] h-[20%] w-[58%] overflow-hidden rounded-2xl bg-[#b9a997]/35 opacity-65">
                   <img src={legacyDishImages[stackIndices[2]]} alt="" className="h-full w-full object-cover" />
                 </div>
 
-                <div className="absolute left-[24%] top-[86%] h-[12%] w-[50%] overflow-hidden bg-[#d9d2c6]/70 opacity-60">
+                <div className="absolute left-[24%] top-[86%] h-[12%] w-[50%] overflow-hidden rounded-2xl bg-[#d9d2c6]/70 opacity-60">
                   <img src={legacyDishImages[stackIndices[3]]} alt="" className="h-full w-full object-cover" />
                 </div>
               </div>
