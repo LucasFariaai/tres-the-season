@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database, Json } from "@/integrations/supabase/types";
 import { uploadSiteImage } from "@/lib/imageUpload";
 import { defaultHomeCmsContent, defaultMediaLibrary, defaultSiteTheme } from "@/lib/site-editor/defaults";
 import {
@@ -48,6 +49,10 @@ const sanitizeFileName = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "") || "image";
 
+const toJson = (value: unknown) => value as Json;
+type SiteSnapshotInsert = Database["public"]["Tables"]["site_snapshots"]["Insert"];
+type SiteSnapshotUpdate = Database["public"]["Tables"]["site_snapshots"]["Update"];
+
 export function useVisualSiteEditor() {
   const [state, setState] = useState<SiteEditorState>({
     session: null,
@@ -90,9 +95,9 @@ export function useVisualSiteEditor() {
     const payload = {
       name: "Draft workspace",
       kind: "draft" as const,
-      content: draftSnapshot.content as unknown as Record<string, unknown>,
-      theme: draftSnapshot.theme as unknown as Record<string, unknown>,
-      media: draftSnapshot.media as unknown as Record<string, unknown>,
+      content: toJson(draftSnapshot.content),
+      theme: toJson(draftSnapshot.theme),
+      media: toJson(draftSnapshot.media),
       created_by: state.session.user.id,
     };
 
@@ -260,17 +265,19 @@ export function useVisualSiteEditor() {
     setState((current) => ({ ...current, publishing: true }));
     const snapshot = { content: state.content, theme: state.theme, media: state.mediaLibrary };
 
+    const historyPayload: SiteSnapshotInsert = {
+      name: `Published ${new Date().toLocaleString()}`,
+      kind: "history",
+      content: toJson(snapshot.content),
+      theme: toJson(snapshot.theme),
+      media: toJson(snapshot.media),
+      restored_from: idsRef.current.published,
+      created_by: state.session.user.id,
+    };
+
     const { data: historySnapshot, error: historyError } = await supabase
       .from("site_snapshots")
-      .insert({
-        name: `Published ${new Date().toLocaleString()}`,
-        kind: "history",
-        content: snapshot.content as unknown as Record<string, unknown>,
-        theme: snapshot.theme as unknown as Record<string, unknown>,
-        media: snapshot.media as unknown as Record<string, unknown>,
-        restored_from: idsRef.current.published,
-        created_by: state.session.user.id,
-      })
+      .insert(historyPayload)
       .select("id")
       .single();
 
@@ -279,19 +286,28 @@ export function useVisualSiteEditor() {
       return { error: historyError.message };
     }
 
-    const publishedPayload = {
+    const publishedPayload: SiteSnapshotUpdate = {
       name: "Published site",
       kind: "published" as const,
-      content: snapshot.content as unknown as Record<string, unknown>,
-      theme: snapshot.theme as unknown as Record<string, unknown>,
-      media: snapshot.media as unknown as Record<string, unknown>,
+      content: toJson(snapshot.content),
+      theme: toJson(snapshot.theme),
+      media: toJson(snapshot.media),
+      created_by: state.session.user.id,
+      restored_from: historySnapshot.id,
+    };
+    const publishedInsertPayload: SiteSnapshotInsert = {
+      name: "Published site",
+      kind: "published",
+      content: toJson(snapshot.content),
+      theme: toJson(snapshot.theme),
+      media: toJson(snapshot.media),
       created_by: state.session.user.id,
       restored_from: historySnapshot.id,
     };
 
     const publishedResult = idsRef.current.published
       ? await supabase.from("site_snapshots").update(publishedPayload).eq("id", idsRef.current.published).select("id").single()
-      : await supabase.from("site_snapshots").insert(publishedPayload).select("id").single();
+      : await supabase.from("site_snapshots").insert(publishedInsertPayload).select("id").single();
 
     if (publishedResult.error) {
       setState((current) => ({ ...current, publishing: false }));
@@ -341,7 +357,7 @@ export function useVisualSiteEditor() {
 
       if (readError) return { error: readError.message };
 
-      const next = normalizeSnapshot(data as Partial<EditorSnapshotPayload>);
+      const next = normalizeSnapshot(data as unknown as Partial<EditorSnapshotPayload>);
       setState((current) => ({ ...current, content: next.content, theme: next.theme, mediaLibrary: next.media }));
 
       await supabase.from("site_change_log").insert({
@@ -382,18 +398,26 @@ export function useVisualSiteEditor() {
   const defineCurrentAsBaseline = useCallback(async () => {
     if (!state.session || !state.isAdmin) return { error: "Unauthorized" };
 
-    const payload = {
+    const payload: SiteSnapshotUpdate = {
       name: "Baseline",
       kind: "baseline" as const,
-      content: state.content as unknown as Record<string, unknown>,
-      theme: state.theme as unknown as Record<string, unknown>,
-      media: state.mediaLibrary as unknown as Record<string, unknown>,
+      content: toJson(state.content),
+      theme: toJson(state.theme),
+      media: toJson(state.mediaLibrary),
+      created_by: state.session.user.id,
+    };
+    const insertPayload: SiteSnapshotInsert = {
+      name: "Baseline",
+      kind: "baseline",
+      content: toJson(state.content),
+      theme: toJson(state.theme),
+      media: toJson(state.mediaLibrary),
       created_by: state.session.user.id,
     };
 
     const result = idsRef.current.baseline
       ? await supabase.from("site_snapshots").update(payload).eq("id", idsRef.current.baseline).select("id").single()
-      : await supabase.from("site_snapshots").insert(payload).select("id").single();
+      : await supabase.from("site_snapshots").insert(insertPayload).select("id").single();
 
     if (result.error) return { error: result.error.message };
 
@@ -436,6 +460,35 @@ export function useVisualSiteEditor() {
     [state.isAdmin, state.session],
   );
 
+  const updateMediaItem = useCallback(
+    async (itemId: string, updates: Partial<Pick<SiteMediaItem, "title" | "alt_text" | "tags">>) => {
+      if (!state.session || !state.isAdmin) return { error: "Unauthorized" };
+
+      const payload = {
+        ...(updates.title !== undefined ? { title: updates.title } : {}),
+        ...(updates.alt_text !== undefined ? { alt_text: updates.alt_text } : {}),
+        ...(updates.tags !== undefined ? { tags: updates.tags } : {}),
+      };
+
+      const { data, error: updateError } = await supabase
+        .from("site_media_library")
+        .update(payload)
+        .eq("id", itemId)
+        .select("id,file_path,title,alt_text,tags,metadata")
+        .single();
+
+      if (updateError) return { error: updateError.message };
+
+      setState((current) => ({
+        ...current,
+        mediaLibrary: current.mediaLibrary.map((item) => (item.id === itemId ? (data as SiteMediaItem) : item)),
+      }));
+
+      return { error: null };
+    },
+    [state.isAdmin, state.session],
+  );
+
   return {
     ...state,
     error,
@@ -448,6 +501,8 @@ export function useVisualSiteEditor() {
     resetToBaseline,
     defineCurrentAsBaseline,
     uploadMedia,
+    updateMediaItem,
+    saveNow: persistDraft,
     reload: () => reload(state.session),
   };
 }

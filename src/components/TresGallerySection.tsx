@@ -2,8 +2,10 @@ import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { tresGalleryItems } from "@/data/tresGalleryItems";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
+import { resolveMediaUrl } from "@/lib/site-editor/mapper";
+import type { GalleryContent, SiteThemeTokens } from "@/lib/site-editor/types";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,7 +15,12 @@ const widthMap = {
   wide: "55vw",
 } as const;
 
-export default function TresGallerySection() {
+interface TresGallerySectionProps {
+  content?: GalleryContent;
+  theme?: SiteThemeTokens;
+}
+
+export default function TresGallerySection({ content }: TresGallerySectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const pinWrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -24,8 +31,11 @@ export default function TresGallerySection() {
   const prefersReducedMotion = useReducedMotion();
 
   const useSimpleLayout = isMobile || prefersReducedMotion;
-
-  const galleryItems = useMemo(() => tresGalleryItems, []);
+  const galleryContent = content ?? defaultHomeCmsContent.gallery;
+  const galleryItems = useMemo(
+    () => galleryContent.items.map((item) => ({ ...item, mediaSrc: resolveMediaUrl(item.mediaSrc) ?? item.mediaSrc })),
+    [galleryContent.items],
+  );
 
   useLayoutEffect(() => {
     if (useSimpleLayout) return;
@@ -62,9 +72,9 @@ export default function TresGallerySection() {
           {
             xPercent: 7.5,
             ease: "none",
-              scrollTrigger: {
+            scrollTrigger: {
               trigger: itemEl,
-                containerAnimation: horizontalTween,
+              containerAnimation: horizontalTween,
               start: "left right",
               end: "right left",
               scrub: true,
@@ -82,9 +92,7 @@ export default function TresGallerySection() {
     if (!videos.length) return;
 
     if (useSimpleLayout) {
-      videos.forEach((video) => {
-        video.pause();
-      });
+      videos.forEach((video) => video.pause());
       return;
     }
 
@@ -107,12 +115,8 @@ export default function TresGallerySection() {
   }, [useSimpleLayout]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative overflow-hidden"
-      style={{ backgroundColor: "hsl(var(--wine-bg))" }}
-    >
-      <div className="px-[8%] pt-16 pb-8 text-center">
+    <section ref={sectionRef} className="relative overflow-hidden" style={{ backgroundColor: "hsl(var(--wine-bg))" }}>
+      <div className="px-[8%] pb-8 pt-16 text-center">
         <p
           style={{
             fontFamily: "Abel, sans-serif",
@@ -123,7 +127,7 @@ export default function TresGallerySection() {
             textTransform: "uppercase",
           }}
         >
-          The World of Tres
+          {galleryContent.eyebrow}
         </p>
         <p
           className="mt-3"
@@ -135,7 +139,7 @@ export default function TresGallerySection() {
             color: "hsl(var(--wine-muted) / 0.5)",
           }}
         >
-          Scroll to explore
+          {galleryContent.subtitle}
         </p>
       </div>
 
@@ -156,12 +160,7 @@ export default function TresGallerySection() {
                 className="relative overflow-hidden"
                 style={{ height: "280px", backgroundColor: "hsl(var(--wine-bg))" }}
               >
-                <img
-                  src={item.mediaSrc}
-                  alt={item.alt}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
+                <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" loading="lazy" />
                 {(item.label || item.caption) && (
                   <div className="absolute bottom-0 left-0 p-8">
                     {item.label && (
