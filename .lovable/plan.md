@@ -1,67 +1,62 @@
 
-Objetivo: preservar a forma antiga de apresentar os cardápios e pratos como um padrão reutilizável, sem mexer na navegação principal e sem recolocar esse formato na home atual.
+Objetivo: restaurar a página de admin de gestão de conteúdo, corrigindo o motivo de ela não aparecer hoje e sem mexer no site público fora do necessário para o acesso administrativo.
 
-1. Extrair o formato antigo para um componente reutilizável
-- Transformar a lógica antiga de cardápio em um componente próprio de apresentação legado, reaproveitando a estrutura que já existe em `MenuPoem.tsx`.
-- Separar esse componente da página principal para que ele possa ser chamado depois em qualquer outra tela.
-- Deixar a API do componente simples, com props como:
-  - temporada inicial
-  - mostrar ou não o cabeçalho da seção
-  - mostrar ou não CTA final
-  - classe externa para encaixe em outras páginas
-- Manter a forma antiga de passar os pratos baseada em `seasonMenus` e descrições por estação, para que o time consiga reutilizar o mesmo padrão depois.
+Diagnóstico confirmado
+- A rota de admin não está registrada em `src/App.tsx`.
+- Não existe nenhuma página de admin em `src/pages`.
+- Também não existe componente de editor CMS no código atual.
+- O backend para conteúdo existe parcialmente:
+  - tabela `public.site_content`
+  - bucket `tres-images`
+  - permissões de leitura pública e escrita para usuários autenticados
+  - hook de leitura `useSiteContent`
+- Resultado: ao tentar abrir uma rota de admin, a aplicação cai no `NotFound`, então a página simplesmente deixou de existir no frontend.
 
-2. Criar uma tela oculta para preservar e revisar esse formato
-- Adicionar uma rota escondida, sem link na navegação, algo como `/menu-legacy` ou `/archive-menu-pattern`.
-- Essa página vai servir como biblioteca viva do formato antigo.
-- Nela, renderizar o componente reutilizável já funcionando com os pratos por estação.
-- Não incluir essa rota em `SeasonBar`, header, footer ou qualquer navegação pública.
+O que vou corrigir
+1. Restaurar a rota de admin
+- Adicionar uma rota dedicada, por exemplo `/admin`, em `src/App.tsx`.
+- Manter essa rota fora da navegação pública.
 
-3. Organizar melhor os dados para reuso futuro
-- Tirar do componente qualquer conteúdo estático que hoje esteja “colado” na UI antiga e mover para uma estrutura exportável.
-- Consolidar:
-  - títulos dos pratos
-  - subtítulos
-  - descrições poéticas
-  - imagens associadas
-- Assim, em outra situação futura, será possível reaproveitar a mesma “forma de passar os pratos” sem copiar bloco de JSX inteiro.
+2. Criar a página de gestão de conteúdo
+- Criar `src/pages/Admin.tsx` com uma interface enxuta para editar o conteúdo do CMS já existente.
+- Organizar por seções já presentes no banco, como `hero`, `about`, `menu`, `hours`, `location`, `contact`, `reservation`, `footer` e `nav`.
 
-4. Preservar o comportamento visual antigo
-- Manter a leitura editorial anterior: lista de pratos por estação, imagem destacada, mudança conforme a estação ativa e entrada suave dos itens.
-- Garantir que esse formato continue independente da nova `SeasonsArchiveSection`, para coexistirem sem conflito.
-- Respeitar os limites já definidos no projeto:
-  - sem em dash
-  - sem adicionar rota na navegação
-  - responsivo em 375px
-  - sem alterar a seção nova da home
+3. Criar autenticação mínima para acesso administrativo
+- Como o banco só permite escrita para usuários autenticados, a página de admin precisa ter login.
+- Implementar uma entrada simples com e-mail e senha usando `supabase.auth.signInWithPassword`.
+- Quando houver sessão ativa, liberar a interface de edição.
+- Quando não houver sessão, mostrar apenas a tela de acesso.
+- Incluir `onAuthStateChange` e leitura inicial de sessão para manter o estado consistente.
 
-5. Ajustar a arquitetura para reuso real
-- O componente legado ficará pronto para ser importado depois em qualquer tela futura, por exemplo:
-  - uma landing editorial
-  - uma página de campanha sazonal
-  - uma tela interna de apresentação
-- A página oculta funcionará como referência pronta e também como ambiente de validação desse padrão.
+4. Implementar leitura e edição do conteúdo
+- Buscar registros de `site_content` diretamente na página admin.
+- Permitir editar campos de texto, URL e imagem conforme `content_type`.
+- Salvar com `upsert` por combinação `section + key`, respeitando a estrutura já criada nas migrations.
+- Exibir feedback de sucesso e erro com os toasts já existentes no projeto.
 
-Arquivos que devem entrar no trabalho
-- `src/components/MenuPoem.tsx`
-  - refatorar para virar base do componente reutilizável legado
-- novo arquivo de componente reutilizável
-  - ex.: `src/components/legacy/LegacySeasonMenu.tsx`
-- novo arquivo de página oculta
-  - ex.: `src/pages/LegacyMenu.tsx`
-- `src/App.tsx`
-  - adicionar a rota oculta
-- possivelmente um arquivo de dados auxiliar
-  - ex.: `src/data/legacySeasonMenus.ts` ou mover a parte editorial para um módulo compartilhado
+5. Implementar gestão de imagens do CMS
+- Para campos do tipo `image`, permitir upload para o bucket `tres-images`.
+- Respeitar os caminhos já previstos pelas policies atuais, para não quebrar permissões.
+- Após upload, salvar a URL ou path correspondente em `site_content`.
 
-Resultado esperado
-- A home continua com a seção nova atual.
-- O formato antigo de cardápios e pratos fica salvo de forma limpa e reaproveitável.
-- Existe uma rota oculta para abrir esse padrão diretamente.
-- No futuro, basta importar esse componente em outra situação, sem reconstruir a lógica do zero.
+6. Garantir que o site público continue igual
+- Não alterar home, navegação pública, seções visuais nem fluxo do usuário comum.
+- A única alteração pública será a existência da rota `/admin`, acessível apenas por URL direta.
 
-Detalhes técnicos
-- Fonte dos pratos: continuar usando `seasonMenus` de `seasonContext` ou extrair para um módulo compartilhado se isso deixar o reuso mais limpo.
-- Controle de estação: manter compatível com `useSeason`, mas permitir override por prop se a tela futura precisar controlar isso localmente.
-- Rota: usar `BrowserRouter` já existente, apenas adicionando o path novo.
-- Navegação: nenhuma alteração visual no site público.
+Ajustes técnicos previstos
+- Novo arquivo: `src/pages/Admin.tsx`
+- Possível extração de um componente reutilizável, como `src/components/admin/ContentEditor.tsx`, se isso deixar a tela mais organizada
+- Edição em `src/App.tsx` para registrar a rota
+- Uso do client Supabase já existente em `src/integrations/supabase/client.ts`
+- Reaproveitamento do sistema de toast já presente no app
+
+Comportamento esperado após a correção
+- `/admin` deixa de cair em 404
+- usuário não autenticado vê login
+- usuário autenticado vê a interface de gestão
+- alterações em `site_content` passam a refletir no site através do hook `useSiteContent`
+- uploads de imagem passam a usar o bucket e as permissões já configuradas
+
+Observação importante
+- Hoje as policies permitem escrita para qualquer usuário autenticado, não apenas para um papel de admin específico. Vou restaurar a página primeiro para voltar a funcionar.
+- Se você quiser, numa etapa seguinte eu posso endurecer a segurança com uma tabela de papéis e bloqueio real de acesso administrativo no backend.
