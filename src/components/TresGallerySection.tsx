@@ -2,7 +2,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { tresGalleryItems } from "@/data/tresGalleryItems";
+import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
+import { resolveMediaUrl } from "@/lib/site-editor/mapper";
+import type { GalleryContent, SiteThemeTokens } from "@/lib/site-editor/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +16,12 @@ const widthMap = {
 } as const;
 
 export default function TresGallerySection() {
+interface TresGallerySectionProps {
+  content?: GalleryContent;
+  theme?: SiteThemeTokens;
+}
+
+export default function TresGallerySection({ content }: TresGallerySectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const pinWrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -25,7 +33,11 @@ export default function TresGallerySection() {
 
   const useSimpleLayout = isMobile || prefersReducedMotion;
 
-  const galleryItems = useMemo(() => tresGalleryItems, []);
+  const galleryContent = content ?? defaultHomeCmsContent.gallery;
+  const galleryItems = useMemo(
+    () => galleryContent.items.map((item) => ({ ...item, mediaSrc: resolveMediaUrl(item.mediaSrc) ?? item.mediaSrc })),
+    [galleryContent.items],
+  );
 
   useLayoutEffect(() => {
     if (useSimpleLayout) return;
@@ -123,7 +135,7 @@ export default function TresGallerySection() {
             textTransform: "uppercase",
           }}
         >
-          The World of Tres
+          {galleryContent.eyebrow}
         </p>
         <p
           className="mt-3"
@@ -135,7 +147,7 @@ export default function TresGallerySection() {
             color: "hsl(var(--wine-muted) / 0.5)",
           }}
         >
-          Scroll to explore
+          {galleryContent.subtitle}
         </p>
       </div>
 
