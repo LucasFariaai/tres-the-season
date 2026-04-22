@@ -69,10 +69,8 @@ function AdminSignIn({ onSignedIn }: { onSignedIn: (session: Session) => void })
   );
 }
 
-const toLineString = (lines: string[]) => lines.join("
-");
-const toLines = (value: string) => value.split("
-").map((line) => line.trim()).filter(Boolean);
+const toLineString = (lines: string[]) => lines.join("\n");
+const toLines = (value: string) => value.split("\n").map((line) => line.trim()).filter(Boolean);
 const tokenSwatchStyle = (value: string) => ({ background: value.includes("gradient") ? value : value, backgroundColor: value.includes("gradient") ? undefined : value });
 
 type MediaTarget =
