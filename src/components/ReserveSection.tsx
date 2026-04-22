@@ -38,8 +38,8 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
           </div>
 
           <div className="flex flex-col justify-center">
-            <div className="flex h-full flex-col items-center md:items-start md:justify-center">
-              <div className="w-full max-w-[320px] text-center md:text-left">
+            <div className="flex h-full w-full flex-col items-center md:items-start md:justify-center">
+              <div className="w-full text-center md:max-w-[320px] md:text-left">
                 <p
                   className="mb-2 text-[24px] font-normal italic leading-[1.2]"
                   style={{ fontFamily: "Fraunces, serif", color: "#1A1410" }}
@@ -60,7 +60,7 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
                 </p>
               </div>
 
-              <div className="mt-12 flex w-full justify-center md:justify-center">
+              <div className="mt-12 flex w-full justify-center md:max-w-[320px] md:justify-center">
                 <OrganicReserveButton
                   label="RESERVE"
                   href="https://www.exploretock.com/tresrotterdam"
