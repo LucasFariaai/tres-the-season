@@ -450,11 +450,12 @@ export default function WineListPage() {
           <div className="mx-auto max-w-[1400px]">
             <div
               className={cn(
-                "z-30 transition-all duration-[400ms]",
+                "z-30 transition-all",
                 isSearching
                   ? "sticky top-0 -mx-[8%] border-b border-[hsl(var(--wine-text)/0.06)] bg-[hsl(var(--wine-bg)/0.95)] px-[8%] py-4 backdrop-blur-[12px]"
                   : "relative py-0",
               )}
+              style={{ transitionDuration: "400ms" }}
             >
               <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
                 <div className="w-full md:max-w-[320px] md:flex-none">
