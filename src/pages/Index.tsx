@@ -5,6 +5,7 @@ import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
 import ConceptSection from "@/components/ConceptSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
+import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
 import FooterSection from "@/components/FooterSection";
@@ -36,6 +37,7 @@ const Index = () => {
       <div aria-hidden="true" className="w-full" style={{ height: "400px", background: content.bands.zoomToProducers || theme.bandZoomToProducers }} />
       <ProducersSection content={content.producers} theme={theme} />
       <ReserveSection content={content.reserve} theme={theme} />
+      <TresGallerySection content={content.gallery} theme={theme} />
       <FooterSection content={content.footer} theme={theme} />
 
       <style>{`
