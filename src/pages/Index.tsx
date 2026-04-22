@@ -20,7 +20,15 @@ const Index = () => {
       {!introDone && <IntroOverlay onComplete={() => setIntroDone(true)} />}
       <SeasonBar />
       <HeroSection shouldPlay={introDone} content={content.hero} theme={theme} />
-      <div aria-hidden="true" className="w-full" style={{ height: "120px", background: content.bands.heroToZoom || theme.bandHeroToZoom }} />
+      <div
+        aria-hidden="true"
+        className="hero-cream-transition w-full"
+        style={{
+          height: "500px",
+          background:
+            "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, rgba(26,20,16,0.95) 100%), linear-gradient(to bottom, #1A1410 0%, #1A1410 8%, #2B1A14 18%, #3A2820 30%, #5A4A3A 44%, #8A7D6A 58%, #B8AE9C 72%, #D8CFBE 84%, #EDE5D4 93%, #F5EFE6 100%)",
+        }}
+      />
       <ZoomParallaxSection content={content.zoom} theme={theme} />
       <SeasonsArchiveSection />
       <ConceptSection content={content.concept} theme={theme} />
@@ -32,7 +40,10 @@ const Index = () => {
 
       <style>{`
         @media (max-width: 767px) {
-          .min-h-screen > div[aria-hidden="true"] { height: 80px; }
+          .hero-cream-transition {
+            height: 340px !important;
+            background: radial-gradient(ellipse 80% 55% at 50% 40%, transparent 0%, rgba(26,20,16,0.95) 100%), linear-gradient(to bottom, #1A1410 0%, #1A1410 8%, #2B1A14 18%, #3A2820 30%, #5A4A3A 44%, #8A7D6A 58%, #B8AE9C 72%, #D8CFBE 84%, #EDE5D4 93%, #F5EFE6 100%);
+          }
           .min-h-screen > div[aria-hidden="true"]:last-of-type { height: 260px; }
         }
       `}</style>
