@@ -184,6 +184,49 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
+
+  .tres-editorial-theme {
+    background-color: hsl(var(--wine-bg));
+    color: hsl(var(--wine-text));
+  }
+
+  .tres-season-row-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 800ms cubic-bezier(0.45, 0, 0.15, 1),
+      transform 800ms cubic-bezier(0.45, 0, 0.15, 1);
+    will-change: opacity, transform;
+  }
+
+  .tres-season-row-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tres-season-watermark {
+    opacity: 0;
+    transition: opacity 800ms cubic-bezier(0.45, 0, 0.15, 1);
+    will-change: opacity;
+  }
+
+  .tres-season-watermark.is-visible {
+    opacity: 1;
+  }
+
+  .tres-philosophy-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 900ms cubic-bezier(0.45, 0, 0.15, 1),
+      transform 900ms cubic-bezier(0.45, 0, 0.15, 1);
+    will-change: opacity, transform;
+  }
+
+  .tres-philosophy-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes ken-burns {
