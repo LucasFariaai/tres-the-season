@@ -17,7 +17,7 @@ export default function TresGallerySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinWrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const itemRefs = useRef<(HTMLElement | null)[]>([]);
   const mediaRefs = useRef<(HTMLImageElement | HTMLVideoElement | null)[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const isMobile = useIsMobile();
@@ -62,9 +62,9 @@ export default function TresGallerySection() {
           {
             xPercent: 7.5,
             ease: "none",
-            scrollTrigger: {
+              scrollTrigger: {
               trigger: itemEl,
-              containerAnimation: horizontalTween.scrollTrigger,
+                containerAnimation: horizontalTween,
               start: "left right",
               end: "right left",
               scrub: true,
