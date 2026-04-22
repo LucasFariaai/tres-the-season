@@ -1,0 +1,137 @@
+import chefImg from "@/assets/chef-kitchen.jpg";
+import foundersImg from "@/assets/founders-cellar.jpg";
+import foodTableSpread from "@/assets/food-table-spread.jpg";
+import foodDryage from "@/assets/food-dryage.jpg";
+import foodCotton from "@/assets/food-cotton.jpg";
+import foodMeatPlate from "@/assets/food-meat-plate.jpg";
+import foodSouffle from "@/assets/food-souffle.jpg";
+import foodDessert from "@/assets/food-dessert.jpg";
+import foodGlazed from "@/assets/food-glazed.jpg";
+import { producers } from "@/components/producers/data";
+import { tresGalleryItems } from "@/data/tresGalleryItems";
+import type { HomeCmsContent, SiteMediaItem, SiteThemeTokens } from "@/lib/site-editor/types";
+
+export const defaultHomeCmsContent: HomeCmsContent = {
+  hero: {
+    tagline: "Complex without being complicated.",
+    location: "Kop van Zuid-Entrepot · Rotterdam",
+    reserveLabel: "Reserve",
+  },
+  bands: {
+    heroToZoom:
+      "linear-gradient(to bottom, hsl(24 24% 8%) 0%, hsl(24 24% 8%) 12%, hsl(48 13% 9%) 22%, hsl(33 25% 13%) 34%, hsl(24 29% 18%) 46%, hsl(26 21% 29%) 58%, hsl(38 13% 48%) 70%, hsl(36 20% 67%) 81%, hsl(38 25% 80%) 90%, hsl(36 33% 95%) 100%)",
+    zoomToProducers:
+      "linear-gradient(to bottom, #1A1410 0%, #1A1410 12%, #1B1A13 22%, #2A2218 34%, #3A2A20 46%, #5A4A3A 58%, #8A7D6A 70%, #B8AE9C 81%, #D8CFBE 90%, #F5EFE6 100%)",
+  },
+  zoom: {
+    images: [
+      { src: foodTableSpread, alt: "Tasting menu spread at Tres Rotterdam" },
+      { src: foodDryage, alt: "Dry-aging cabinet with heritage meats" },
+      { src: foodCotton, alt: "Cotton flower dish on moss" },
+      { src: foodMeatPlate, alt: "Dry-aged meat with sourdough bread" },
+      { src: foodSouffle, alt: "Herb-crusted soufflé" },
+      { src: foodDessert, alt: "Quenelle dessert on pink linen" },
+      { src: foodGlazed, alt: "Glazed bite on charred board" },
+    ],
+  },
+  concept: {
+    eyebrow: "Our Philosophy",
+    title: "Complex without being complicated.",
+    body:
+      "Tres is built on a simple conviction: the finest ingredients, treated with restraint and respect, need very little else. Every dish begins in the land and ends at the table, nothing more, nothing less.",
+    handsTitle: "The Hands",
+    handsBody:
+      "Every course is shaped by intuition, not formula. Our kitchen works with what the season brings — adapting, improvising, discovering flavour in restraint.",
+    placeTitle: "The Place",
+    placeBody:
+      "Set inside a 19th-century cellar beneath the Walhalla, where the Maas meets the city. Stone walls, candlelight, and the quiet hum of a kitchen at work, this is where Tres lives.",
+    quote: '"We don\'t chase trends. We chase seasons."',
+    chefImage: chefImg,
+    chefAlt: "Chef preparing dishes in the candlelit kitchen",
+    foundersImage: foundersImg,
+    foundersAlt: "The founders in the historic cellar of Tres",
+  },
+  gallery: {
+    eyebrow: "The World of Tres",
+    subtitle: "Scroll to explore",
+    items: tresGalleryItems,
+  },
+  producers: {
+    eyebrow: "Our Producers",
+    title: "The Circle",
+    body: "Every name here has shaped what you'll taste tonight.",
+    helper: "Explore our network of local producers",
+    closingQuote: "Complex without being complicated.",
+    items: producers,
+  },
+  reserve: {
+    eyebrow: "The Rhythm",
+    title: "Visit Tres",
+    hoursTitle: "Hours",
+    hoursLines: ["Wednesday – Saturday", "18:00 – 23:00"],
+    locationTitle: "Location",
+    locationLines: ["Walhalla, Veerhaven 1", "3011 BK Rotterdam", "The Netherlands"],
+    travelTitle: "Getting here",
+    travelLines: ["Take the watertaxi from Rotterdam harbour.", "A seven-minute crossing across the Maas."],
+    price: "€185",
+    reserveButton: "Reserve",
+    note: "Reservations recommended 2–3 weeks ahead",
+  },
+  footer: {
+    quote: '"Complex without being complicated."',
+    instagramUrl: "#",
+    facebookUrl: "#",
+    logoAlt: "Tres",
+  },
+};
+
+export const defaultSiteTheme: SiteThemeTokens = {
+  heroOverlay: "radial-gradient(ellipse at center, rgba(26,20,16,0.15) 0%, rgba(26,20,16,0.55) 60%, rgba(26,20,16,0.85) 100%)",
+  conceptBackground: "hsl(24 24% 8%)",
+  zoomBackground: "hsl(36 33% 95%)",
+  producersBackground: "hsl(var(--background))",
+  reserveBackground: "hsl(var(--background))",
+  footerBackground: "hsl(var(--season-darkest))",
+  bandHeroToZoom:
+    "linear-gradient(to bottom, hsl(24 24% 8%) 0%, hsl(24 24% 8%) 12%, hsl(48 13% 9%) 22%, hsl(33 25% 13%) 34%, hsl(24 29% 18%) 46%, hsl(26 21% 29%) 58%, hsl(38 13% 48%) 70%, hsl(36 20% 67%) 81%, hsl(38 25% 80%) 90%, hsl(36 33% 95%) 100%)",
+  bandZoomToProducers:
+    "linear-gradient(to bottom, #1A1410 0%, #1A1410 12%, #1B1A13 22%, #2A2218 34%, #3A2A20 46%, #5A4A3A 58%, #8A7D6A 70%, #B8AE9C 81%, #D8CFBE 90%, #F5EFE6 100%)",
+};
+
+export const defaultMediaLibrary: SiteMediaItem[] = [
+  ...defaultHomeCmsContent.zoom.images.map((image, index) => ({
+    file_path: image.src,
+    title: `Zoom image ${index + 1}`,
+    alt_text: image.alt,
+    tags: ["zoom"],
+    metadata: {},
+  })),
+  {
+    file_path: defaultHomeCmsContent.concept.chefImage,
+    title: "Chef",
+    alt_text: defaultHomeCmsContent.concept.chefAlt,
+    tags: ["concept"],
+    metadata: {},
+  },
+  {
+    file_path: defaultHomeCmsContent.concept.foundersImage,
+    title: "Founders",
+    alt_text: defaultHomeCmsContent.concept.foundersAlt,
+    tags: ["concept"],
+    metadata: {},
+  },
+  ...defaultHomeCmsContent.gallery.items.map((item) => ({
+    file_path: item.mediaSrc,
+    title: item.label ?? item.id,
+    alt_text: item.alt,
+    tags: ["gallery"],
+    metadata: {},
+  })),
+  ...defaultHomeCmsContent.producers.items.map((item) => ({
+    file_path: item.image,
+    title: item.name,
+    alt_text: item.name,
+    tags: ["producers"],
+    metadata: {},
+  })),
+];

@@ -1,12 +1,20 @@
-import { useRef, useState, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import ProducerCard from "./producers/ProducerCard";
 import ProducerMap from "./producers/ProducerMap";
-import { producers } from "./producers/data";
+import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
+import type { ProducersContent, SiteThemeTokens } from "@/lib/site-editor/types";
 
-export default function ProducersSection() {
+interface ProducersSectionProps {
+  content?: ProducersContent;
+  theme?: SiteThemeTokens;
+}
+
+export default function ProducersSection({ content, theme }: ProducersSectionProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const sectionContent = content ?? defaultHomeCmsContent.producers;
+  const sectionTheme = theme ?? defaultSiteTheme;
 
   const handlePinClick = useCallback((index: number) => {
     setActiveIndex(index);
@@ -18,98 +26,41 @@ export default function ProducersSection() {
   }, []);
 
   return (
-    <section
-      id="producers"
-      className="relative overflow-hidden"
-      style={{ backgroundColor: "hsl(var(--background))" }}
-    >
-        {/* Grain texture */}
-        <div
-          className="absolute inset-0 pointer-events-none z-[1]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-            backgroundSize: "256px 256px",
-          }}
-        />
+    <section id="producers" className="relative overflow-hidden" style={{ backgroundColor: sectionTheme.producersBackground }}>
+      <div className="absolute inset-0 z-[1] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E")`, backgroundRepeat: "repeat", backgroundSize: "256px 256px" }} />
 
-        {/* Section header */}
-        <div className="relative z-[2] text-center pt-0 pb-8 px-6">
-          <p className="font-body text-xs tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(30 22% 44%)" }}>
-            Our Producers
-          </p>
-          <h2 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--wine-bg))" }}>
-            The Circle
-          </h2>
-          <p className="font-accent text-base max-w-lg mx-auto" style={{ color: "hsl(30 22% 44%)" }}>
-            Every name here has shaped what you'll taste tonight.
-          </p>
-          <p className="font-body text-xs mt-3" style={{ color: "hsl(35 13% 69%)" }}>
-            Explore our network of local producers
-          </p>
+      <div className="relative z-[2] px-6 pb-8 pt-0 text-center">
+        <p className="mb-4 font-body text-xs uppercase tracking-[0.3em] text-[hsl(var(--accent))]">{sectionContent.eyebrow}</p>
+        <h2 className="mb-4 font-display text-4xl text-[hsl(var(--wine-bg))] sm:text-5xl">{sectionContent.title}</h2>
+        <p className="mx-auto max-w-lg font-accent text-base text-[hsl(var(--accent))]">{sectionContent.body}</p>
+        <p className="mt-3 font-body text-xs text-muted-foreground">{sectionContent.helper}</p>
+      </div>
+
+      <div className="relative z-[2] hidden lg:flex" style={{ height: "85vh", maxHeight: "800px" }}>
+        <div className="w-[45%] overflow-y-auto border-r border-border">
+          {sectionContent.items.map((producer, index) => (
+            <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
+              <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
+            </div>
+          ))}
         </div>
-
-        {/* Split view — desktop */}
-        <div className="relative z-[2] hidden lg:flex" style={{ height: "85vh", maxHeight: "800px" }}>
-          {/* Left panel — scrollable producer list */}
-          <div
-            className="w-[45%] overflow-y-auto"
-            style={{ borderRight: "1px solid #E8DCC8" }}
-          >
-            {producers.map((p, i) => (
-              <div key={p.name} ref={(el) => { cardRefs.current[i] = el; }}>
-                <ProducerCard
-                  producer={p}
-                  index={i}
-                  isActive={activeIndex === i}
-                  onHover={setHoveredIndex}
-                  onClick={handleCardClick}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Right panel — sticky map */}
-          <div className="w-[55%]">
-            <ProducerMap
-              activeIndex={activeIndex}
-              hoveredIndex={hoveredIndex}
-              onPinClick={handlePinClick}
-              className="w-full h-full"
-            />
-          </div>
+        <div className="w-[55%]">
+          <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="h-full w-full" />
         </div>
+      </div>
 
-        {/* Mobile layout */}
-        <div className="relative z-[2] lg:hidden">
-          {/* Map at top */}
-          <ProducerMap
-            activeIndex={activeIndex}
-            hoveredIndex={hoveredIndex}
-            onPinClick={handlePinClick}
-            className="w-full"
-            style={{ height: "50vh" }}
-          />
-          {/* Producer list below */}
-          <div className="px-2">
-            {producers.map((p, i) => (
-              <div key={p.name} ref={(el) => { cardRefs.current[i] = el; }}>
-                <ProducerCard
-                  producer={p}
-                  index={i}
-                  isActive={activeIndex === i}
-                  onHover={setHoveredIndex}
-                  onClick={handleCardClick}
-                />
-              </div>
-            ))}
-          </div>
+      <div className="relative z-[2] lg:hidden">
+        <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="w-full" style={{ height: "50vh" }} />
+        <div className="px-2">
+          {sectionContent.items.map((producer, index) => (
+            <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
+              <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
+            </div>
+          ))}
         </div>
+      </div>
 
-        {/* Closing quote */}
-        <p className="font-accent text-lg text-center py-16 relative z-[2]" style={{ color: "hsl(35 13% 69%)" }}>
-          Complex without being complicated.
-        </p>
-      </section>
+      <p className="relative z-[2] py-16 text-center font-accent text-lg text-muted-foreground">{sectionContent.closingQuote}</p>
+    </section>
   );
 }
