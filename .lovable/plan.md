@@ -1,202 +1,161 @@
 
-Objetivo: transformar `/admin` em um editor visual da home, com aparência próxima do site público, mas com capacidade real de editar textos, trocar todas as imagens, ajustar cores de fundo, navegar por biblioteca de mídia/paleta, restaurar versões anteriores e manter histórico de mudanças.
+Objetivo: concluir a transformação de `/admin` em um editor visual da home, agora aproveitando a base já criada no Supabase (`site_snapshots`, `site_editor_state`, `site_media_library`, `site_theme_tokens`, `site_change_log`, `user_roles`) e substituindo o fluxo atual baseado apenas em `site_content`.
 
-O que será construído
+O que será implementado
 
-1. Reestruturar o admin como “site editor”, não mais como formulário técnico
-- Substituir a UI atual de campos por uma página editorial com preview em tempo real.
-- O admin passará a usar os mesmos blocos principais da home, mas em “modo edição”.
-- Cada seção terá controles visuais ao lado ou sobrepostos:
-  - editar títulos, subtítulos e textos
-  - trocar imagens existentes
-  - escolher cor de fundo da seção
-  - resetar a seção para o padrão
-- O site público continua em `/`; `/admin` vira o ambiente de edição.
+1. Criar a camada de CMS versionado no frontend
+- Adicionar um conjunto de tipos e utilitários para representar:
+  - conteúdo estruturado da home
+  - biblioteca de mídia
+  - tokens de tema
+  - snapshots `draft`, `published`, `baseline` e `history`
+- Criar hooks para:
+  - carregar o estado atual do editor a partir de `site_editor_state`
+  - buscar o snapshot `draft` e o `published`
+  - listar histórico em `site_snapshots` + `site_change_log`
+  - salvar novo snapshot histórico e atualizar o `draft`
+  - restaurar snapshot anterior
+  - resetar para o `baseline`
+- Manter compatibilidade temporária com `site_content` só como fallback de leitura, para evitar quebra enquanto a home migra por completo.
 
-2. Criar um modelo de conteúdo mais robusto para CMS
-- O formato atual (`site_content` com `section`, `key`, `value`) é simples demais para:
-  - histórico
-  - presets
-  - restauração
-  - biblioteca de assets
-  - temas
-- Vou evoluir a estrutura para suportar:
-  - conteúdo atual publicado
-  - conteúdo em rascunho do admin
-  - baseline/padrão restaurável
-  - histórico de revisões
-  - biblioteca de imagens
-  - biblioteca de cores/tokens
-- A modelagem será pensada para não quebrar o conteúdo já existente.
+2. Definir um schema único da home editável
+- Consolidar a home em um único objeto CMS, em vez de campos soltos por seção.
+- Estruturar blocos editáveis para as áreas mais importantes da página pública:
+  - hero
+  - faixas/gradientes entre seções
+  - concept/philosophy
+  - gallery
+  - producers intro/copy
+  - reserve/info
+  - footer
+- Cada bloco terá:
+  - textos
+  - imagens
+  - cores de fundo/superfície
+  - metadados mínimos de edição
+- O schema será pensado para crescer sem obrigar nova refatoração quando você definir o “padrão final”.
 
-3. Criar backend seguro de admin
-- Remover a dependência prática de “qualquer usuário autenticado pode editar”.
-- Implementar controle real de admin no backend com tabela separada de papéis:
-  - `user_roles`
-  - função `has_role(...)`
-  - policies admin-only para escrita
-- O login do admin não pode ficar hardcoded no frontend.
-- O acesso visual ao `/admin` e a permissão de salvar/publicar/resetar serão protegidos por papel de admin.
+3. Reescrever `/admin` como editor visual
+- Substituir a página administrativa atual em formulário por uma interface em duas partes:
+  - coluna lateral de edição
+  - preview principal com aparência próxima da home
+- O preview usará os mesmos componentes visuais da home sempre que possível, para evitar divergência entre edição e site público.
+- A sidebar do admin terá áreas claras:
+  - Conteúdo
+  - Imagens
+  - Cores
+  - Histórico
+  - Reset padrão
+- O editor continuará protegido por autenticação Supabase e role `admin`.
 
-4. Separar claramente “publicado”, “rascunho” e “padrão”
-- O editor terá três estados:
-  - Publicado: o que o site usa hoje
-  - Rascunho: o que está sendo editado no admin
-  - Padrão: versão-base restaurável
-- Isso permite:
-  - editar sem quebrar imediatamente o site
-  - publicar quando estiver pronto
-  - resetar uma seção ou a home inteira para o padrão
-- Como você ainda vai definir o padrão final, o sistema já ficará preparado para “definir versão atual como padrão” depois.
+4. Tornar textos editáveis por seção
+- Em cada seção do preview, expor controles para editar:
+  - headings
+  - subheadings
+  - body copy
+  - labels/eyebrows
+  - CTA text quando aplicável
+- Usar inputs/textarea contextuais no painel lateral, vinculados ao bloco selecionado.
+- Implementar autosave em draft com feedback visual de “não salvo / salvando / salvo”.
+- Cada salvamento relevante gera entrada em `site_change_log`.
 
-5. Histórico de mudanças e restauração
-- Registrar cada publicação/reset relevante com:
-  - autor
-  - data/hora
+5. Tornar imagens totalmente gerenciáveis
+- Substituir o mapeamento fixo de `IMAGE_PATHS` por referências à `site_media_library`.
+- Permitir:
+  - trocar imagem existente
+  - subir nova imagem
+  - escolher imagem já existente na biblioteca
+  - editar título/alt/tags
+- Criar uma “biblioteca de fotos” no admin com:
+  - grid de miniaturas
+  - filtros básicos por tag/seção
+  - ação “usar nesta seção”
+- O preview passará a renderizar imagens via referência do snapshot, não via imports fixos quando a seção estiver migrada.
+
+6. Tornar as cores de fundo editáveis
+- Conectar os fundos e tons principais da home a tokens armazenados em `site_theme_tokens` e refletidos dentro do snapshot.
+- Expor no admin uma biblioteca de cores com:
+  - grupos semânticos, por exemplo `background.primary`, `background.secondary`, `text.primary`, `accent.primary`
+  - amostras visuais
+  - editor por valor
+- Permitir aplicar cor por seção sem quebrar a direção visual existente.
+- Incluir ação “restaurar paleta padrão”.
+
+7. Implementar histórico, restauração e baseline
+- Cada ação editorial importante criará novo snapshot `history`.
+- O admin terá um painel de histórico com:
+  - nome/data
+  - autor quando disponível
   - tipo de mudança
-  - snapshot dos dados
-- Criar painel de histórico no admin:
-  - lista cronológica de versões
-  - visualizar resumo da mudança
-  - restaurar uma versão anterior
-- O reset para o padrão será, tecnicamente, uma restauração do snapshot marcado como baseline.
+  - ação para restaurar
+- Implementar dois resets distintos:
+  - restaurar uma versão histórica específica
+  - resetar tudo para o `baseline`
+- O baseline atual continua sendo o padrão técnico até você definir o padrão oficial final.
 
-6. Biblioteca de imagens
-- Criar uma área no admin com:
-  - coleção de todas as fotos disponíveis
-  - upload de novas fotos
-  - substituição de imagens existentes
-  - seleção de uma imagem da biblioteca para qualquer bloco
-- Continuará usando o bucket `tres-images`.
-- Cada asset ficará reutilizável em múltiplas seções, em vez de depender só de path fixo por campo.
+8. Migrar a home pública para consumir o CMS novo
+- Criar um provider/hook para a home ler o snapshot `published`.
+- Atualizar progressivamente os componentes da home para ler:
+  - texto do snapshot publicado
+  - imagens da mídia publicada
+  - cores/tokens publicados
+- Preservar o visual atual como fallback quando um bloco ainda não estiver preenchido.
+- Garantir que `/` continue estável durante a migração.
 
-7. Biblioteca de cores / design tokens
-- Criar uma área no admin para o padrão de cores da marca/site:
-  - fundos principais
-  - fundos por seção
-  - tons de texto
-  - acentos, se necessário
-- Em vez de cores hardcoded espalhadas nos componentes, vou centralizar tokens de tema.
-- O admin poderá:
-  - ajustar cor por seção
-  - visualizar a paleta
-  - resetar uma cor
-  - resetar toda a paleta para o padrão
+9. Separar claramente draft e published
+- O admin editará sempre o `draft`.
+- Adicionar ação explícita de publicar para copiar/promover o draft ao estado `published`.
+- O site público lerá apenas o `published`.
+- Isso evita que mudanças parciais do admin apareçam ao vivo antes da hora.
 
-8. Refatorar a home para ler conteúdo e estilo do CMS
-- Hoje a maior parte da home ainda está hardcoded.
-- Vou adaptar os componentes principais para consumir:
-  - textos do CMS
-  - imagens do CMS
-  - cores/tokens do CMS
-- Isso será feito sem alterar desnecessariamente a estrutura visual da home.
-- A meta é que o admin mexa em conteúdo e estilo sem exigir novo deploy manual para cada mudança editorial.
+10. Endurecimento e acabamento
+- Validar acesso administrativo com backend/Supabase, nunca por estado no cliente.
+- Manter `user_roles` como fonte oficial de permissão.
+- Ajustar mensagens de erro, estados vazios, loading e confirmação de reset/restauração.
+- Garantir que a experiência continue dentro da linguagem visual quente, escura e editorial do projeto.
 
-9. Criar componentes “editáveis” reutilizáveis
-- Em vez de reinventar cada seção, vou criar um padrão de edição para uso no admin:
-  - `EditableText`
-  - `EditableImage`
-  - `EditableSectionBackground`
-  - `ResetSectionButton`
-  - `PublishBar / DraftBar`
-- Isso reduz inconsistência e facilita expansão futura.
-
-10. Organizar a experiência do admin em áreas claras
-- Estrutura proposta de `/admin`:
-  - visão geral / preview da home
-  - painel lateral de edição da seção selecionada
-  - biblioteca de fotos
-  - biblioteca de cores
-  - histórico
-  - ações globais:
-    - salvar rascunho
-    - publicar
-    - definir como padrão
-    - resetar para padrão
-- Assim o admin vira um “editor de marca/site”, não uma tela técnica de banco.
-
-Mudanças de banco e dados
-
-1. Manter `site_content` apenas se ainda ajudar na migração
-- Posso reaproveitar parte dos dados atuais para migrar o conteúdo existente.
-- Mas o modelo final deve ir para tabelas mais adequadas, por exemplo:
-  - `site_sections`
-  - `site_section_versions`
-  - `site_theme_tokens`
-  - `site_theme_versions`
-  - `media_library`
-  - `change_log`
-  - `user_roles`
-- A estrutura exata será definida para preservar os dados já existentes.
-
-2. Criar versionamento por snapshot
-- Cada publicação importante salva um snapshot JSON do site.
-- Isso simplifica:
-  - histórico
-  - compare
-  - rollback
-  - baseline/padrão
-
-3. Preparar baseline oficial
-- Como você ainda vai reforçar qual é o padrão definitivo, vou deixar uma ação no admin:
-  - “Definir estado atual como padrão”
-- Depois disso, qualquer reset volta exatamente para essa base.
-
-Segurança
-
-- Não vou usar credenciais hardcoded no cliente.
-- O admin precisa de proteção real no backend.
-- As permissões atuais de escrita para qualquer autenticado precisam ser endurecidas.
-- Papéis ficarão em tabela separada, não em profiles/users, seguindo a exigência de segurança.
-
-Arquivos que devem ser alterados/criados
-
-Frontend
-- `src/pages/Admin.tsx` — reconstrução completa
-- `src/hooks/useSiteContent.ts` — evoluir para draft/published/theme/version data
-- novos componentes de edição em `src/components/admin/*`
-- refactors em seções da home para consumirem CMS/tokens
+Arquivos e áreas que serão afetados
+- `src/pages/Admin.tsx` — reescrita completa para editor visual
+- `src/pages/Index.tsx` — início da leitura do snapshot publicado
+- componentes da home como:
   - `HeroSection.tsx`
-  - `ZoomParallaxSection.tsx`
   - `ConceptSection.tsx`
   - `TresGallerySection.tsx`
-  - `ProducersSection.tsx`
   - `ReserveSection.tsx`
   - `FooterSection.tsx`
-  - possivelmente `SeasonBar.tsx`
+  - e demais seções que forem conectadas ao CMS nesta etapa
+- novos hooks/utilitários para CMS versionado
+- `src/lib/imageUpload.ts` — adaptar para biblioteca de mídia
+- eventuais componentes novos para:
+  - painel lateral
+  - media picker
+  - color token editor
+  - history panel
+  - reset/publish actions
 
-Dados / tema
-- `src/lib/*` para mapper de conteúdo, tema e snapshots
-- eventual refactor de `seasonContext` apenas se necessário para coexistir com tokens editáveis
-
-Banco / Supabase
-- migrations para novas tabelas e RLS
-- ajuste das policies atuais
-- possível backfill dos dados existentes para o novo modelo
-
-Passos de implementação
-
-1. Auditar os blocos atuais da home e mapear tudo que precisa virar editável
-2. Criar o schema novo com versionamento, mídia, tema e roles
-3. Migrar o conteúdo atual para o novo formato sem perder o que já existe
-4. Proteger o admin com papéis reais no backend
-5. Reescrever `/admin` como editor visual com preview
-6. Refatorar as seções da home para ler dados e tokens do CMS
-7. Implementar biblioteca de imagens
-8. Implementar biblioteca de cores
-9. Implementar histórico + restauração + reset para padrão
-10. Adicionar ação “definir como padrão” para quando você confirmar a versão final
-11. Fazer revisão responsiva e de fluxo completo
-
-Ajuste importante que vou incluir
-- Corrigir também o erro atual de runtime do mapa (`Invalid LatLng object`) para evitar instabilidade enquanto o admin passa a reutilizar componentes da home.
+Detalhes técnicos
+- Fonte de verdade do editor:
+  - `site_editor_state` aponta para `draft_snapshot_id`, `published_snapshot_id`, `baseline_snapshot_id`
+- Snapshots:
+  - `site_snapshots.content` guarda estrutura da home
+  - `site_snapshots.theme` guarda tokens por seção
+  - `site_snapshots.media` guarda referências de assets usados
+- Biblioteca:
+  - `site_media_library` vira catálogo reutilizável, não apenas consequência de upload
+- Histórico:
+  - `site_change_log` registra ações editoriais e associações com snapshot
+- Segurança:
+  - acesso administrativo apenas para usuários com `has_role(auth.uid(), 'admin')`
+- Compatibilidade:
+  - onde ainda não houver conteúdo migrado, a UI usa fallback do estado atual/imports existentes
+- Publicação:
+  - `/admin` trabalha em draft
+  - `/` lê published
 
 Resultado esperado
-- `/admin` deixa de ser um formulário simples e vira um editor visual do site
-- textos, imagens e fundos passam a ser editáveis
-- existe biblioteca central de fotos
-- existe biblioteca central de cores
+- `/admin` deixa de ser um CRUD simples e vira um editor visual real
+- o admin consegue editar textos, trocar fotos, trocar fundos e reutilizar biblioteca
 - existe histórico de mudanças com restauração
-- existe reset para o padrão
-- o padrão oficial pode ser definido depois por você
-- o acesso administrativo fica protegido corretamente no backend
+- existe reset para o padrão técnico atual
+- a home pública continua funcionando sem regressão
+- a base fica pronta para você definir depois o “padrão oficial” que será salvo como baseline final
