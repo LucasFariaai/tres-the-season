@@ -115,15 +115,15 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
   }, [useSimpleLayout]);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden" style={{ backgroundColor: "hsl(var(--wine-bg))" }}>
-      <div className="px-[8%] pb-8 pt-16 text-center">
+    <section ref={sectionRef} className="relative overflow-hidden" style={{ backgroundColor: "#F5EFE6" }}>
+      <div className="px-[8%] pb-8 pt-0 text-center">
         <p
           style={{
             fontFamily: "Abel, sans-serif",
             fontSize: "12px",
             fontWeight: 400,
             letterSpacing: "0.18em",
-            color: "hsl(var(--wine-accent))",
+            color: "rgba(78, 55, 39, 0.9)",
             textTransform: "uppercase",
           }}
         >
@@ -136,7 +136,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
             fontStyle: "italic",
             fontSize: "18px",
             fontWeight: 300,
-            color: "hsl(var(--wine-muted) / 0.5)",
+            color: "rgba(26, 20, 16, 0.52)",
           }}
         >
           {galleryContent.subtitle}
@@ -145,7 +145,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 
       {useSimpleLayout ? (
         <div className="px-0 pb-0">
-          <div className="flex flex-col gap-[2px] bg-[hsl(var(--wine-bg))]">
+          <div className="flex flex-col gap-[2px]" style={{ backgroundColor: "#F5EFE6" }}>
             {galleryItems.map((item, index) => (
               <motion.article
                 key={item.id}
@@ -158,7 +158,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                   delay: prefersReducedMotion ? 0 : index * 0.08,
                 }}
                 className="relative overflow-hidden"
-                style={{ height: "280px", backgroundColor: "hsl(var(--wine-bg))" }}
+                style={{ height: "280px", backgroundColor: "#F5EFE6" }}
               >
                 <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" loading="lazy" />
                 {(item.label || item.caption) && (
@@ -200,7 +200,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
         </div>
       ) : (
         <div ref={pinWrapRef} className="relative" style={{ height: "85vh", minHeight: "520px" }}>
-          <div className="relative h-full overflow-hidden bg-[hsl(var(--wine-bg))]">
+          <div className="relative h-full overflow-hidden" style={{ backgroundColor: "#F5EFE6" }}>
             <div ref={trackRef} className="flex h-full gap-[3px] pr-[3px] will-change-transform">
               {galleryItems.map((item, index) => (
                 <article
@@ -209,7 +209,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                     itemRefs.current[index] = el;
                   }}
                   className="relative h-full shrink-0 overflow-hidden"
-                  style={{ width: widthMap[item.width], backgroundColor: "hsl(var(--wine-bg))" }}
+                  style={{ width: widthMap[item.width], backgroundColor: "#F5EFE6" }}
                 >
                   <div className="absolute inset-0 overflow-hidden">
                     <img
