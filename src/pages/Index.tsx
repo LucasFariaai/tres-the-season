@@ -4,6 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
 import ConceptSection from "@/components/ConceptSection";
+import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
 import FooterSection from "@/components/FooterSection";
@@ -29,6 +30,16 @@ const Index = () => {
       <ZoomParallaxSection />
       <SeasonsArchiveSection />
       <ConceptSection />
+      <TresGallerySection />
+      <div
+        aria-hidden="true"
+        className="w-full"
+        style={{
+          height: "400px",
+          background:
+            "linear-gradient(to bottom, #1A1410 0%, #1A1410 12%, #1B1A13 22%, #2A2218 34%, #3A2A20 46%, #5A4A3A 58%, #8A7D6A 70%, #B8AE9C 81%, #D8CFBE 90%, #F5EFE6 100%)",
+        }}
+      />
       <ProducersSection />
       <ReserveSection />
       <FooterSection />
@@ -37,6 +48,10 @@ const Index = () => {
         @media (max-width: 767px) {
           .min-h-screen > div[aria-hidden="true"] {
             height: 80px;
+          }
+
+          .min-h-screen > div[aria-hidden="true"]:last-of-type {
+            height: 260px;
           }
         }
       `}</style>
