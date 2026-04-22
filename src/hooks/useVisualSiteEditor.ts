@@ -295,10 +295,19 @@ export function useVisualSiteEditor() {
       created_by: state.session.user.id,
       restored_from: historySnapshot.id,
     };
+    const publishedInsertPayload: SiteSnapshotInsert = {
+      name: "Published site",
+      kind: "published",
+      content: toJson(snapshot.content),
+      theme: toJson(snapshot.theme),
+      media: toJson(snapshot.media),
+      created_by: state.session.user.id,
+      restored_from: historySnapshot.id,
+    };
 
     const publishedResult = idsRef.current.published
       ? await supabase.from("site_snapshots").update(publishedPayload).eq("id", idsRef.current.published).select("id").single()
-      : await supabase.from("site_snapshots").insert(publishedPayload satisfies SiteSnapshotInsert).select("id").single();
+      : await supabase.from("site_snapshots").insert(publishedInsertPayload).select("id").single();
 
     if (publishedResult.error) {
       setState((current) => ({ ...current, publishing: false }));
@@ -397,10 +406,18 @@ export function useVisualSiteEditor() {
       media: toJson(state.mediaLibrary),
       created_by: state.session.user.id,
     };
+    const insertPayload: SiteSnapshotInsert = {
+      name: "Baseline",
+      kind: "baseline",
+      content: toJson(state.content),
+      theme: toJson(state.theme),
+      media: toJson(state.mediaLibrary),
+      created_by: state.session.user.id,
+    };
 
     const result = idsRef.current.baseline
       ? await supabase.from("site_snapshots").update(payload).eq("id", idsRef.current.baseline).select("id").single()
-      : await supabase.from("site_snapshots").insert(payload satisfies SiteSnapshotInsert).select("id").single();
+      : await supabase.from("site_snapshots").insert(insertPayload).select("id").single();
 
     if (result.error) return { error: result.error.message };
 
