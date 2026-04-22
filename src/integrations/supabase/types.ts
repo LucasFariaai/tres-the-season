@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      site_change_log: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string
+          details: Json
+          entity_id: string | null
+          entity_type: string
+          id: string
+          snapshot_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          snapshot_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          snapshot_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_change_log_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "site_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_content: {
         Row: {
           content_type: string
@@ -41,15 +82,202 @@ export type Database = {
         }
         Relationships: []
       }
+      site_editor_state: {
+        Row: {
+          baseline_snapshot_id: string | null
+          draft_snapshot_id: string | null
+          id: boolean
+          published_snapshot_id: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          baseline_snapshot_id?: string | null
+          draft_snapshot_id?: string | null
+          id?: boolean
+          published_snapshot_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          baseline_snapshot_id?: string | null
+          draft_snapshot_id?: string | null
+          id?: boolean
+          published_snapshot_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_editor_state_baseline_snapshot_id_fkey"
+            columns: ["baseline_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "site_snapshots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_editor_state_draft_snapshot_id_fkey"
+            columns: ["draft_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "site_snapshots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_editor_state_published_snapshot_id_fkey"
+            columns: ["published_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "site_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_media_library: {
+        Row: {
+          alt_text: string | null
+          created_at: string
+          created_by: string | null
+          file_path: string
+          id: string
+          metadata: Json
+          tags: string[]
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_path: string
+          id?: string
+          metadata?: Json
+          tags?: string[]
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_path?: string
+          id?: string
+          metadata?: Json
+          tags?: string[]
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_snapshots: {
+        Row: {
+          content: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: Database["public"]["Enums"]["editor_snapshot_kind"]
+          media: Json
+          name: string | null
+          restored_from: string | null
+          theme: Json
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["editor_snapshot_kind"]
+          media?: Json
+          name?: string | null
+          restored_from?: string | null
+          theme?: Json
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["editor_snapshot_kind"]
+          media?: Json
+          name?: string | null
+          restored_from?: string | null
+          theme?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_snapshots_restored_from_fkey"
+            columns: ["restored_from"]
+            isOneToOne: false
+            referencedRelation: "site_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_theme_tokens: {
+        Row: {
+          created_at: string
+          environment: string
+          id: string
+          section: string
+          token: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          environment: string
+          id?: string
+          section?: string
+          token: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          environment?: string
+          id?: string
+          section?: string
+          token?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "editor" | "user"
+      editor_snapshot_kind: "draft" | "published" | "baseline" | "history"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -176,6 +404,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "editor", "user"],
+      editor_snapshot_kind: ["draft", "published", "baseline", "history"],
+    },
   },
 } as const
