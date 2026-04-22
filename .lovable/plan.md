@@ -1,53 +1,51 @@
 
-Objetivo: substituir a transição atual entre a seção escura e a grade de fotos cream pelo componente `DarkToCreamTransition`, sem alterar nenhuma outra parte da página.
+Objetivo: usar o arquivo enviado `DarkToCreamTransition.tsx` como substituição exata do divisor atual entre a seção escura e a grade de fotos cream, sem alterar nenhuma outra parte da home.
 
-O que será feito
+O que será implementado
 
-1. Adicionar o novo componente de transição
+1. Adicionar o componente enviado ao projeto
 - Criar `src/components/DarkToCreamTransition.tsx`.
-- Colar nele o componente enviado no upload separado, preservando sua estrutura e lógica visual.
-- Confirmar que ele renderiza apenas a zona de transição vazia, sem conteúdo.
-- Garantir a altura:
-  - `600px` no desktop
-  - `400px` abaixo de `768px`
+- Inserir exatamente a estrutura do arquivo enviado:
+  - gradiente vertical base de `#1A1410` para `#F5EFE6`
+  - camada lateral esquerda com sombra
+  - camada lateral direita com sombra
+  - camada inferior radial para segurar levemente os cantos
+- Preservar o componente como uma zona vazia, sem texto e sem conteúdo interno adicional.
 
-2. Trocar o divisor atual na home
-- Em `src/pages/Index.tsx`, remover o divisor atual que hoje fica entre:
-  - a seção escura acima
-  - a `TresGallerySection` abaixo
-- Substituir esse elemento antigo por `<DarkToCreamTransition />` exatamente na mesma posição de fluxo.
+2. Ajustar a responsividade pedida
+- Manter `height: 600px` no desktop.
+- Adaptar o componente para `height: 400px` abaixo de `768px`.
+- Não alterar nenhuma outra lógica visual do componente além dessa redução de altura no mobile.
 
-3. Ajustar os imports e limpar o que sobrar
-- Importar `DarkToCreamTransition` em `src/pages/Index.tsx`.
-- Remover qualquer `div` antiga de transição, gradiente, spacer ou separador que ainda esteja entre essas duas seções.
-- Não tocar em outros divisores da página que não sejam esse trecho específico.
+3. Substituir o divisor antigo na home
+- Em `src/pages/Index.tsx`, importar `DarkToCreamTransition`.
+- Remover o divisor/transição atual que hoje está entre a seção escura anterior e `TresGallerySection`.
+- Inserir `<DarkToCreamTransition />` exatamente nesse ponto do fluxo.
 
-4. Garantir o encaixe visual pedido
-- Verificar que a seção imediatamente acima termina em `#1A1410` sem padding inferior, margem inferior ou borda inferior extras.
-- Verificar que a `TresGallerySection` começa em `#F5EFE6` sem padding superior, margem superior ou borda superior extras.
-- Se o componente atual da galeria ainda estiver iniciando em fundo escuro, ajustar apenas o início dessa seção para respeitar o cream pedido, sem mudar seu restante além do necessário para esse encaixe.
+4. Limpar o que sobrar do divisor antigo
+- Remover o `div` antigo de gradiente/spacer correspondente a essa transição específica.
+- Remover qualquer ajuste inline ou regra local associada apenas a esse divisor antigo.
+- Não tocar na transição hero → cream do topo da página, já que o pedido é somente para a transição antes da grade de fotos.
 
-5. Preservar o comportamento do componente novo
-- O componente deve manter:
-  - gradiente base vertical com dissolução lenta no escuro e cream só no terço final
-  - painéis laterais que seguram as bordas escuras por mais tempo
-  - camada inferior para escurecer discretamente os cantos
-- Não reestilizar o efeito fora do que já vier no arquivo enviado.
+5. Garantir o encaixe visual entre as seções
+- Confirmar que a seção acima termina visualmente em `#1A1410`, sem margem, padding ou borda extra no final.
+- Confirmar que `TresGallerySection` começa em `#F5EFE6`, sem margem, padding ou borda extra no topo.
+- Se necessário, ajustar apenas o container externo de `TresGallerySection` para começar no cream pedido, preservando o restante da seção.
 
 Arquivos envolvidos
 - `src/components/DarkToCreamTransition.tsx`
 - `src/pages/Index.tsx`
-- possivelmente `src/components/TresGallerySection.tsx` apenas se for necessário corrigir o fundo inicial da seção para `#F5EFE6`
+- possivelmente `src/components/TresGallerySection.tsx` apenas se for necessário corrigir o fundo inicial da seção para o encaixe com `#F5EFE6`
 
 Detalhes técnicos
-- A troca acontece no trecho final da home, entre a seção escura anterior e a galeria.
-- O CSS responsivo da altura pode ficar dentro do próprio componente ou via classe responsiva, desde que respeite `600px` desktop e `400px` mobile.
-- Se houver estilos inline antigos em `Index.tsx` para esse divisor, eles serão removidos junto com o elemento antigo.
-- A implementação não deve mexer na transição hero → cream já existente no topo da página.
+- O componente enviado usa estilos inline e pode ser mantido assim para preservar fielmente o efeito aprovado.
+- A troca será localizada no trecho final da home, entre a seção escura anterior e a galeria.
+- O ajuste mobile pode ser feito com lógica responsiva dentro do componente ou via media query local, desde que respeite `600px` desktop e `400px` mobile.
+- Nenhuma alteração será feita no conteúdo, dados ou ordem das outras seções.
 
 Resultado esperado
-- a transição antiga é removida por completo
-- a home passa a usar `DarkToCreamTransition` no ponto correto
-- o centro clareia antes das bordas e cantos, criando a dissolução orgânica pedida
+- o divisor antigo entre a seção escura e a grade cream deixa de existir
+- a home passa a usar o componente enviado em `src/components/DarkToCreamTransition.tsx`
+- a transição mantém o centro clareando antes das bordas e cantos
 - mobile usa 400px de altura
 - nenhuma outra parte da página é alterada
