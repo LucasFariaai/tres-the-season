@@ -64,7 +64,8 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
                 <OrganicReserveButton
                   label="RESERVE"
                   href="https://www.exploretock.com/tresrotterdam"
-                  accentColor="#1A1410"
+                  strokeColor="#1A1410"
+                  textColor="#1A1410"
                 />
               </div>
 
