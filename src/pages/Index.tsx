@@ -3,8 +3,7 @@ import SeasonBar from "@/components/SeasonBar";
 import HeroSection from "@/components/HeroSection";
 import ChapterBreak from "@/components/ChapterBreak";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
-import DishStack from "@/components/DishStack";
-import SeasonSelector from "@/components/SeasonSelector";
+import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
 import ConceptSection from "@/components/ConceptSection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
@@ -21,8 +20,7 @@ const Index = () => {
       <HeroSection shouldPlay={introDone} />
       <ChapterBreak word="Winter" subtitle="Where the season is stored." />
       <ZoomParallaxSection />
-      <DishStack />
-      <SeasonSelector />
+      <SeasonsArchiveSection />
       <ConceptSection />
       <ProducersSection />
       <ReserveSection />
