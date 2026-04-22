@@ -1,113 +1,151 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useEffect } from 'react';
+import gsap from 'gsap';
 
 interface OrganicReserveButtonProps {
   label?: string;
   href?: string;
-  accentColor?: string;
+  strokeColor?: string;
+  textColor?: string;
+  size?: number;
 }
 
 const OrganicReserveButton: React.FC<OrganicReserveButtonProps> = ({
   label = 'RESERVE',
   href = 'https://www.exploretock.com/tresrotterdam',
-  accentColor = '#F5EFE6',
+  strokeColor = '#F5EFE6',
+  textColor = '#F5EFE6',
+  size = 200,
 }) => {
-  const pathRef = useRef<SVGPathElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const defaultPath = `M100 18
-             C 130 16, 158 28, 172 50
-             C 188 74, 190 98, 184 122
-             C 178 148, 160 168, 138 178
-             C 116 188, 92 190, 72 182
-             C 48 172, 28 154, 20 130
-             C 12 106, 14 80, 24 58
-             C 36 34, 62 20, 100 18
-             Z`;
-  const hoverPath = `M100 16
-             C 132 14, 160 26, 174 48
-             C 190 72, 192 100, 186 124
-             C 180 150, 158 170, 136 180
-             C 114 190, 90 192, 70 184
-             C 46 174, 26 156, 18 132
-             C 10 108, 12 78, 22 56
-             C 34 32, 64 18, 100 16
-             Z`;
+  const blobRef = useRef<HTMLSpanElement>(null);
+  const linkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    const path = pathRef.current;
-    if (!path) return;
-    const length = path.getTotalLength();
-    path.style.strokeDasharray = `${length}`;
-    path.style.strokeDashoffset = `${length}`;
+    const blob = blobRef.current;
+    const link = linkRef.current;
+    if (!blob || !link) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            path.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(0.45, 0, 0.15, 1)';
-            path.style.strokeDashoffset = '0';
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
+    function getRandomBorderRadius(): string {
+      const r = () => gsap.utils.random(40, 80, 1) + '%';
+      return `${r()} ${r()} ${r()} ${r()} / ${r()} ${r()} ${r()} ${r()}`;
+    }
 
-    const parent = path.closest('a');
-    if (parent) observer.observe(parent);
+    let activeMorphTween: gsap.core.Tween | null = null;
 
-    return () => observer.disconnect();
+    function animateRandomMorph(target: HTMLElement) {
+      const randomRadius = getRandomBorderRadius();
+      activeMorphTween = gsap.to(target, {
+        borderRadius: randomRadius,
+        duration: gsap.utils.random(1, 2),
+        ease: 'power1.inOut',
+        onComplete: () => animateRandomMorph(target),
+      });
+    }
+
+    function createRotationTween(target: HTMLElement) {
+      return gsap.to(target, {
+        rotation: '+=360',
+        duration: 10,
+        repeat: -1,
+        ease: 'none',
+      });
+    }
+
+    animateRandomMorph(blob);
+    let activeRotationTween = createRotationTween(blob);
+
+    let pausedState = { borderRadius: null as string | null, rotation: null as number | null };
+    let hoverTween: gsap.core.Tween | null = null;
+    let leaveTween: gsap.core.Tween | null = null;
+
+    const handleMouseEnter = () => {
+      pausedState.borderRadius = gsap.getProperty(blob, 'borderRadius') as string;
+      pausedState.rotation = gsap.getProperty(blob, 'rotation') as number;
+
+      if (activeMorphTween) activeMorphTween.pause();
+      activeRotationTween.pause();
+      if (leaveTween) leaveTween.kill();
+      if (hoverTween) hoverTween.kill();
+
+      hoverTween = gsap.to(blob, {
+        duration: 0.5,
+        scale: 0.9,
+        borderRadius: '50%',
+        ease: 'power3.out',
+        overwrite: true,
+      });
+    };
+
+    const handleMouseLeave = () => {
+      if (hoverTween) hoverTween.kill();
+      if (leaveTween) leaveTween.kill();
+
+      leaveTween = gsap.to(blob, {
+        scale: 1,
+        duration: 0.5,
+        borderRadius: pausedState.borderRadius || '40% 60% 70% 30% / 40% 40% 60% 50%',
+        rotation: pausedState.rotation || 0,
+        ease: 'power3.in',
+        overwrite: true,
+        onStart: () => {
+          activeRotationTween.kill();
+          if (activeMorphTween) activeMorphTween.kill();
+          animateRandomMorph(blob);
+          activeRotationTween = createRotationTween(blob);
+          activeRotationTween.play();
+          leaveTween = null;
+        },
+      });
+    };
+
+    link.addEventListener('mouseenter', handleMouseEnter);
+    link.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      link.removeEventListener('mouseenter', handleMouseEnter);
+      link.removeEventListener('mouseleave', handleMouseLeave);
+      if (activeMorphTween) activeMorphTween.kill();
+      if (activeRotationTween) activeRotationTween.kill();
+      if (hoverTween) hoverTween.kill();
+      if (leaveTween) leaveTween.kill();
+    };
   }, []);
 
-    return (
+  return (
     <a
+      ref={linkRef}
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={label}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
-        display: 'inline-flex',
+        width: `${size}px`,
+        height: `${size}px`,
+        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        width: 'min(100%, 320px)',
-        aspectRatio: '1 / 1',
         textDecoration: 'none',
-        cursor: 'pointer',
+        color: textColor,
+        fontFamily: "'Abel', sans-serif",
       }}
     >
-      <svg
-        viewBox="0 0 200 200"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      <span
+        ref={blobRef}
         style={{
           position: 'absolute',
-          inset: 0,
           width: '100%',
           height: '100%',
+          border: `1px solid ${strokeColor}`,
+          borderRadius: '40% 60% 70% 30% / 40% 40% 60% 50%',
+          inset: 0,
+          transformOrigin: 'center center',
         }}
-      >
-        <motion.path
-          ref={pathRef}
-          d={defaultPath}
-          animate={{ d: isHovered ? hoverPath : defaultPath, strokeWidth: isHovered ? 1.4 : 1 }}
-          transition={{ duration: 0.6, ease: [0.45, 0, 0.15, 1] }}
-          stroke={accentColor}
-          strokeWidth="1"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      />
       <span
         style={{
           position: 'relative',
           zIndex: 1,
-          fontFamily: 'Abel, sans-serif',
           fontSize: '14px',
-          letterSpacing: isHovered ? '0.24em' : '0.18em',
-          color: accentColor,
-          transition: 'color 0.3s ease, letter-spacing 0.4s ease',
+          letterSpacing: '0.18em',
         }}
       >
         {label}
