@@ -16,7 +16,8 @@ export default function ConceptSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-season-darkest overflow-hidden season-transition"
+      className="relative overflow-hidden"
+      style={{ backgroundColor: "hsl(24 24% 8%)" }}
     >
       {/* Grain overlay */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -32,16 +33,43 @@ export default function ConceptSection() {
           transition={{ duration: 0.8 }}
           className="max-w-2xl mb-20 sm:mb-28"
         >
-          <p className="font-body text-xs tracking-[0.4em] uppercase text-season-mid/60 mb-5 season-transition">
+          <p
+            className="mb-5 uppercase"
+            style={{
+              fontFamily: "Abel, sans-serif",
+              fontSize: "12px",
+              fontWeight: 400,
+              letterSpacing: "0.16em",
+              color: "hsl(29 51% 50%)",
+            }}
+          >
             Our Philosophy
           </p>
-          <h2 className="font-display text-3xl sm:text-5xl text-season-lightest leading-tight mb-8 season-transition">
-            Complex without<br />being complicated.
+          <h2
+            className="mb-8"
+            style={{
+              fontFamily: "Fraunces, serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              fontSize: "clamp(36px, 5.5vw, 72px)",
+              lineHeight: 1.05,
+              color: "hsl(36 33% 95%)",
+            }}
+          >
+            Complex without being complicated.
           </h2>
-          <p className="font-body text-base sm:text-lg text-season-light/60 leading-relaxed season-transition">
+          <p
+            style={{
+              fontFamily: "Abel, sans-serif",
+              fontSize: "17px",
+              fontWeight: 400,
+              lineHeight: 1.65,
+              color: "hsl(38 28% 69%)",
+            }}
+          >
             Tres is built on a simple conviction: the finest ingredients, treated with
             restraint and respect, need very little else. Every dish begins in the land
-            and ends at the table — nothing more, nothing less.
+            and ends at the table, nothing more, nothing less.
           </p>
         </motion.div>
 
@@ -54,7 +82,7 @@ export default function ConceptSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="relative overflow-hidden rounded-2xl"
+              className="relative overflow-hidden"
             >
               <img
                 src={chefImg}
@@ -62,7 +90,12 @@ export default function ConceptSection() {
                 className="w-full aspect-[3/4] object-cover"
               />
               {/* Warm overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-season-darkest/50 via-transparent to-transparent season-transition" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: "linear-gradient(to top, hsl(24 24% 8% / 0.5), transparent 60%)",
+                }}
+              />
             </motion.div>
 
             <motion.div
@@ -72,10 +105,28 @@ export default function ConceptSection() {
               transition={{ delay: 0.4, duration: 0.7 }}
               className="mt-6 sm:mt-8"
             >
-              <h3 className="font-display text-xl sm:text-2xl text-season-lightest mb-3 season-transition">
+              <h3
+                className="mb-3"
+                style={{
+                  fontFamily: "Fraunces, serif",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  fontSize: "clamp(24px, 3vw, 32px)",
+                  color: "hsl(36 33% 95%)",
+                }}
+              >
                 The Hands
               </h3>
-              <p className="font-body text-sm text-season-light/50 leading-relaxed max-w-sm season-transition">
+              <p
+                className="max-w-sm"
+                style={{
+                  fontFamily: "Abel, sans-serif",
+                  fontSize: "17px",
+                  fontWeight: 400,
+                  lineHeight: 1.65,
+                  color: "hsl(38 28% 69%)",
+                }}
+              >
                 Every course is shaped by intuition, not formula. Our kitchen works with
                 what the season brings — adapting, improvising, discovering flavour in
                 restraint.
@@ -90,14 +141,19 @@ export default function ConceptSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-              className="relative overflow-hidden rounded-2xl"
+              className="relative overflow-hidden"
             >
               <img
                 src={foundersImg}
                 alt="The founders in the historic cellar of Tres"
                 className="w-full aspect-[3/4] object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-season-darkest/50 via-transparent to-transparent season-transition" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: "linear-gradient(to top, hsl(24 24% 8% / 0.5), transparent 60%)",
+                }}
+              />
             </motion.div>
 
             <motion.div
@@ -107,13 +163,31 @@ export default function ConceptSection() {
               transition={{ delay: 0.6, duration: 0.7 }}
               className="mt-6 sm:mt-8"
             >
-              <h3 className="font-display text-xl sm:text-2xl text-season-lightest mb-3 season-transition">
+              <h3
+                className="mb-3"
+                style={{
+                  fontFamily: "Fraunces, serif",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  fontSize: "clamp(24px, 3vw, 32px)",
+                  color: "hsl(36 33% 95%)",
+                }}
+              >
                 The Place
               </h3>
-              <p className="font-body text-sm text-season-light/50 leading-relaxed max-w-sm season-transition">
+              <p
+                className="max-w-sm"
+                style={{
+                  fontFamily: "Abel, sans-serif",
+                  fontSize: "17px",
+                  fontWeight: 400,
+                  lineHeight: 1.65,
+                  color: "hsl(38 28% 69%)",
+                }}
+              >
                 Set inside a 19th-century cellar beneath the Walhalla, where the Maas
                 meets the city. Stone walls, candlelight, and the quiet hum of a kitchen
-                at work — this is where Tres lives.
+                at work, this is where Tres lives.
               </p>
             </motion.div>
           </motion.div>
@@ -127,8 +201,17 @@ export default function ConceptSection() {
           transition={{ delay: 0.3, duration: 1 }}
           className="mt-24 sm:mt-32 text-center"
         >
-          <div className="w-px h-16 bg-season-mid/20 mx-auto mb-8 season-transition" />
-          <p className="font-accent italic text-lg sm:text-xl text-season-light/40 max-w-lg mx-auto season-transition">
+          <div className="w-px h-16 mx-auto mb-8" style={{ backgroundColor: "hsl(29 51% 50% / 0.2)" }} />
+          <p
+            className="max-w-lg mx-auto"
+            style={{
+              fontFamily: "Fraunces, serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              fontSize: "clamp(20px, 2.4vw, 28px)",
+              color: "hsl(38 28% 69% / 0.7)",
+            }}
+          >
             "We don't chase trends. We chase seasons."
           </p>
         </motion.div>
