@@ -32,7 +32,7 @@ const Index = () => {
       <ZoomParallaxSection content={content.zoom} theme={theme} />
       <SeasonsArchiveSection />
       <ConceptSection content={content.concept} theme={theme} />
-      <MenuPoemSection />
+      <MenuPoemSection showCta={false} />
       <div aria-hidden="true" className="w-full" style={{ height: "400px", background: content.bands.zoomToProducers || theme.bandZoomToProducers }} />
       <ProducersSection content={content.producers} theme={theme} />
       <ReserveSection content={content.reserve} theme={theme} />

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import ProducerCard from "./producers/ProducerCard";
 import ProducerMap from "./producers/ProducerMap";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
@@ -13,6 +14,7 @@ export default function ProducersSection({ content, theme }: ProducersSectionPro
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isMobile = useIsMobile();
   const sectionContent = content ?? defaultHomeCmsContent.producers;
   const sectionTheme = theme ?? defaultSiteTheme;
 
@@ -36,29 +38,31 @@ export default function ProducersSection({ content, theme }: ProducersSectionPro
         <p className="mt-3 font-body text-xs text-muted-foreground">{sectionContent.helper}</p>
       </div>
 
-      <div className="relative z-[2] hidden lg:flex" style={{ height: "85vh", maxHeight: "800px" }}>
-        <div className="w-[45%] overflow-y-auto border-r border-border">
-          {sectionContent.items.map((producer, index) => (
-            <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
-              <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
-            </div>
-          ))}
+      {!isMobile ? (
+        <div className="relative z-[2] flex" style={{ height: "85vh", maxHeight: "800px" }}>
+          <div className="w-[45%] overflow-y-auto border-r border-border">
+            {sectionContent.items.map((producer, index) => (
+              <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
+                <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
+              </div>
+            ))}
+          </div>
+          <div className="w-[55%]">
+            <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="h-full w-full" />
+          </div>
         </div>
-        <div className="w-[55%]">
-          <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="h-full w-full" />
+      ) : (
+        <div className="relative z-[2]">
+          <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="w-full" style={{ height: "50vh" }} />
+          <div className="px-2">
+            {sectionContent.items.map((producer, index) => (
+              <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
+                <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-
-      <div className="relative z-[2] lg:hidden">
-        <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="w-full" style={{ height: "50vh" }} />
-        <div className="px-2">
-          {sectionContent.items.map((producer, index) => (
-            <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
-              <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
 
       <p className="relative z-[2] py-16 text-center font-accent text-lg text-muted-foreground">{sectionContent.closingQuote}</p>
     </section>
