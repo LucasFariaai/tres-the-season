@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { useSeason, seasonLabels } from "@/lib/seasonContext";
 import OrganicReserveButton from "@/components/OrganicReserveButton";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
@@ -8,14 +9,14 @@ interface ReserveSectionProps {
   theme?: SiteThemeTokens;
 }
 
-export default function ReserveSection({ content, theme }: ReserveSectionProps) {
+const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, theme }, ref) => {
   const { season } = useSeason();
   const reserveContent = content ?? defaultHomeCmsContent.reserve;
   const reserveTheme = theme ?? defaultSiteTheme;
   const tastingSeason = seasonLabels[season] || "Spring";
 
   return (
-    <section id="reserve" className="season-transition py-24 sm:py-32" style={{ backgroundColor: reserveTheme.reserveBackground }}>
+    <section ref={ref} id="reserve" className="season-transition py-24 sm:py-32" style={{ backgroundColor: reserveTheme.reserveBackground }}>
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-16 md:grid-cols-2">
           <div>
@@ -101,4 +102,8 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
       </div>
     </section>
   );
-}
+});
+
+ReserveSection.displayName = "ReserveSection";
+
+export default ReserveSection;

@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Facebook, Instagram } from "lucide-react";
 import logoTres from "@/assets/logo-tres-svg.svg";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
@@ -8,12 +9,12 @@ interface FooterSectionProps {
   theme?: SiteThemeTokens;
 }
 
-export default function FooterSection({ content, theme }: FooterSectionProps) {
+const FooterSection = forwardRef<HTMLElement, FooterSectionProps>(({ content, theme }, ref) => {
   const footerContent = content ?? defaultHomeCmsContent.footer;
   const footerTheme = theme ?? defaultSiteTheme;
 
   return (
-    <footer className="season-transition py-24" style={{ backgroundColor: footerTheme.footerBackground }}>
+    <footer ref={ref} className="season-transition py-24" style={{ backgroundColor: footerTheme.footerBackground }}>
       <div className="mx-auto max-w-md px-6 text-center">
         <p className="season-transition mb-10 font-accent text-lg italic text-season-light/50 sm:text-xl">{footerContent.quote}</p>
         <div className="mb-10 flex justify-center gap-5">
@@ -24,4 +25,8 @@ export default function FooterSection({ content, theme }: FooterSectionProps) {
       </div>
     </footer>
   );
-}
+});
+
+FooterSection.displayName = "FooterSection";
+
+export default FooterSection;

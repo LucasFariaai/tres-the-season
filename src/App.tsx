@@ -15,25 +15,27 @@ import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <SeasonProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/seasons" element={<Seasons />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/menu-legacy" element={<LegacyMenu />} />
-            <Route path="/reserve" element={<Reserve />} />
-            <Route path="/wine-list" element={<WineList />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </SeasonProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <div>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <SeasonProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/seasons" element={<Seasons />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/menu-legacy" element={<LegacyMenu />} />
+              <Route path="/reserve" element={<Reserve />} />
+              <Route path="/wine-list" element={<WineList />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </SeasonProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </div>
 );
 
 export default App;

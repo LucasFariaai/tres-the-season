@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useSeason, seasonLabels } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoTres from "@/assets/logo-tres-svg.svg";
@@ -71,7 +71,7 @@ function FloatingParticles() {
   return <canvas ref={canvasRef} className="absolute inset-0 z-[2] h-full w-full pointer-events-none" />;
 }
 
-export default function HeroSection({ shouldPlay = true, content, theme }: HeroSectionProps) {
+const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, content, theme }, ref) => {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
@@ -92,7 +92,7 @@ export default function HeroSection({ shouldPlay = true, content, theme }: HeroS
   }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-[hsl(var(--wine-bg))]">
+    <section ref={ref} className="relative h-screen w-full overflow-hidden bg-[hsl(var(--wine-bg))]">
       <div className="absolute inset-0">
         <video
           ref={videoRef}
@@ -147,4 +147,8 @@ export default function HeroSection({ shouldPlay = true, content, theme }: HeroS
       </div>
     </section>
   );
-}
+});
+
+HeroSection.displayName = "HeroSection";
+
+export default HeroSection;
