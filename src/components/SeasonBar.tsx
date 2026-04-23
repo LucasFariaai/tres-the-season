@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { forwardRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import logoTres from "@/assets/logo-tres-nav.svg";
 
-export default function SeasonBar() {
+const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -37,7 +37,7 @@ export default function SeasonBar() {
   const bgClass = scrolled ? "bg-black/50 backdrop-blur-xl" : "bg-black/40 backdrop-blur-lg";
 
   return (
-    <>
+    <div ref={ref}>
       {/* Desktop floating island — compact, expands on hover */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden lg:block">
         <nav
@@ -127,6 +127,10 @@ export default function SeasonBar() {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
-}
+});
+
+SeasonBar.displayName = "SeasonBar";
+
+export default SeasonBar;
