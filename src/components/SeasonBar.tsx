@@ -84,6 +84,12 @@ export default function SeasonBar() {
               >
                 Producers
               </button>
+              <button
+                onClick={() => navigate("/wine-list")}
+                className="text-sm px-3 py-1.5 rounded-full transition-all duration-300 text-white/70 hover:text-white hover:bg-white/10"
+              >
+                Wine
+              </button>
             </div>
           </div>
 

@@ -58,6 +58,26 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
                 >
                   18 servings. Alcoholic pairing €110. Non-alcoholic pairing €100. Reservations recommended 2 to 3 weeks ahead.
                 </p>
+
+                <a
+                  href="/wine-list"
+                  className="mt-4 inline-flex items-center gap-1.5 transition-opacity hover:opacity-70"
+                  style={{
+                    fontFamily: "Abel, sans-serif",
+                    fontSize: "13px",
+                    letterSpacing: "0.06em",
+                    color: "hsl(29 51% 50%)",
+                    textDecoration: "none",
+                    border: "none",
+                    background: "transparent",
+                    borderRadius: 0,
+                  }}
+                >
+                  Explore the carta
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M4 12L12 4M12 4H6M12 4V10" />
+                  </svg>
+                </a>
               </div>
 
               <div className="mt-12 flex w-full justify-center md:max-w-[320px] md:justify-center">
