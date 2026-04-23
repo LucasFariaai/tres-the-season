@@ -3,8 +3,10 @@ import SeasonBar from "@/components/SeasonBar";
 import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
+import MenuSecretSection from "@/components/MenuSecretSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
 import ConceptSection from "@/components/ConceptSection";
+import GreenStarSection from "@/components/GreenStarSection";
 import DarkToCreamTransition from "@/components/DarkToCreamTransition";
 import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
@@ -33,8 +35,10 @@ const Index = () => {
       />
       <ZoomParallaxSection content={content.zoom} theme={theme} />
       <SeasonsArchiveSection />
+      <MenuSecretSection />
       <MenuPoemSection showCta={false} />
       <ConceptSection content={content.concept} theme={theme} />
+      <GreenStarSection />
       <div aria-hidden="true" className="w-full" style={{ height: "400px", background: content.bands.zoomToProducers || theme.bandZoomToProducers }} />
       <ProducersSection content={content.producers} theme={theme} />
       <ReserveSection content={content.reserve} theme={theme} />
