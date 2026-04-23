@@ -3,23 +3,26 @@ import { Link } from "react-router-dom";
 import SeasonBar from "@/components/SeasonBar";
 import { wines, type Wine, type WineCategory } from "@/data/tres-wine-data";
 
-/* ─── constants ──────────────────────────────────────────────────────── */
+/* ── constants ───────────────────────────────────────────────────────── */
 
 const CATEGORY_ORDER: WineCategory[] = ["sparkling", "white", "red", "dessert"];
+
 const CATEGORY_LABELS: Record<WineCategory, string> = {
   sparkling: "Sparkling",
   white: "White wine",
   red: "Red wine",
   dessert: "Dessert",
 };
-const CATEGORY_SHORT: Record<WineCategory, string> = {
-  sparkling: "Sparkling",
-  white: "White",
-  red: "Red",
-  dessert: "Dessert",
-};
 
-/* ─── helpers ────────────────────────────────────────────────────────── */
+const CATEGORY_OPTIONS: { value: string; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "sparkling", label: "Sparkling" },
+  { value: "white", label: "White" },
+  { value: "red", label: "Red" },
+  { value: "dessert", label: "Dessert" },
+];
+
+/* ── helpers ─────────────────────────────────────────────────────────── */
 
 function normalize(value: string | number | null | undefined): string {
   return String(value ?? "")
@@ -39,22 +42,10 @@ function regionLabel(wine: Wine): string {
   return parts.join(" · ").toUpperCase();
 }
 
-/** Returns indices [start, length] of first match, or null */
-function findMatch(text: string, query: string): [number, number] | null {
-  if (!query) return null;
-  const idx = normalize(text).indexOf(normalize(query));
-  if (idx === -1) return null;
-  return [idx, query.length];
-}
-
-/** Check if wine matches the query across all searchable fields */
 function wineMatches(wine: Wine, query: string): boolean {
   if (!query) return true;
   const q = normalize(query);
-
-  // exact price match only
   if (/^\d+$/.test(q) && String(wine.price) === q) return true;
-
   return [
     wine.name,
     wine.producer,
@@ -67,63 +58,53 @@ function wineMatches(wine: Wine, query: string): boolean {
   ].some((field) => normalize(field).includes(q));
 }
 
-/* ─── data structures ────────────────────────────────────────────────── */
+/* ── data structures ─────────────────────────────────────────────────── */
 
 interface WineGroup {
   key: string;
+  category: WineCategory;
   label: string;
   wines: Wine[];
 }
 
-interface WineSection {
-  category: WineCategory;
-  label: string;
-  id: string;
-  groups: WineGroup[];
+function buildGrouped(list: Wine[]): WineGroup[] {
+  const map = new Map<string, WineGroup>();
+
+  list.forEach((w) => {
+    const key = `${w.category}::${regionKey(w)}`;
+    const existing = map.get(key);
+    if (existing) {
+      existing.wines.push(w);
+    } else {
+      map.set(key, {
+        key,
+        category: w.category,
+        label: regionLabel(w),
+        wines: [w],
+      });
+    }
+  });
+
+  const order: Record<string, number> = { sparkling: 0, white: 1, red: 2, dessert: 3 };
+  return Array.from(map.values()).sort((a, b) => order[a.category] - order[b.category]);
 }
 
-function buildSections(list: Wine[]): WineSection[] {
-  return CATEGORY_ORDER.map((cat) => {
-    const catWines = list.filter((w) => w.category === cat);
-    const groupMap = new Map<string, WineGroup>();
-
-    catWines.forEach((w) => {
-      const key = regionKey(w);
-      const existing = groupMap.get(key);
-      if (existing) {
-        existing.wines.push(w);
-      } else {
-        groupMap.set(key, { key, label: regionLabel(w), wines: [w] });
-      }
-    });
-
-    return {
-      category: cat,
-      label: CATEGORY_LABELS[cat],
-      id: `section-${cat}`,
-      groups: [...groupMap.values()],
-    };
-  }).filter((s) => s.groups.length > 0);
-}
-
-/* ─── highlight component ────────────────────────────────────────────── */
+/* ── highlight ───────────────────────────────────────────────────────── */
 
 function Highlight({ text, query }: { text: string; query: string }) {
   if (!query) return <>{text}</>;
-  const match = findMatch(text, query);
-  if (!match) return <>{text}</>;
-
-  const [start, length] = match;
+  const idx = normalize(text).indexOf(normalize(query));
+  if (idx === -1) return <>{text}</>;
   return (
     <>
-      {text.slice(0, start)}
-      <span style={{ color: "#C17D3E" }}>{text.slice(start, start + length)}</span>
-      {text.slice(start + length)}
+      {text.slice(0, idx)}
+      <span style={{ color: "#C17D3E" }}>{text.slice(idx, idx + query.length)}</span>
+      {text.slice(idx + query.length)}
     </>
   );
 }
 
-/* ─── wine row ───────────────────────────────────────────────────────── */
+/* ── wine row ────────────────────────────────────────────────────────── */
 
 function WineRow({ wine, query }: { wine: Wine; query: string }) {
   const vintage = wine.vintage ?? "NV";
@@ -138,40 +119,25 @@ function WineRow({ wine, query }: { wine: Wine; query: string }) {
           borderColor: "rgba(245,239,230,0.04)",
         }}
       >
-        <span
-          className="text-right"
-          style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.35)" }}
-        >
+        <span className="text-right" style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.35)" }}>
           {vintage}
         </span>
         <span style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#F5EFE6" }}>
           <Highlight text={wine.name} query={query} />
         </span>
-        <span
-          className="text-right truncate"
-          style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.4)" }}
-        >
+        <span className="text-right truncate" style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.4)" }}>
           <Highlight text={wine.producer} query={query} />
         </span>
-        <span
-          className="text-right truncate italic"
-          style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.25)" }}
-        >
+        <span className="text-right truncate italic" style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.25)" }}>
           <Highlight text={wine.grapes} query={query} />
         </span>
-        <span
-          className="text-right"
-          style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#C8B89A" }}
-        >
+        <span className="text-right" style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#C8B89A" }}>
           €{wine.price}
         </span>
       </div>
 
       {/* Mobile */}
-      <div
-        className="md:hidden border-b py-[12px]"
-        style={{ borderColor: "rgba(245,239,230,0.04)" }}
-      >
+      <div className="md:hidden border-b py-[12px]" style={{ borderColor: "rgba(245,239,230,0.04)" }}>
         <div className="flex justify-between items-baseline">
           <span style={{ fontFamily: "Abel, sans-serif", fontSize: "14px", fontWeight: 500, color: "#F5EFE6" }}>
             <span style={{ color: "rgba(200,184,154,0.35)", fontSize: "13px", marginRight: "6px" }}>{vintage}</span>
@@ -183,7 +149,7 @@ function WineRow({ wine, query }: { wine: Wine; query: string }) {
         </div>
         <div className="truncate" style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.4)", marginTop: "2px" }}>
           <Highlight text={wine.producer} query={query} />
-          <span style={{ margin: "0 6px", color: "rgba(200,184,154,0.2)" }}>·</span>
+          <span style={{ margin: "0 6px", color: "rgba(200,184,154,0.15)" }}>·</span>
           <span className="italic" style={{ color: "rgba(200,184,154,0.25)" }}>
             <Highlight text={wine.grapes} query={query} />
           </span>
@@ -193,46 +159,23 @@ function WineRow({ wine, query }: { wine: Wine; query: string }) {
   );
 }
 
-/* ─── sommelier highlights ───────────────────────────────────────────── */
+/* ── sommelier highlights ────────────────────────────────────────────── */
 
 function SommelierHighlights() {
   const featured = useMemo(() => wines.filter((w) => w.featured), []);
-
   if (featured.length === 0) return null;
 
   return (
     <div style={{ padding: "0 0 48px" }}>
-      <p
-        style={{
-          fontFamily: "Abel, sans-serif",
-          fontSize: "11px",
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          color: "#C17D3E",
-          marginBottom: "12px",
-        }}
-      >
+      <p style={{ fontFamily: "Abel, sans-serif", fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#C17D3E", marginBottom: "12px" }}>
         Conversation starters
       </p>
-      <p
-        style={{
-          fontFamily: "'Fraunces', serif",
-          fontStyle: "italic",
-          fontWeight: 300,
-          fontSize: "18px",
-          color: "rgba(200,184,154,0.45)",
-          marginBottom: "32px",
-        }}
-      >
+      <p style={{ fontFamily: "'Fraunces', serif", fontStyle: "italic", fontWeight: 300, fontSize: "18px", color: "rgba(200,184,154,0.45)", marginBottom: "32px" }}>
         A few wines we think deserve attention this season.
       </p>
       <div className="grid gap-x-12 md:grid-cols-2">
         {featured.slice(0, 6).map((wine) => (
-          <div
-            key={wine.id}
-            className="border-b py-4"
-            style={{ borderColor: "rgba(245,239,230,0.06)" }}
-          >
+          <div key={wine.id} className="border-b py-4" style={{ borderColor: "rgba(245,239,230,0.06)" }}>
             <p style={{ fontFamily: "Abel, sans-serif", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(200,184,154,0.4)" }}>
               {wine.producer}
             </p>
@@ -254,185 +197,42 @@ function SommelierHighlights() {
   );
 }
 
-/* ─── side index (desktop) ───────────────────────────────────────────── */
-
-function SideIndex({
-  sections,
-  activeCategory,
-  visible,
-}: {
-  sections: WineSection[];
-  activeCategory: WineCategory | null;
-  visible: boolean;
-}) {
-  const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
-  if (!visible) return null;
-
-  return (
-    <nav
-      className="hidden lg:flex fixed left-6 top-1/2 z-30 flex-col items-start gap-4"
-      style={{ transform: "translateY(-50%)" }}
-      aria-label="Wine list sections"
-    >
-      {sections.map((section) => {
-        const isActive = activeCategory === section.category;
-        return (
-          <button
-            key={section.category}
-            type="button"
-            onClick={() => scrollTo(section.id)}
-            style={{
-              fontFamily: "Abel, sans-serif",
-              fontSize: "11px",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: isActive ? "#F5EFE6" : "rgba(200,184,154,0.2)",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              transition: "color 200ms ease",
-              padding: 0,
-            }}
-          >
-            {CATEGORY_SHORT[section.category]}
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
-/* ─── sticky category bar (mobile) ───────────────────────────────────── */
-
-function MobileCategoryBar({
-  sections,
-  activeCategory,
-  visible,
-}: {
-  sections: WineSection[];
-  activeCategory: WineCategory | null;
-  visible: boolean;
-}) {
-  const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
-  if (!visible) return null;
-
-  return (
-    <div
-      className="lg:hidden sticky z-10"
-      style={{
-        top: 0,
-        background: "rgba(26,20,16,0.95)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        padding: "12px 24px",
-      }}
-    >
-      <div className="flex items-center gap-6">
-        {sections.map((section) => {
-          const isActive = activeCategory === section.category;
-          return (
-            <button
-              key={section.category}
-              type="button"
-              onClick={() => scrollTo(section.id)}
-              style={{
-                fontFamily: "Abel, sans-serif",
-                fontSize: "12px",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color: isActive ? "#F5EFE6" : "rgba(200,184,154,0.35)",
-                background: "none",
-                border: "none",
-                borderBottom: isActive ? "2px solid #C17D3E" : "2px solid transparent",
-                cursor: "pointer",
-                transition: "color 200ms ease, border-color 200ms ease",
-                paddingBottom: "4px",
-              }}
-            >
-              {CATEGORY_SHORT[section.category]}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-/* ─── main page ──────────────────────────────────────────────────────── */
+/* ── main page ───────────────────────────────────────────────────────── */
 
 export default function WineListPage() {
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<WineCategory | null>(null);
-  const [showNav, setShowNav] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCountry, setActiveCountry] = useState("all");
 
-  const headerRefs = useRef<Map<WineCategory, HTMLElement | null>>(new Map());
-  const firstHeaderRef = useRef<HTMLElement | null>(null);
-
-  const isSearching = query.trim().length > 0;
   const normalizedQuery = normalize(query);
 
-  // Build full sections (unfiltered)
-  const allSections = useMemo(() => buildSections(wines), []);
+  const countryOptions = useMemo(() => {
+    const set = new Set(wines.map((w) => w.country));
+    return ["all", ...Array.from(set).sort()];
+  }, []);
 
-  // Filtered view when searching
-  const filteredWines = useMemo(() => {
-    if (!isSearching) return [];
-    return wines.filter((w) => wineMatches(w, normalizedQuery));
-  }, [isSearching, normalizedQuery]);
+  const filtered = useMemo(() => {
+    return wines.filter((w) => {
+      if (activeCategory !== "all" && w.category !== activeCategory) return false;
+      if (activeCountry !== "all" && w.country !== activeCountry) return false;
+      return wineMatches(w, normalizedQuery);
+    });
+  }, [activeCategory, activeCountry, normalizedQuery]);
 
-  const resultCount = isSearching ? filteredWines.length : wines.length;
+  const grouped = useMemo(() => buildGrouped(filtered), [filtered]);
 
-  // Track active category via IntersectionObserver
-  useEffect(() => {
-    const elements = Array.from(headerRefs.current.entries())
-      .map(([cat, el]) => (el ? { cat, el } : null))
-      .filter(Boolean) as { cat: WineCategory; el: HTMLElement }[];
+  const activeFilters =
+    (activeCategory !== "all" ? 1 : 0) +
+    (activeCountry !== "all" ? 1 : 0) +
+    (query.trim() ? 1 : 0);
 
-    if (elements.length === 0) return;
+  const clearAll = useCallback(() => {
+    setQuery("");
+    setActiveCategory("all");
+    setActiveCountry("all");
+  }, []);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const cat = (entry.target as HTMLElement).dataset.category as WineCategory;
-            if (cat) setActiveCategory(cat);
-          }
-        });
-      },
-      { rootMargin: "-40% 0px -40% 0px", threshold: 0.01 },
-    );
-
-    elements.forEach(({ el }) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [allSections]);
-
-  // Show/hide nav based on scroll past first header
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowNav(!entry.isIntersecting);
-      },
-      { threshold: 0 },
-    );
-
-    const el = firstHeaderRef.current;
-    if (el) observer.observe(el);
-    return () => observer.disconnect();
-  }, [allSections]);
-
-  const setHeaderRef = useCallback(
-    (cat: WineCategory, el: HTMLElement | null) => {
-      headerRefs.current.set(cat, el);
-      if (cat === CATEGORY_ORDER[0]) firstHeaderRef.current = el;
-    },
-    [],
-  );
+  let lastRenderedCategory: string | null = null;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#1A1410", color: "#F5EFE6" }}>
@@ -442,28 +242,10 @@ export default function WineListPage() {
         {/* Hero */}
         <section className="px-6 pb-16 pt-[120px] sm:px-8 lg:px-12">
           <div className="mx-auto max-w-[1100px]">
-            <p
-              style={{
-                fontFamily: "Abel, sans-serif",
-                fontSize: "11px",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "rgba(200,184,154,0.25)",
-              }}
-            >
+            <p style={{ fontFamily: "Abel, sans-serif", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(200,184,154,0.25)" }}>
               Wine list · 2026
             </p>
-            <h1
-              style={{
-                fontFamily: "'Fraunces', serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: "clamp(42px, 7vw, 80px)",
-                lineHeight: 1,
-                color: "#F5EFE6",
-                marginTop: "20px",
-              }}
-            >
+            <h1 style={{ fontFamily: "'Fraunces', serif", fontStyle: "italic", fontWeight: 400, fontSize: "clamp(42px, 7vw, 80px)", lineHeight: 1, color: "#F5EFE6", marginTop: "20px" }}>
               The carta.
             </h1>
           </div>
@@ -476,10 +258,18 @@ export default function WineListPage() {
           </div>
         </section>
 
-        {/* Search bar */}
-        <section className="px-6 sm:px-8 lg:px-12">
+        {/* Sticky filter bar */}
+        <div
+          className="sticky top-0 z-30 px-6 sm:px-8 lg:px-12"
+          style={{
+            backgroundColor: "rgba(26,20,16,0.97)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+          }}
+        >
           <div className="mx-auto max-w-[1100px]">
-            <div className="relative" style={{ maxWidth: "480px", margin: "0 auto 0 0" }}>
+            {/* Search input */}
+            <div className="relative">
               <input
                 type="text"
                 value={query}
@@ -489,8 +279,8 @@ export default function WineListPage() {
                 style={{
                   width: "100%",
                   background: "transparent",
-                  border: "1px solid rgba(245,239,230,0.15)",
-                  padding: "14px 40px 14px 20px",
+                  border: "1px solid rgba(245,239,230,0.12)",
+                  padding: "12px 40px 12px 16px",
                   fontFamily: "Abel, sans-serif",
                   fontSize: "15px",
                   color: "#F5EFE6",
@@ -505,7 +295,7 @@ export default function WineListPage() {
                   aria-label="Clear search"
                   style={{
                     position: "absolute",
-                    right: "14px",
+                    right: "12px",
                     top: "50%",
                     transform: "translateY(-50%)",
                     background: "none",
@@ -521,126 +311,146 @@ export default function WineListPage() {
                 </button>
               )}
             </div>
-            <p
-              className="text-right"
-              style={{
-                fontFamily: "Abel, sans-serif",
-                fontSize: "11px",
-                color: "rgba(200,184,154,0.2)",
-                marginTop: "8px",
-              }}
-            >
-              {resultCount} wines
-            </p>
-          </div>
-        </section>
 
-        {/* Navigation */}
-        <SideIndex sections={allSections} activeCategory={activeCategory} visible={showNav && !isSearching} />
-        <MobileCategoryBar sections={allSections} activeCategory={activeCategory} visible={showNav && !isSearching} />
+            {/* Category tabs */}
+            <div className="flex" style={{ marginTop: "14px", overflowX: "auto" }}>
+              {CATEGORY_OPTIONS.map((opt) => {
+                const isActive = activeCategory === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setActiveCategory(opt.value)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      borderBottom: isActive ? "2px solid #C17D3E" : "2px solid transparent",
+                      padding: "8px 16px",
+                      fontFamily: "Abel, sans-serif",
+                      fontSize: "12px",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: isActive ? "#F5EFE6" : "rgba(200,184,154,0.35)",
+                      cursor: "pointer",
+                      transition: "color 200ms, border-color 200ms",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* Wine list body */}
-        <section className="px-6 pt-8 pb-[120px] sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-[1100px]">
-            {/* Search results mode */}
-            {isSearching ? (
-              <div>
-                <p
+            {/* Country pills */}
+            <div className="flex gap-2" style={{ marginTop: "12px", overflowX: "auto", paddingBottom: "14px" }}>
+              {countryOptions.map((c) => {
+                const isActive = activeCountry === c;
+                const label = c === "all" ? "All countries" : c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setActiveCountry(c)}
+                    style={{
+                      background: isActive ? "rgba(193,125,62,0.15)" : "rgba(245,239,230,0.04)",
+                      border: isActive ? "1px solid rgba(193,125,62,0.4)" : "1px solid rgba(245,239,230,0.08)",
+                      padding: "6px 14px",
+                      fontFamily: "Abel, sans-serif",
+                      fontSize: "11px",
+                      letterSpacing: "0.06em",
+                      color: isActive ? "#C17D3E" : "rgba(200,184,154,0.4)",
+                      cursor: "pointer",
+                      transition: "all 200ms",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                      borderRadius: 0,
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Result count + clear */}
+            <div className="flex justify-between items-center" style={{ paddingBottom: "12px" }}>
+              <span style={{ fontFamily: "Abel, sans-serif", fontSize: "11px", color: "rgba(200,184,154,0.2)" }}>
+                {filtered.length} wines
+              </span>
+              {activeFilters > 0 && (
+                <button
+                  type="button"
+                  onClick={clearAll}
                   style={{
+                    background: "none",
+                    border: "none",
                     fontFamily: "Abel, sans-serif",
-                    fontSize: "12px",
-                    color: "rgba(200,184,154,0.3)",
-                    marginBottom: "16px",
+                    fontSize: "11px",
+                    color: "rgba(193,125,62,0.6)",
+                    cursor: "pointer",
                   }}
                 >
-                  Showing {filteredWines.length} results for &lsquo;{query}&rsquo;
-                </p>
+                  Clear filters
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
 
-                {filteredWines.length > 0 ? (
-                  filteredWines.map((wine) => (
-                    <WineRow key={wine.id} wine={wine} query={normalizedQuery} />
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <p
-                      style={{
-                        fontFamily: "'Fraunces', serif",
-                        fontStyle: "italic",
-                        fontWeight: 300,
-                        fontSize: "22px",
-                        color: "rgba(200,184,154,0.35)",
-                      }}
-                    >
-                      No wines match &lsquo;{query}&rsquo;
-                    </p>
-                    <p
-                      style={{
-                        fontFamily: "Abel, sans-serif",
-                        fontSize: "13px",
-                        color: "rgba(200,184,154,0.2)",
-                        marginTop: "8px",
-                      }}
-                    >
-                      Try a grape, region, or producer name
-                    </p>
-                  </div>
-                )}
+        {/* Wine list */}
+        <section className="px-6 pt-4 pb-[120px] sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-[1100px]">
+            {filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <p style={{ fontFamily: "'Fraunces', serif", fontStyle: "italic", fontWeight: 300, fontSize: "22px", color: "rgba(200,184,154,0.35)" }}>
+                  No wines match your selection
+                </p>
+                <p style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.2)", marginTop: "8px" }}>
+                  Try adjusting your filters
+                </p>
               </div>
             ) : (
-              /* Full carta mode */
-              <div>
-                {allSections.map((section) => (
-                  <div key={section.category} className="mb-12">
-                    {/* Category header */}
-                    <h2
-                      id={section.id}
-                      data-category={section.category}
-                      ref={(el) => setHeaderRef(section.category, el)}
-                      style={{
-                        fontFamily: "'Fraunces', serif",
-                        fontStyle: "italic",
-                        fontWeight: 400,
-                        fontSize: "clamp(28px, 4vw, 42px)",
-                        color: "#F5EFE6",
-                        padding: "48px 0 16px",
-                        borderBottom: "1px solid rgba(245,239,230,0.06)",
-                      }}
-                    >
-                      {section.label}
-                    </h2>
+              grouped.map((group) => {
+                const showCatHeader = group.category !== lastRenderedCategory;
+                lastRenderedCategory = group.category;
 
-                    {/* Region groups */}
-                    {section.groups.map((group) => (
-                      <div key={group.key}>
-                        <p
-                          style={{
-                            fontFamily: "Abel, sans-serif",
-                            fontSize: "11px",
-                            letterSpacing: "0.12em",
-                            textTransform: "uppercase",
-                            color: "rgba(200,184,154,0.25)",
-                            padding: "32px 0 12px",
-                          }}
-                        >
-                          {group.label}
-                        </p>
-                        {group.wines.map((wine) => (
-                          <WineRow key={wine.id} wine={wine} query="" />
-                        ))}
-                      </div>
+                return (
+                  <div key={group.key}>
+                    {showCatHeader && (
+                      <h2
+                        id={`section-${group.category}`}
+                        style={{
+                          fontFamily: "'Fraunces', serif",
+                          fontStyle: "italic",
+                          fontWeight: 400,
+                          fontSize: "clamp(28px, 4vw, 42px)",
+                          color: "#F5EFE6",
+                          padding: "48px 0 16px",
+                          borderBottom: "1px solid rgba(245,239,230,0.06)",
+                        }}
+                      >
+                        {CATEGORY_LABELS[group.category]}
+                      </h2>
+                    )}
+
+                    <p style={{ fontFamily: "Abel, sans-serif", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(200,184,154,0.25)", padding: "28px 0 10px" }}>
+                      {group.label}
+                    </p>
+
+                    {group.wines.map((wine) => (
+                      <WineRow key={wine.id} wine={wine} query={normalizedQuery} />
                     ))}
                   </div>
-                ))}
-              </div>
+                );
+              })
             )}
           </div>
         </section>
 
         {/* Footer */}
-        <footer
-          className="px-6 py-12 text-center sm:px-8 lg:px-12"
-          style={{ borderTop: "1px solid rgba(245,239,230,0.06)" }}
-        >
+        <footer className="px-6 py-12 text-center sm:px-8 lg:px-12" style={{ borderTop: "1px solid rgba(245,239,230,0.06)" }}>
           <div className="mx-auto max-w-[1100px] space-y-2">
             <p style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.2)" }}>
               Prices are subject to change. Wine list 2026.
@@ -651,15 +461,7 @@ export default function WineListPage() {
             <p className="pt-6">
               <Link
                 to="/"
-                style={{
-                  fontFamily: "'Fraunces', serif",
-                  fontSize: "18px",
-                  color: "rgba(200,184,154,0.5)",
-                  textDecoration: "none",
-                  transition: "color 300ms ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#F5EFE6")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(200,184,154,0.5)")}
+                style={{ fontFamily: "'Fraunces', serif", fontSize: "18px", color: "rgba(200,184,154,0.5)", textDecoration: "none" }}
               >
                 Return to Tres
               </Link>
