@@ -174,22 +174,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {!introDone && <IntroOverlay onComplete={() => setIntroDone(true)} />}
-      <SeasonBar />
-      <HeroSection shouldPlay={introDone} content={content.hero} theme={theme} />
-      <HeroToZoomBand />
-      <ZoomParallaxSection content={content.zoom} theme={theme} />
-      <SeasonsArchiveSection />
-      <MenuSecretSection />
-      <MenuPoemSection showCta={false} />
-      <ConceptSection content={content.concept} theme={theme} />
-      <GreenStarSection />
-      <ZoomToProducersBand />
-      <ProducersSection content={content.producers} theme={theme} />
-      <ReserveSection content={content.reserve} theme={theme} />
-      <DarkToCreamTransition />
-      <TresGallerySection content={content.gallery} theme={theme} />
-      <FooterSection content={content.footer} theme={theme} />
+      {!introDone && <div><IntroOverlay onComplete={() => setIntroDone(true)} /></div>}
+      <div><SeasonBar /></div>
+      <div><HeroSection shouldPlay={introDone} content={content.hero} theme={theme} /></div>
+      <div><HeroToZoomBand /></div>
+      <div><ZoomParallaxSection content={content.zoom} theme={theme} /></div>
+      <div><SeasonsArchiveSection /></div>
+      <div><MenuSecretSection /></div>
+      <div><MenuPoemSection showCta={false} /></div>
+      <div><ConceptSection content={content.concept} theme={theme} /></div>
+      <div><GreenStarSection /></div>
+      <div><ZoomToProducersBand /></div>
+      <div><ProducersSection content={content.producers} theme={theme} /></div>
+      <div><ReserveSection content={content.reserve} theme={theme} /></div>
+      <div><DarkToCreamTransition /></div>
+      <div><TresGallerySection content={content.gallery} theme={theme} /></div>
+      <div><FooterSection content={content.footer} theme={theme} /></div>
     </div>
   );
 };
