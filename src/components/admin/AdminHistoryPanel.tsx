@@ -48,15 +48,15 @@ export function AdminHistoryPanel({ editor }: AdminHistoryPanelProps) {
       return;
     }
 
-    const result = await editor.resetToBaseline();
-    if (result.error) {
-      toast({ title: "Reset failed", description: result.error, variant: "destructive" });
-      return;
-    }
-
-    const saveResult = await editor.saveNow();
-    if (saveResult.error) {
-      toast({ title: "Save failed", description: saveResult.error, variant: "destructive" });
+    try {
+      await editor.resetToBaseline();
+      await editor.saveNow();
+    } catch (error) {
+      toast({
+        title: "Reset failed",
+        description: error instanceof Error ? error.message : "Unable to reset baseline.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -65,24 +65,29 @@ export function AdminHistoryPanel({ editor }: AdminHistoryPanelProps) {
   };
 
   const handleSetBaseline = async () => {
-    const result = await editor.defineCurrentAsBaseline();
-    if (result.error) {
-      toast({ title: "Baseline update failed", description: result.error, variant: "destructive" });
+    try {
+      await editor.defineCurrentAsBaseline();
+    } catch (error) {
+      toast({
+        title: "Baseline update failed",
+        description: error instanceof Error ? error.message : "Unable to update baseline.",
+        variant: "destructive",
+      });
       return;
     }
     toast({ title: "Baseline updated" });
   };
 
   const handleRestore = async (snapshotId: string) => {
-    const result = await editor.restoreToDraft(snapshotId);
-    if (result.error) {
-      toast({ title: "Restore failed", description: result.error, variant: "destructive" });
-      return;
-    }
-
-    const saveResult = await editor.saveNow();
-    if (saveResult.error) {
-      toast({ title: "Save failed", description: saveResult.error, variant: "destructive" });
+    try {
+      await editor.restoreToDraft(snapshotId);
+      await editor.saveNow();
+    } catch (error) {
+      toast({
+        title: "Restore failed",
+        description: error instanceof Error ? error.message : "Unable to restore draft.",
+        variant: "destructive",
+      });
       return;
     }
 
