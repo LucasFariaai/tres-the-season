@@ -60,28 +60,30 @@
     --season-transition: 600ms ease;
 
     /* Wine list editorial theme */
-    --wine-bg: 24 24% 8%;
-    --wine-text: 36 43% 93%;
-    --wine-muted: 39 30% 69%;
-    --wine-micro: 30 30% 42%;
-    --wine-accent: 29 51% 50%;
-    --wine-hairline: 36 43% 93% / 0.1;
-    --wine-hairline-strong: 36 43% 93% / 0.18;
-    --wine-hairline-input: 36 43% 93% / 0.15;
-    --wine-surface: 36 43% 93% / 0.05;
+    --wine-bg: 14 19% 8%;        /* #1b1310 — warm near-black */
+    --wine-text: 30 33% 95%;     /* #f7f2ee — cream */
+    --wine-muted: 30 18% 67%;    /* #b8b0a3 — muted body */
+    --wine-micro: 25 13% 40%;    /* #6e6358 — faint/hairline */
+    --wine-accent: 35 28% 70%;   /* #c9b89e — warm beige (no orange) */
+    --wine-hairline: 30 33% 95% / 0.12;
+    --wine-hairline-strong: 30 33% 95% / 0.24;
+    --wine-hairline-input: 30 33% 95% / 0.15;
+    --wine-surface: 30 33% 95% / 0.05;
+    --wine-bark: 15 24% 18%;     /* #3a2a22 — dark brown accent surface */
+    --wine-beige-soft: 35 32% 80%;  /* #e0d3bd — softer beige */
   }
 
   /* Winter — Dec-Feb */
   .season-winter {
-    --season-darkest: 220 30% 14%;
-    --season-dark: 213 27% 24%;
-    --season-mid: 212 14% 48%;
-    --season-light: 209 18% 71%;
-    --season-lighter: 213 18% 88%;
-    --season-lightest: 210 18% 95%;
-    --season-nav-bg: 213 27% 24%;
-    --season-nav-fg: 210 18% 95%;
-    --season-hero-overlay: 220 30% 14%;
+    --season-darkest: 211 28% 13%;
+    --season-dark: 208 24% 22%;
+    --season-mid: 208 16% 42%;
+    --season-light: 208 18% 65%;
+    --season-lighter: 210 18% 85%;
+    --season-lightest: 210 20% 95%;
+    --season-nav-bg: 208 24% 22%;
+    --season-nav-fg: 210 20% 95%;
+    --season-hero-overlay: 211 28% 13%;
   }
 
   /* Spring — Mar-May */
@@ -163,30 +165,30 @@
     --foreground: var(--wine-text);
     background-color: hsl(var(--wine-bg));
     color: hsl(var(--wine-text));
-    font-family: 'Abel', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
   }
 
   .wine-list-display {
-    font-family: 'Fraunces', serif;
+    font-family: 'Playfair Display', serif;
     font-style: italic;
     font-weight: 400;
     line-height: 1.02;
   }
 
   .wine-list-display-roman {
-    font-family: 'Fraunces', serif;
+    font-family: 'Playfair Display', serif;
     font-style: normal;
     font-weight: 400;
     line-height: 1.02;
   }
 
   .wine-list-body {
-    font-family: 'Abel', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-weight: 400;
   }
 
   .wine-list-label {
-    font-family: 'Abel', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;

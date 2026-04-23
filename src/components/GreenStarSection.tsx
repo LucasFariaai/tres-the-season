@@ -47,7 +47,7 @@ export default function GreenStarSection() {
           <div style={{ maxWidth: "600px" }}>
             <p
               style={{
-                fontFamily: "Abel, sans-serif",
+                fontFamily: "'Source Sans 3', sans-serif",
                 fontSize: "12px",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
@@ -60,7 +60,7 @@ export default function GreenStarSection() {
 
             <h2
               style={{
-                fontFamily: "'Fraunces', serif",
+                fontFamily: "'Playfair Display', serif",
                 fontStyle: "italic",
                 fontWeight: 400,
                 fontSize: "clamp(36px, 6vw, 64px)",
@@ -74,7 +74,7 @@ export default function GreenStarSection() {
 
             <p
               style={{
-                fontFamily: "'Fraunces', serif",
+                fontFamily: "'Playfair Display', serif",
                 fontStyle: "italic",
                 fontWeight: 300,
                 fontSize: "18px",
@@ -87,7 +87,7 @@ export default function GreenStarSection() {
 
             <p
               style={{
-                fontFamily: "Abel, sans-serif",
+                fontFamily: "'Source Sans 3', sans-serif",
                 fontSize: "17px",
                 lineHeight: 1.7,
                 color: "hsl(var(--wine-muted))",
@@ -101,7 +101,7 @@ export default function GreenStarSection() {
             </p>
             <p
               style={{
-                fontFamily: "Abel, sans-serif",
+                fontFamily: "'Source Sans 3', sans-serif",
                 fontSize: "17px",
                 lineHeight: 1.7,
                 color: "hsl(var(--wine-muted))",
@@ -151,7 +151,7 @@ export default function GreenStarSection() {
                 <div style={{ marginBottom: "24px" }}>
                   <span
                     style={{
-                      fontFamily: "'Fraunces', serif",
+                      fontFamily: "'Playfair Display', serif",
                       fontStyle: "italic",
                       fontWeight: 400,
                       fontSize: "48px",
@@ -165,7 +165,7 @@ export default function GreenStarSection() {
                   </span>
                   <span
                     style={{
-                      fontFamily: "Abel, sans-serif",
+                      fontFamily: "'Source Sans 3', sans-serif",
                       fontSize: "11px",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
@@ -179,7 +179,7 @@ export default function GreenStarSection() {
 
                 <h3
                   style={{
-                    fontFamily: "'Fraunces', serif",
+                    fontFamily: "'Playfair Display', serif",
                     fontStyle: "italic",
                     fontWeight: 400,
                     fontSize: "22px",
@@ -193,7 +193,7 @@ export default function GreenStarSection() {
 
                 <p
                   style={{
-                    fontFamily: "Abel, sans-serif",
+                    fontFamily: "'Source Sans 3', sans-serif",
                     fontSize: "15px",
                     lineHeight: 1.65,
                     color: "hsl(var(--wine-muted) / 0.65)",
@@ -233,7 +233,7 @@ export default function GreenStarSection() {
           >
             <span
               style={{
-                fontFamily: "Abel, sans-serif",
+                fontFamily: "'Source Sans 3', sans-serif",
                 fontSize: "12px",
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",

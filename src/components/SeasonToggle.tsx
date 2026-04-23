@@ -20,7 +20,7 @@ export default function SeasonToggle() {
               aria-label={`Switch to ${seasonLabels[item]}`}
               aria-pressed={isActive}
               className="group flex items-center gap-3"
-              style={{ fontFamily: "Abel, sans-serif" }}
+              style={{ fontFamily: "'Source Sans 3', sans-serif" }}
             >
               <span
                 className="text-[11px] uppercase tracking-[0.18em] text-white/65 opacity-0 transition-opacity duration-300 group-hover:opacity-100"

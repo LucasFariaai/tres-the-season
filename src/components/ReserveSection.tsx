@@ -42,19 +42,19 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
               <div className="w-full text-center md:max-w-[320px] md:text-left">
                 <p
                   className="mb-2 text-[24px] font-normal italic leading-[1.2]"
-                  style={{ fontFamily: "Fraunces, serif", color: "#1A1410" }}
+                  style={{ fontFamily: "'Playfair Display', serif", color: "#1A1410" }}
                 >
                   {tastingSeason} Tasting Menu
                 </p>
                 <p
                   className="mb-8 text-[14px] leading-[1.4]"
-                  style={{ fontFamily: "Abel, sans-serif", color: "rgba(26,20,16,0.5)" }}
+                  style={{ fontFamily: "'Source Sans 3', sans-serif", color: "rgba(26,20,16,0.5)" }}
                 >
                   €185 per guest
                 </p>
                 <p
                   className="text-[14px] leading-[1.6]"
-                  style={{ fontFamily: "Abel, sans-serif", color: "rgba(26,20,16,0.55)" }}
+                  style={{ fontFamily: "'Source Sans 3', sans-serif", color: "rgba(26,20,16,0.55)" }}
                 >
                   18 servings. Alcoholic pairing €110. Non-alcoholic pairing €100. Reservations recommended 2 to 3 weeks ahead.
                 </p>
@@ -63,10 +63,10 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
                   href="/wine-list"
                   className="mt-4 inline-flex items-center gap-1.5 transition-opacity hover:opacity-70"
                   style={{
-                    fontFamily: "Abel, sans-serif",
+                    fontFamily: "'Source Sans 3', sans-serif",
                     fontSize: "13px",
                     letterSpacing: "0.06em",
-                    color: "hsl(29 51% 50%)",
+                    color: "#c9b89e",
                     textDecoration: "none",
                     border: "none",
                     background: "transparent",
@@ -91,7 +91,7 @@ export default function ReserveSection({ content, theme }: ReserveSectionProps) 
 
               <p
                 className="mt-6 text-center text-[11px] leading-[1.4]"
-                style={{ fontFamily: "Abel, sans-serif", color: "rgba(26,20,16,0.3)" }}
+                style={{ fontFamily: "'Source Sans 3', sans-serif", color: "rgba(26,20,16,0.3)" }}
               >
                 You will be redirected to Tock
               </p>

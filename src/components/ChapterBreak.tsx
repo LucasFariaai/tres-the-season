@@ -98,7 +98,7 @@ export default function ChapterBreak({
           <h2
             ref={wordRef}
             style={{
-              fontFamily: "'Fraunces', serif",
+              fontFamily: "'Playfair Display', serif",
               fontStyle: "italic",
               fontWeight: 400,
               fontSize: "clamp(64px, 10vw, 120px)",
@@ -114,7 +114,7 @@ export default function ChapterBreak({
           <p
             ref={subtitleRef}
             style={{
-              fontFamily: "'Fraunces', serif",
+              fontFamily: "'Playfair Display', serif",
               fontStyle: "italic",
               fontWeight: 400,
               fontSize: "18px",

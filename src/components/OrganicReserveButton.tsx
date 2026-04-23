@@ -125,7 +125,7 @@ const OrganicReserveButton: React.FC<OrganicReserveButtonProps> = ({
         position: 'relative',
         textDecoration: 'none',
         color: textColor,
-        fontFamily: "'Abel', sans-serif",
+        fontFamily: "'Source Sans 3', sans-serif",
       }}
     >
       <span

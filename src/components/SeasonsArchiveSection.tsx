@@ -104,7 +104,7 @@ export default function SeasonsArchiveSection() {
             className="mb-4 uppercase"
             style={{
               color: "hsl(var(--wine-accent))",
-              fontFamily: "Abel, sans-serif",
+              fontFamily: "'Source Sans 3', sans-serif",
               fontSize: "12px",
               letterSpacing: "0.18em",
             }}
@@ -114,7 +114,7 @@ export default function SeasonsArchiveSection() {
           <h2
             style={{
               color: "hsl(var(--wine-text))",
-              fontFamily: "Fraunces, serif",
+              fontFamily: "'Playfair Display', serif",
               fontSize: "clamp(40px, 6vw, 72px)",
               fontStyle: "italic",
               fontWeight: 400,
@@ -127,7 +127,7 @@ export default function SeasonsArchiveSection() {
             className="mx-auto mt-3 max-w-2xl"
             style={{
               color: "hsl(var(--wine-muted))",
-              fontFamily: "Fraunces, serif",
+              fontFamily: "'Playfair Display', serif",
               fontSize: "18px",
               fontStyle: "italic",
               fontWeight: 300,
@@ -195,7 +195,7 @@ export default function SeasonsArchiveSection() {
                   <p
                     style={{
                       color: "hsl(var(--wine-accent))",
-                      fontFamily: "Abel, sans-serif",
+                      fontFamily: "'Source Sans 3', sans-serif",
                       fontSize: "11px",
                       letterSpacing: "0.12em",
                     }}
@@ -205,7 +205,7 @@ export default function SeasonsArchiveSection() {
                   <p
                     style={{
                       color: `hsl(var(--wine-text) / ${labelColor})`,
-                      fontFamily: "Fraunces, serif",
+                      fontFamily: "'Playfair Display', serif",
                       fontSize: isActive ? "clamp(36px, 5vw, 56px)" : "18px",
                       fontStyle: "italic",
                       fontWeight: 400,
@@ -229,7 +229,7 @@ export default function SeasonsArchiveSection() {
                     <p
                       style={{
                         color: "hsl(var(--wine-muted) / 0.75)",
-                        fontFamily: "Abel, sans-serif",
+                        fontFamily: "'Source Sans 3', sans-serif",
                         fontSize: "13px",
                         fontStyle: "italic",
                       }}
@@ -241,7 +241,7 @@ export default function SeasonsArchiveSection() {
                       style={{
                         borderColor: "hsl(var(--wine-accent) / 0.45)",
                         color: "hsl(var(--wine-accent))",
-                        fontFamily: "Abel, sans-serif",
+                        fontFamily: "'Source Sans 3', sans-serif",
                         fontSize: "9px",
                         letterSpacing: "0.14em",
                       }}
@@ -259,7 +259,7 @@ export default function SeasonsArchiveSection() {
           className="mx-auto mt-6 max-w-3xl text-center"
           style={{
             color: "hsl(var(--wine-muted) / 0.45)",
-            fontFamily: "Fraunces, serif",
+            fontFamily: "'Playfair Display', serif",
             fontSize: "16px",
             fontStyle: "italic",
             fontWeight: 300,
@@ -283,7 +283,7 @@ export default function SeasonsArchiveSection() {
                 className="tres-philosophy-reveal uppercase"
                 style={{
                   color: "hsl(var(--wine-accent))",
-                  fontFamily: "Abel, sans-serif",
+                  fontFamily: "'Source Sans 3', sans-serif",
                   fontSize: "12px",
                   letterSpacing: "0.18em",
                 }}
@@ -305,7 +305,7 @@ export default function SeasonsArchiveSection() {
                     className="tres-philosophy-reveal"
                     style={{
                       color: "hsl(var(--wine-text))",
-                      fontFamily: "Fraunces, serif",
+                      fontFamily: "'Playfair Display', serif",
                       fontSize: "clamp(48px, 8vw, 96px)",
                       fontStyle: "italic",
                       fontWeight: 400,
@@ -322,7 +322,7 @@ export default function SeasonsArchiveSection() {
                 className="tres-philosophy-reveal mx-auto mt-8 max-w-2xl md:mx-0"
                 style={{
                   color: "hsl(var(--wine-muted))",
-                  fontFamily: "Fraunces, serif",
+                  fontFamily: "'Playfair Display', serif",
                   fontSize: "20px",
                   fontStyle: "italic",
                   fontWeight: 300,

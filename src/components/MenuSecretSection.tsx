@@ -17,7 +17,7 @@ export default function MenuSecretSection() {
         {/* Eyebrow */}
         <p
           style={{
-            fontFamily: "Abel, sans-serif",
+            fontFamily: "'Source Sans 3', sans-serif",
             fontSize: "12px",
             letterSpacing: "0.18em",
             textTransform: "uppercase",
@@ -31,7 +31,7 @@ export default function MenuSecretSection() {
         {/* Title */}
         <h2
           style={{
-            fontFamily: "'Fraunces', serif",
+            fontFamily: "'Playfair Display', serif",
             fontStyle: "italic",
             fontWeight: 400,
             fontSize: "clamp(36px, 6vw, 64px)",
@@ -47,7 +47,7 @@ export default function MenuSecretSection() {
         <div style={{ maxWidth: "640px" }}>
           <p
             style={{
-              fontFamily: "Abel, sans-serif",
+              fontFamily: "'Source Sans 3', sans-serif",
               fontSize: "17px",
               lineHeight: 1.7,
               color: "hsl(var(--wine-muted))",
@@ -60,7 +60,7 @@ export default function MenuSecretSection() {
           </p>
           <p
             style={{
-              fontFamily: "Abel, sans-serif",
+              fontFamily: "'Source Sans 3', sans-serif",
               fontSize: "17px",
               lineHeight: 1.7,
               color: "hsl(var(--wine-muted))",
@@ -73,7 +73,7 @@ export default function MenuSecretSection() {
           </p>
           <p
             style={{
-              fontFamily: "'Fraunces', serif",
+              fontFamily: "'Playfair Display', serif",
               fontStyle: "italic",
               fontWeight: 300,
               fontSize: "19px",
@@ -108,7 +108,7 @@ export default function MenuSecretSection() {
           />
           <span
             style={{
-              fontFamily: "Abel, sans-serif",
+              fontFamily: "'Source Sans 3', sans-serif",
               fontSize: "12px",
               letterSpacing: "0.1em",
               textTransform: "uppercase",

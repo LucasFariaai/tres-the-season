@@ -111,7 +111,7 @@ export default function MenuPoem({
                 type="button"
                 onClick={() => document.getElementById("reserve")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" })}
                 className="flex items-center gap-1.5 bg-white px-5 py-2 text-[13px] font-medium text-[#231E1A] transition-opacity duration-300 hover:opacity-90"
-                style={{ borderRadius: "999px", fontFamily: "Abel, sans-serif" }}
+                style={{ borderRadius: "999px", fontFamily: "'Source Sans 3', sans-serif" }}
               >
                 Reserve
                 <span aria-hidden="true">→</span>
@@ -126,15 +126,15 @@ export default function MenuPoem({
               {showHeader ? (
                 <div className="mb-10 sm:mb-12">
                   <p
-                    className="text-[11px] uppercase tracking-[0.34em] text-[#B89667]"
-                    style={{ fontFamily: "Abel, sans-serif" }}
+                    className="text-[11px] uppercase tracking-[0.34em] text-[#c9b89e]"
+                    style={{ fontFamily: "'Source Sans 3', sans-serif" }}
                   >
                     Tasting Menu
                   </p>
                   <h1
                     className="mt-2 text-[44px] leading-none sm:text-[54px]"
                     style={{
-                      fontFamily: "Fraunces, serif",
+                      fontFamily: "'Playfair Display', serif",
                       fontStyle: "italic",
                       fontWeight: 400,
                       color: "hsl(var(--season-dark))",
@@ -149,20 +149,20 @@ export default function MenuPoem({
                 <div className="relative py-6 xl:py-8">
                   <span
                     className="pointer-events-none absolute left-0 top-0 select-none text-[92px] leading-none text-[#EEE6DA] xl:text-[108px]"
-                    style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontWeight: 400 }}
+                    style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 400 }}
                   >
                     {String(activeIndex + 1).padStart(2, "0")}
                   </span>
                   <div className="relative z-10 pt-10">
                     <h2
                       className="max-w-[360px] text-[34px] leading-[1.08] text-[#332925] xl:max-w-[420px] xl:text-[42px]"
-                      style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                      style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
                     >
                       {activeDish}
                     </h2>
                     <p
-                      className="mt-3 text-[16px] italic text-[#B89667] xl:text-[18px]"
-                      style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                      className="mt-3 text-[16px] italic text-[#c9b89e] xl:text-[18px]"
+                      style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
                     >
                       {activeDescription}
                     </p>
@@ -195,7 +195,7 @@ export default function MenuPoem({
                   );
                 })}
               </div>
-              <p className="text-[12px] text-[#B1A291]" style={{ fontFamily: "Abel, sans-serif" }}>
+              <p className="text-[12px] text-[#B1A291]" style={{ fontFamily: "'Source Sans 3', sans-serif" }}>
                 {menuMeta.servings} · {menuMeta.tastingPrice} · {menuMeta.pairingPrice}
               </p>
             </div>
@@ -227,20 +227,20 @@ export default function MenuPoem({
                       <div className="relative py-3 lg:py-4">
                         <span
                           className="pointer-events-none absolute left-0 top-0 select-none text-[72px] leading-none text-[#EEE6DA] sm:text-[82px]"
-                          style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontWeight: 400 }}
+                          style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 400 }}
                         >
                           {String(index + 1).padStart(2, "0")}
                         </span>
                         <div className="relative z-10 pl-1 pt-8 sm:pt-9">
                           <h3
                             className="max-w-[360px] text-[28px] leading-[1.12] text-[#332925] sm:text-[32px]"
-                            style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
                           >
                             {item}
                           </h3>
                           <p
-                            className="mt-2 text-[15px] italic text-[#B89667] sm:text-[16px]"
-                            style={{ fontFamily: "Fraunces, serif", fontWeight: 400 }}
+                            className="mt-2 text-[15px] italic text-[#c9b89e] sm:text-[16px]"
+                            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
                           >
                             {descriptions[index] || ""}
                           </p>

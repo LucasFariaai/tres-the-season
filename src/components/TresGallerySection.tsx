@@ -119,7 +119,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
       <div className="px-[8%] pb-8 pt-0 text-center">
         <p
           style={{
-            fontFamily: "Abel, sans-serif",
+            fontFamily: "'Source Sans 3', sans-serif",
             fontSize: "12px",
             fontWeight: 400,
             letterSpacing: "0.18em",
@@ -132,7 +132,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
         <p
           className="mt-3"
           style={{
-            fontFamily: "Fraunces, serif",
+            fontFamily: "'Playfair Display', serif",
             fontStyle: "italic",
             fontSize: "18px",
             fontWeight: 300,
@@ -166,7 +166,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                     {item.label && (
                       <p
                         style={{
-                          fontFamily: "Abel, sans-serif",
+                          fontFamily: "'Source Sans 3', sans-serif",
                           fontSize: "11px",
                           fontWeight: 400,
                           letterSpacing: "0.14em",
@@ -181,7 +181,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                       <p
                         className="mt-2 max-w-[18rem]"
                         style={{
-                          fontFamily: "Fraunces, serif",
+                          fontFamily: "'Playfair Display', serif",
                           fontStyle: "italic",
                           fontSize: "22px",
                           fontWeight: 300,
@@ -228,7 +228,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                       {item.label && (
                         <p
                           style={{
-                            fontFamily: "Abel, sans-serif",
+                            fontFamily: "'Source Sans 3', sans-serif",
                             fontSize: "11px",
                             fontWeight: 400,
                             letterSpacing: "0.14em",
@@ -243,7 +243,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                         <p
                           className="mt-2 max-w-[18rem]"
                           style={{
-                            fontFamily: "Fraunces, serif",
+                            fontFamily: "'Playfair Display', serif",
                             fontStyle: "italic",
                             fontSize: "22px",
                             fontWeight: 300,
