@@ -75,6 +75,7 @@ export function useVisualSiteEditor() {
     published: null,
     baseline: null,
   });
+  const sessionRef = useRef<Session | null>(null);
   const lastSavedRef = useRef<string>(JSON.stringify(initialSnapshot));
   const skipAutosaveRef = useRef(true);
 
@@ -132,89 +133,154 @@ export function useVisualSiteEditor() {
   }, [draftSnapshot, state.isAdmin, state.session]);
 
   const reload = useCallback(async (session?: Session | null) => {
-    const activeSession = session ?? state.session;
+    const activeSession = session ?? sessionRef.current;
+    sessionRef.current = activeSession ?? null;
 
     if (!activeSession) {
-      setState((current) => ({ ...current, session: null, isAdmin: false, loading: false }));
+      setError(null);
+      setState((current) => ({ ...current, session: null, isAdmin: false, loading: false, saving: false, publishing: false }));
       return;
     }
 
-    setState((current) => ({ ...current, loading: true }));
+    setState((current) => ({ ...current, session: activeSession, loading: true }));
 
-    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", activeSession.user.id);
-    const isAdmin = (roles ?? []).some((entry) => entry.role === "admin");
+    try {
+      const { data: roles, error: rolesError } = await supabase.from("user_roles").select("role").eq("user_id", activeSession.user.id);
 
-    if (!isAdmin) {
-      setState((current) => ({ ...current, session: activeSession, isAdmin: false, loading: false }));
-      return;
+      if (rolesError) {
+        console.error("Failed to load editor roles", rolesError);
+        setError(rolesError.message);
+        setState((current) => ({ ...current, session: activeSession, isAdmin: false, loading: false, saving: false, publishing: false }));
+        return;
+      }
+
+      const isAdmin = (roles ?? []).some((entry) => entry.role === "admin");
+
+      if (!isAdmin) {
+        setError(null);
+        setState((current) => ({ ...current, session: activeSession, isAdmin: false, loading: false, saving: false, publishing: false }));
+        return;
+      }
+
+      const [editorStateResult, mediaResult, historyResult, changeLogResult, publishedThemeResult] = await Promise.all([
+        supabase.from("site_editor_state").select("draft_snapshot_id,published_snapshot_id,baseline_snapshot_id").eq("id", true).maybeSingle(),
+        supabase.from("site_media_library").select("id,file_path,title,alt_text,tags,metadata").order("created_at", { ascending: false }),
+        supabase.from("site_snapshots").select("id,name,kind,created_at,restored_from").in("kind", ["history", "baseline", "published", "draft"]).order("created_at", { ascending: false }),
+        supabase.from("site_change_log").select("id,action,entity_type,entity_id,created_at,details").order("created_at", { ascending: false }).limit(30),
+        supabase.from("site_theme_tokens").select("section,token,value").eq("environment", "published"),
+      ]);
+
+      const initialLoadError =
+        editorStateResult.error ?? mediaResult.error ?? historyResult.error ?? changeLogResult.error ?? publishedThemeResult.error;
+
+      if (initialLoadError) {
+        console.error("Failed to load visual editor data", initialLoadError);
+        setError(initialLoadError.message);
+        setState((current) => ({ ...current, session: activeSession, isAdmin: true, loading: false, saving: false, publishing: false }));
+        return;
+      }
+
+      const ids = editorStateResult.data ?? null;
+      idsRef.current = {
+        draft: ids?.draft_snapshot_id ?? null,
+        published: ids?.published_snapshot_id ?? null,
+        baseline: ids?.baseline_snapshot_id ?? null,
+      };
+
+      const snapshotIds = [idsRef.current.draft, idsRef.current.published, idsRef.current.baseline].filter(Boolean) as string[];
+      const snapshotResult = snapshotIds.length
+        ? await supabase.from("site_snapshots").select("id,content,theme,media").in("id", snapshotIds)
+        : { data: [] as Array<{ id: string; content: unknown; theme: unknown; media: unknown }>, error: null };
+
+      if (snapshotResult.error) {
+        console.error("Failed to load editor snapshots", snapshotResult.error);
+        setError(snapshotResult.error.message);
+        setState((current) => ({ ...current, session: activeSession, isAdmin: true, loading: false, saving: false, publishing: false }));
+        return;
+      }
+
+      const byId = new Map((snapshotResult.data ?? []).map((entry) => [entry.id, entry]));
+      const draft = normalizeSnapshot(byId.get(idsRef.current.draft ?? "") as Partial<EditorSnapshotPayload> | undefined);
+      const baseline = normalizeSnapshot(byId.get(idsRef.current.baseline ?? "") as Partial<EditorSnapshotPayload> | undefined);
+      const publishedFromSnapshot = normalizeSnapshot(byId.get(idsRef.current.published ?? "") as Partial<EditorSnapshotPayload> | undefined);
+
+      const mediaLibrary = mediaResult.data?.length ? normalizeMediaLibrary(mediaResult.data) : defaultMediaLibrary;
+      const publishedTheme = publishedThemeResult.data?.length ? tokenRowsToTheme(publishedThemeResult.data) : publishedFromSnapshot.theme;
+
+      const nextDraft = draft.content ? draft : { ...initialSnapshot, media: mediaLibrary };
+
+      setError(null);
+      setState({
+        session: activeSession,
+        isAdmin,
+        loading: false,
+        saving: false,
+        publishing: false,
+        content: nextDraft.content,
+        theme: normalizeTheme(nextDraft.theme),
+        mediaLibrary,
+        history: (historyResult.data ?? []) as EditorHistoryEntry[],
+        changeLog: (changeLogResult.data ?? []).map((entry) => ({ ...entry, details: (entry.details ?? {}) as Record<string, unknown> })),
+        baseline,
+        published: { ...publishedFromSnapshot, theme: publishedTheme },
+      });
+
+      lastSavedRef.current = JSON.stringify({ content: nextDraft.content, theme: nextDraft.theme, media: mediaLibrary });
+      skipAutosaveRef.current = true;
+      setSaveTick((value) => value + 1);
+    } catch (reloadError) {
+      console.error("Unexpected error while loading visual editor", reloadError);
+      setError(reloadError instanceof Error ? reloadError.message : "Unable to load the visual editor.");
+      setState((current) => ({ ...current, session: activeSession, loading: false, saving: false, publishing: false }));
     }
-
-    const [editorStateResult, mediaResult, historyResult, changeLogResult, publishedThemeResult] = await Promise.all([
-      supabase.from("site_editor_state").select("draft_snapshot_id,published_snapshot_id,baseline_snapshot_id").eq("id", true).maybeSingle(),
-      supabase.from("site_media_library").select("id,file_path,title,alt_text,tags,metadata").order("created_at", { ascending: false }),
-      supabase.from("site_snapshots").select("id,name,kind,created_at,restored_from").in("kind", ["history", "baseline", "published", "draft"]).order("created_at", { ascending: false }),
-      supabase.from("site_change_log").select("id,action,entity_type,entity_id,created_at,details").order("created_at", { ascending: false }).limit(30),
-      supabase.from("site_theme_tokens").select("section,token,value").eq("environment", "published"),
-    ]);
-
-    const ids = editorStateResult.data ?? null;
-    idsRef.current = {
-      draft: ids?.draft_snapshot_id ?? null,
-      published: ids?.published_snapshot_id ?? null,
-      baseline: ids?.baseline_snapshot_id ?? null,
-    };
-
-    const snapshotIds = [idsRef.current.draft, idsRef.current.published, idsRef.current.baseline].filter(Boolean) as string[];
-    const { data: snapshots } = snapshotIds.length
-      ? await supabase.from("site_snapshots").select("id,content,theme,media").in("id", snapshotIds)
-      : { data: [] as Array<{ id: string; content: unknown; theme: unknown; media: unknown }> };
-
-    const byId = new Map((snapshots ?? []).map((entry) => [entry.id, entry]));
-    const draft = normalizeSnapshot(byId.get(idsRef.current.draft ?? "") as Partial<EditorSnapshotPayload> | undefined);
-    const baseline = normalizeSnapshot(byId.get(idsRef.current.baseline ?? "") as Partial<EditorSnapshotPayload> | undefined);
-    const publishedFromSnapshot = normalizeSnapshot(byId.get(idsRef.current.published ?? "") as Partial<EditorSnapshotPayload> | undefined);
-
-    const mediaLibrary = mediaResult.data?.length ? normalizeMediaLibrary(mediaResult.data) : defaultMediaLibrary;
-    const publishedTheme = publishedThemeResult.data?.length ? tokenRowsToTheme(publishedThemeResult.data) : publishedFromSnapshot.theme;
-
-    const nextDraft = draft.content ? draft : { ...initialSnapshot, media: mediaLibrary };
-
-    setState({
-      session: activeSession,
-      isAdmin,
-      loading: false,
-      saving: false,
-      publishing: false,
-      content: nextDraft.content,
-      theme: normalizeTheme(nextDraft.theme),
-      mediaLibrary,
-      history: (historyResult.data ?? []) as EditorHistoryEntry[],
-      changeLog: (changeLogResult.data ?? []).map((entry) => ({ ...entry, details: (entry.details ?? {}) as Record<string, unknown> })),
-      baseline,
-      published: { ...publishedFromSnapshot, theme: publishedTheme },
-    });
-
-    lastSavedRef.current = JSON.stringify({ content: nextDraft.content, theme: nextDraft.theme, media: mediaLibrary });
-    skipAutosaveRef.current = true;
-    setSaveTick((value) => value + 1);
-  }, [state.session]);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
 
     const bootstrap = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!mounted) return;
-      await reload(data.session);
+      try {
+        const { data, error: sessionError } = await supabase.auth.getSession();
+        if (!mounted) return;
+
+        if (sessionError) {
+          console.error("Failed to get Supabase session", sessionError);
+          setError(sessionError.message);
+          setState((current) => ({ ...current, session: null, isAdmin: false, loading: false, saving: false, publishing: false }));
+          return;
+        }
+
+        sessionRef.current = data.session;
+        await reload(data.session);
+      } catch (bootstrapError) {
+        if (!mounted) return;
+        console.error("Unexpected error while bootstrapping visual editor", bootstrapError);
+        setError(bootstrapError instanceof Error ? bootstrapError.message : "Unable to start the visual editor.");
+        setState((current) => ({ ...current, session: null, isAdmin: false, loading: false, saving: false, publishing: false }));
+      }
     };
 
     void bootstrap();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
-      void reload(session);
+
+      sessionRef.current = session;
+
+      if (event === "SIGNED_OUT") {
+        setError(null);
+        setState((current) => ({ ...current, session: null, isAdmin: false, loading: false, saving: false, publishing: false }));
+        return;
+      }
+
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        void reload(session);
+        return;
+      }
+
+      setState((current) => ({ ...current, session: session ?? null, loading: false }));
     });
 
     return () => {
@@ -222,6 +288,21 @@ export function useVisualSiteEditor() {
       subscription.unsubscribe();
     };
   }, [reload]);
+
+  useEffect(() => {
+    sessionRef.current = state.session;
+  }, [state.session]);
+
+  useEffect(() => {
+    if (!state.loading) return;
+
+    const timeout = window.setTimeout(() => {
+      console.warn("Visual editor loading timed out after 8 seconds");
+      setState((current) => ({ ...current, loading: false }));
+    }, 8000);
+
+    return () => window.clearTimeout(timeout);
+  }, [state.loading]);
 
   useEffect(() => {
     if (skipAutosaveRef.current) {
@@ -503,6 +584,6 @@ export function useVisualSiteEditor() {
     uploadMedia,
     updateMediaItem,
     saveNow: persistDraft,
-    reload: () => reload(state.session),
+    reload: () => reload(sessionRef.current),
   };
 }

@@ -795,16 +795,16 @@ export default function Admin() {
     toast({ title: "Signed out" });
   };
 
-  if (!editor.session && !editor.loading) {
-    return <AdminSignIn onSignedIn={() => void editor.reload()} />;
-  }
-
   if (editor.loading) {
     return (
       <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, color: uiPalette.controlText, fontFamily: '"Abel", sans-serif' }}>
         Loading editor...
       </main>
     );
+  }
+
+  if (!editor.session) {
+    return <AdminSignIn onSignedIn={() => void editor.reload()} />;
   }
 
   if (!editor.isAdmin) {
