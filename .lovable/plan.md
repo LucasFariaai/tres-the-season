@@ -1,54 +1,62 @@
 
-Objetivo: corrigir a origem do “menu antigo” na home e garantir que a parte mostrada no print seja removida, mantendo apenas a área de seleção de estação e o `MenuPoem` como menu oficial.
+Objetivo: corrigir o loop de carregamento do `/admin` sem mexer no layout do editor, ajustando apenas o gerenciamento de estado em `src/hooks/useVisualSiteEditor.ts` e a ordem de renderização em `src/pages/Admin.tsx`.
 
 O que será implementado
 
-1. Identificar a causa do problema e corrigir na origem
-- O bloco antigo não está vindo de `MenuPoemSection`.
-- Ele está embutido dentro de `SeasonsArchiveSection`, que hoje mistura:
-  - a seleção de estações
-  - a lista de pratos “PAST MENU”
-  - o bloco final “OUR PHILOSOPHY”
-- Por isso, quando o `MenuPoemSection` foi removido antes, os pratos do cardápio antigo continuaram aparecendo.
+1. Blindar `useVisualSiteEditor` contra loading infinito
+- Revisar a função `reload` para garantir `loading: false` em todos os caminhos de saída.
+- Cobrir explicitamente estes cenários:
+  - sem sessão ativa
+  - sessão verificada mas usuário não autenticado
+  - falha ao buscar roles
+  - falha em qualquer consulta inicial do editor
+  - exceções inesperadas durante `getSession()` ou `reload()`
+- Registrar erros com `console.error(...)` e, quando fizer sentido, armazenar a mensagem em `error`.
 
-2. Excluir da home a parte antiga mostrada no print
-- Em `src/components/SeasonsArchiveSection.tsx`, remover a renderização do trecho de “past menu” que começa no título:
-  - `{seasonLabels[displayedSeason].toUpperCase()} · PAST MENU`
-- Remover também a listagem de pratos/imagens antiga logo abaixo, que é exatamente a área do print.
+2. Remover a causa principal do re-render/recarga em loop
+- Tornar `reload` estável, removendo a dependência de `state.session`.
+- Evitar que o `useEffect` de bootstrap/auth listener seja recriado a cada mudança de estado.
+- Manter a sessão ativa em uma referência estável quando necessário, para que `reload()` continue funcionando sem depender de um objeto mutável no array de dependências.
 
-3. Manter apenas a parte de seleção de estação
-- Preservar no `SeasonsArchiveSection` somente a faixa interativa de seleção das estações.
-- Essa parte continuará servindo para trocar a estação global via `useSeason()`, para que o `MenuPoem` oficial responda a essa seleção.
+3. Corrigir o listener de autenticação do Supabase
+- Ajustar `supabase.auth.onAuthStateChange(...)` para:
+  - atualizar a sessão uma vez
+  - disparar recarga completa apenas em `SIGNED_IN` e `TOKEN_REFRESHED`
+  - tratar `SIGNED_OUT` zerando sessão/admin/loading imediatamente
+  - não chamar reload em todos os eventos
+- Preservar cleanup correto com `subscription.unsubscribe()`.
 
-4. Ajustar estados e lógica que ficarem obsoletos
-- Limpar do `SeasonsArchiveSection` os dados e estados usados só pelo menu antigo, como:
-  - `seasonMenus` usado para montar `dishRows`
-  - `seasonDescriptions`
-  - `dishImages`
-  - `displayedSeason`
-  - `dishPhase`
-  - refs e animações ligadas às linhas dos pratos
-- Manter apenas o que for necessário para o seletor de estações e, se desejado, para o bloco editorial final.
+4. Adicionar timeout de segurança
+- Criar um efeito de proteção que, se `loading` permanecer `true` por mais de 8 segundos, force `loading: false`.
+- Registrar `console.warn(...)` para facilitar diagnóstico se isso acontecer.
+- Garantir limpeza do timer ao desmontar ou quando `loading` mudar.
 
-5. Garantir a permanência do MenuPoem como menu oficial
-- Em `src/pages/Index.tsx`, manter `MenuPoemSection` na home na posição atual acima de `ConceptSection`, conforme já aprovado antes.
-- Não reintroduzir nenhum outro bloco de pratos antigos fora dele.
+5. Corrigir a ordem de renderização em `Admin.tsx`
+- Ajustar a lógica para seguir exatamente esta ordem:
+  - `if (editor.loading) return ...`
+  - `if (!editor.session) return ...`
+  - `if (!editor.isAdmin) return ...`
+  - caso contrário, renderizar o editor
+- Isso elimina o risco de a tela de login competir com o loading durante transições de auth.
 
-Arquivos envolvidos
-- `src/components/SeasonsArchiveSection.tsx`
-- `src/pages/Index.tsx` (apenas conferência de composição; alteração só se necessária)
+6. Preservar o restante do comportamento existente
+- Não alterar o layout visual do admin.
+- Não mexer em `usePublishedHome`, componentes de seção, `lib/site-editor/*` ou demais arquivos proibidos.
+- Manter publish, reset, autosave, upload e histórico funcionando como hoje.
+
+Arquivos que serão alterados
+- `src/hooks/useVisualSiteEditor.ts`
+- `src/pages/Admin.tsx`
 
 Detalhes técnicos
-- Hoje existem dois lugares diferentes exibindo pratos:
-  1. `MenuPoemSection` / `MenuPoem` — menu oficial atual
-  2. `SeasonsArchiveSection` — arquivo antigo com “PAST MENU”
-- O print corresponde ao segundo caso.
-- A correção certa não é remover o seletor inteiro, e sim desacoplar/remover a parte antiga de pratos dentro de `SeasonsArchiveSection`.
-- A troca de estação continuará funcionando porque o seletor usa `setSeason(item)`, e o `MenuPoem` lê essa estação pelo contexto `useSeason()`.
+- Problema principal identificado: `reload` hoje depende de `state.session`, então sua identidade muda quando o state muda. Como o efeito de bootstrap/auth listener depende de `reload`, ele é recriado repetidamente, o que pode causar flicker e novas recargas.
+- Outro risco atual: `reload` não está protegido por `try/catch`; se qualquer query rejeitar, o hook pode ficar preso com `loading: true`.
+- O listener atual chama `reload(session)` para qualquer evento de auth, o que amplia a chance de ciclos desnecessários.
+- A correção será feita sem alterar o contrato público do hook.
 
 Resultado esperado
-- a área do print deixa de existir
-- a home mantém só a seleção de estação nessa parte
-- os pratos antigos não aparecem mais nesse bloco
-- o único menu com pratos na home passa a ser o `MenuPoem`
-- o restante da home continua igual
+- `/admin` deixa de piscar e de ficar preso em “Loading editor...”
+- usuário deslogado vê a tela de login normalmente
+- usuário logado sem role admin vê a tela de acesso negado
+- usuário admin entra no editor sem loop de recarga
+- falhas de Supabase deixam de travar a interface em loading infinito
