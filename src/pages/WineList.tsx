@@ -1,69 +1,27 @@
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import SeasonBar from "@/components/SeasonBar";
-import wineList from "@/data/tres-wine-list.json";
-import { cn } from "@/lib/utils";
+import { wines, type Wine, type WineCategory } from "@/data/tres-wine-data";
 
-type WineType = "sparkling" | "white" | "red";
-type FilterType = WineType | "all";
+/* ─── constants ──────────────────────────────────────────────────────── */
 
-type WineItem = {
-  id: number;
-  type: "sparkling" | "white" | "red" | "dessert";
-  country: string;
-  region: string;
-  subregion: string | null;
-  vintage: number | string | null;
-  name: string;
-  producer: string;
-  grapes: string;
-  price: number;
-  note?: string;
+const CATEGORY_ORDER: WineCategory[] = ["sparkling", "white", "red", "dessert"];
+const CATEGORY_LABELS: Record<WineCategory, string> = {
+  sparkling: "Sparkling",
+  white: "White wine",
+  red: "Red wine",
+  dessert: "Dessert",
 };
-
-type FilterState = {
-  query: string;
-  activeType: FilterType;
-  priceFrom: string;
-  priceTo: string;
-};
-
-type WineGroup = {
-  key: string;
-  label: string;
-  wines: WineItem[];
-};
-
-type WineSection = {
-  type: WineType;
-  label: string;
-  groups: WineGroup[];
-};
-
-const wines = (wineList as WineItem[]).filter((wine) => ["sparkling", "white", "red"].includes(wine.type)) as WineItem[];
-const FEATURED_IDS = [5, 47, 96, 111, 145, 160];
-const TYPE_OPTIONS: Array<{ value: FilterType; label: string }> = [
-  { value: "all", label: "All" },
-  { value: "sparkling", label: "Sparkling" },
-  { value: "white", label: "White" },
-  { value: "red", label: "Red" },
-];
-const TYPE_LABELS: Record<WineType, string> = {
+const CATEGORY_SHORT: Record<WineCategory, string> = {
   sparkling: "Sparkling",
   white: "White",
   red: "Red",
+  dessert: "Dessert",
 };
-const TYPE_ORDER: Record<WineType, number> = {
-  sparkling: 0,
-  white: 1,
-  red: 2,
-};
-const DEFAULT_PRICE_FROM = 75;
-const DEFAULT_PRICE_TO = 950;
-const REVEAL_EASE = [0.45, 0, 0.15, 1] as const;
 
-function normalizeText(value: string | number | null | undefined) {
+/* ─── helpers ────────────────────────────────────────────────────────── */
+
+function normalize(value: string | number | null | undefined): string {
   return String(value ?? "")
     .toLowerCase()
     .normalize("NFD")
@@ -71,552 +29,638 @@ function normalizeText(value: string | number | null | undefined) {
     .trim();
 }
 
-function formatVintage(vintage: WineItem["vintage"]) {
-  return vintage === null ? "NV" : String(vintage);
+function regionKey(wine: Wine): string {
+  return [wine.country, wine.region, wine.subregion ?? ""].join("::");
 }
 
-function formatPrice(price: number) {
-  return String(price);
+function regionLabel(wine: Wine): string {
+  const parts = [wine.country, wine.region];
+  if (wine.subregion) parts.push(wine.subregion);
+  return parts.join(" · ").toUpperCase();
 }
 
-function formatRegionLine(wine: WineItem) {
-  return wine.subregion ? `${wine.region} · ${wine.subregion}` : wine.region;
+/** Returns indices [start, length] of first match, or null */
+function findMatch(text: string, query: string): [number, number] | null {
+  if (!query) return null;
+  const idx = normalize(text).indexOf(normalize(query));
+  if (idx === -1) return null;
+  return [idx, query.length];
 }
 
-function formatGroupLabel(wine: WineItem) {
-  return [wine.country, wine.region, wine.subregion].filter(Boolean).join(" · ").toUpperCase();
+/** Check if wine matches the query across all searchable fields */
+function wineMatches(wine: Wine, query: string): boolean {
+  if (!query) return true;
+  const q = normalize(query);
+
+  // exact price match only
+  if (/^\d+$/.test(q) && String(wine.price) === q) return true;
+
+  return [
+    wine.name,
+    wine.producer,
+    wine.grapes,
+    wine.region,
+    wine.subregion ?? "",
+    wine.country,
+    wine.category,
+    wine.vintage ?? "",
+  ].some((field) => normalize(field).includes(q));
 }
 
-function parsePriceInput(value: string, fallback: number) {
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
+/* ─── data structures ────────────────────────────────────────────────── */
+
+interface WineGroup {
+  key: string;
+  label: string;
+  wines: Wine[];
 }
 
-function compareWines(a: WineItem, b: WineItem) {
+interface WineSection {
+  category: WineCategory;
+  label: string;
+  id: string;
+  groups: WineGroup[];
+}
+
+function buildSections(list: Wine[]): WineSection[] {
+  return CATEGORY_ORDER.map((cat) => {
+    const catWines = list.filter((w) => w.category === cat);
+    const groupMap = new Map<string, WineGroup>();
+
+    catWines.forEach((w) => {
+      const key = regionKey(w);
+      const existing = groupMap.get(key);
+      if (existing) {
+        existing.wines.push(w);
+      } else {
+        groupMap.set(key, { key, label: regionLabel(w), wines: [w] });
+      }
+    });
+
+    return {
+      category: cat,
+      label: CATEGORY_LABELS[cat],
+      id: `section-${cat}`,
+      groups: [...groupMap.values()],
+    };
+  }).filter((s) => s.groups.length > 0);
+}
+
+/* ─── highlight component ────────────────────────────────────────────── */
+
+function Highlight({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>;
+  const match = findMatch(text, query);
+  if (!match) return <>{text}</>;
+
+  const [start, length] = match;
   return (
-    TYPE_ORDER[a.type as WineType] - TYPE_ORDER[b.type as WineType] ||
-    a.country.localeCompare(b.country) ||
-    a.region.localeCompare(b.region) ||
-    (a.subregion ?? "").localeCompare(b.subregion ?? "") ||
-    a.producer.localeCompare(b.producer) ||
-    a.name.localeCompare(b.name) ||
-    a.price - b.price
+    <>
+      {text.slice(0, start)}
+      <span style={{ color: "#C17D3E" }}>{text.slice(start, start + length)}</span>
+      {text.slice(start + length)}
+    </>
   );
 }
 
-function scoreWineRelevance(wine: WineItem, query: string) {
-  const normalizedQuery = normalizeText(query);
-  if (!normalizedQuery) return -1;
+/* ─── wine row ───────────────────────────────────────────────────────── */
 
-  const name = normalizeText(wine.name);
-  const producer = normalizeText(wine.producer);
-  const grapes = normalizeText(wine.grapes);
-  const region = normalizeText(wine.region);
-  const subregion = normalizeText(wine.subregion);
-  const country = normalizeText(wine.country);
+function WineRow({ wine, query }: { wine: Wine; query: string }) {
+  const vintage = wine.vintage ?? "NV";
 
-  let score = 0;
+  return (
+    <>
+      {/* Desktop */}
+      <div
+        className="hidden md:grid items-baseline gap-x-4 border-b py-[10px] transition-colors duration-200 hover:bg-[rgba(245,239,230,0.02)]"
+        style={{
+          gridTemplateColumns: "50px 1fr 200px 160px 70px",
+          borderColor: "rgba(245,239,230,0.04)",
+        }}
+      >
+        <span
+          className="text-right"
+          style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.35)" }}
+        >
+          {vintage}
+        </span>
+        <span style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#F5EFE6" }}>
+          <Highlight text={wine.name} query={query} />
+        </span>
+        <span
+          className="text-right truncate"
+          style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.4)" }}
+        >
+          <Highlight text={wine.producer} query={query} />
+        </span>
+        <span
+          className="text-right truncate italic"
+          style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.25)" }}
+        >
+          <Highlight text={wine.grapes} query={query} />
+        </span>
+        <span
+          className="text-right"
+          style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#C8B89A" }}
+        >
+          €{wine.price}
+        </span>
+      </div>
 
-  if (name === normalizedQuery) score = Math.max(score, 1200);
-  else if (name.startsWith(normalizedQuery)) score = Math.max(score, 1050);
-  else if (name.includes(normalizedQuery)) score = Math.max(score, 900);
-
-  if (producer === normalizedQuery) score = Math.max(score, 850);
-  else if (producer.startsWith(normalizedQuery)) score = Math.max(score, 760);
-  else if (producer.includes(normalizedQuery)) score = Math.max(score, 680);
-
-  if (grapes.includes(normalizedQuery)) score = Math.max(score, 560);
-  if (subregion && subregion.includes(normalizedQuery)) score = Math.max(score, 500);
-  if (region.includes(normalizedQuery)) score = Math.max(score, 470);
-  if (country.includes(normalizedQuery)) score = Math.max(score, 430);
-
-  return score;
+      {/* Mobile */}
+      <div
+        className="md:hidden border-b py-[12px]"
+        style={{ borderColor: "rgba(245,239,230,0.04)" }}
+      >
+        <div className="flex justify-between items-baseline">
+          <span style={{ fontFamily: "Abel, sans-serif", fontSize: "14px", fontWeight: 500, color: "#F5EFE6" }}>
+            <span style={{ color: "rgba(200,184,154,0.35)", fontSize: "13px", marginRight: "6px" }}>{vintage}</span>
+            <Highlight text={wine.name} query={query} />
+          </span>
+          <span style={{ fontFamily: "Abel, sans-serif", fontSize: "14px", fontWeight: 500, color: "#C8B89A", flexShrink: 0, marginLeft: "12px" }}>
+            €{wine.price}
+          </span>
+        </div>
+        <div className="truncate" style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.4)", marginTop: "2px" }}>
+          <Highlight text={wine.producer} query={query} />
+          <span style={{ margin: "0 6px", color: "rgba(200,184,154,0.2)" }}>·</span>
+          <span className="italic" style={{ color: "rgba(200,184,154,0.25)" }}>
+            <Highlight text={wine.grapes} query={query} />
+          </span>
+        </div>
+      </div>
+    </>
+  );
 }
 
-function buildBrowsingSections(list: WineItem[]) {
-  return (Object.keys(TYPE_LABELS) as WineType[])
-    .map((type) => {
-      const typeWines = list.filter((wine) => wine.type === type).sort(compareWines);
-      const groupsMap = new Map<string, WineGroup>();
+/* ─── sommelier highlights ───────────────────────────────────────────── */
 
-      typeWines.forEach((wine) => {
-        const key = `${wine.country}::${wine.region}::${wine.subregion ?? ""}`;
-        const existing = groupsMap.get(key);
-        if (existing) {
-          existing.wines.push(wine);
-          return;
-        }
+function SommelierHighlights() {
+  const featured = useMemo(() => wines.filter((w) => w.featured), []);
 
-        groupsMap.set(key, {
-          key,
-          label: formatGroupLabel(wine),
-          wines: [wine],
-        });
-      });
+  if (featured.length === 0) return null;
 
-      return {
-        type,
-        label: TYPE_LABELS[type],
-        groups: [...groupsMap.values()],
-      } satisfies WineSection;
-    })
-    .filter((section) => section.groups.length > 0);
+  return (
+    <div style={{ padding: "0 0 48px" }}>
+      <p
+        style={{
+          fontFamily: "Abel, sans-serif",
+          fontSize: "11px",
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: "#C17D3E",
+          marginBottom: "12px",
+        }}
+      >
+        Conversation starters
+      </p>
+      <p
+        style={{
+          fontFamily: "'Fraunces', serif",
+          fontStyle: "italic",
+          fontWeight: 300,
+          fontSize: "18px",
+          color: "rgba(200,184,154,0.45)",
+          marginBottom: "32px",
+        }}
+      >
+        A few wines we think deserve attention this season.
+      </p>
+      <div className="grid gap-x-12 md:grid-cols-2">
+        {featured.slice(0, 6).map((wine) => (
+          <div
+            key={wine.id}
+            className="border-b py-4"
+            style={{ borderColor: "rgba(245,239,230,0.06)" }}
+          >
+            <p style={{ fontFamily: "Abel, sans-serif", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(200,184,154,0.4)" }}>
+              {wine.producer}
+            </p>
+            <p style={{ fontFamily: "'Fraunces', serif", fontSize: "18px", fontWeight: 400, color: "#F5EFE6", marginTop: "4px" }}>
+              {wine.name}
+            </p>
+            <div className="flex justify-between items-baseline mt-2">
+              <span className="italic" style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.3)" }}>
+                {wine.grapes}
+              </span>
+              <span style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", color: "#C8B89A" }}>
+                €{wine.price}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-function filterByControls(list: WineItem[], filters: FilterState) {
-  const normalizedQuery = normalizeText(filters.query);
-  const from = parsePriceInput(filters.priceFrom, DEFAULT_PRICE_FROM);
-  const to = parsePriceInput(filters.priceTo, DEFAULT_PRICE_TO);
-  const minPrice = Math.min(from, to);
-  const maxPrice = Math.max(from, to);
+/* ─── side index (desktop) ───────────────────────────────────────────── */
 
-  return list.filter((wine) => {
-    if (filters.activeType !== "all" && wine.type !== filters.activeType) return false;
-    if (wine.price < minPrice || wine.price > maxPrice) return false;
-
-    if (!normalizedQuery) return true;
-
-    return [wine.name, wine.producer, wine.grapes, wine.region, wine.subregion ?? "", wine.country]
-      .map(normalizeText)
-      .some((field) => field.includes(normalizedQuery));
-  });
-}
-
-function useReveal(disabled: boolean) {
-  const reducedMotion = useReducedMotion();
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(disabled || reducedMotion);
-
-  useEffect(() => {
-    if (disabled || reducedMotion) {
-      setIsVisible(true);
-      return;
-    }
-
-    const node = ref.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [disabled, reducedMotion]);
-
-  return { ref, isVisible, reducedMotion };
-}
-
-function RevealBlock({
-  children,
-  className,
-  delay = 0,
-  disabled,
+function SideIndex({
+  sections,
+  activeCategory,
+  visible,
 }: {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-  disabled: boolean;
+  sections: WineSection[];
+  activeCategory: WineCategory | null;
+  visible: boolean;
 }) {
-  const { ref, isVisible, reducedMotion } = useReveal(disabled);
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <nav
+      className="hidden lg:flex fixed left-6 top-1/2 z-30 flex-col items-start gap-4"
+      style={{ transform: "translateY(-50%)" }}
+      aria-label="Wine list sections"
+    >
+      {sections.map((section) => {
+        const isActive = activeCategory === section.category;
+        return (
+          <button
+            key={section.category}
+            type="button"
+            onClick={() => scrollTo(section.id)}
+            style={{
+              fontFamily: "Abel, sans-serif",
+              fontSize: "11px",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: isActive ? "#F5EFE6" : "rgba(200,184,154,0.2)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              transition: "color 200ms ease",
+              padding: 0,
+            }}
+          >
+            {CATEGORY_SHORT[section.category]}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
+/* ─── sticky category bar (mobile) ───────────────────────────────────── */
+
+function MobileCategoryBar({
+  sections,
+  activeCategory,
+  visible,
+}: {
+  sections: WineSection[];
+  activeCategory: WineCategory | null;
+  visible: boolean;
+}) {
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  if (!visible) return null;
 
   return (
     <div
-      ref={ref}
-      className={cn("wine-list-reveal", isVisible && "is-visible", className)}
-      style={
-        reducedMotion || disabled
-          ? undefined
-          : {
-              transitionDuration: "600ms",
-              transitionDelay: `${delay}ms`,
-              transitionTimingFunction: "cubic-bezier(0.45, 0, 0.15, 1)",
-            }
-      }
+      className="lg:hidden sticky z-10"
+      style={{
+        top: 0,
+        background: "rgba(26,20,16,0.95)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        padding: "12px 24px",
+      }}
     >
-      {children}
+      <div className="flex items-center gap-6">
+        {sections.map((section) => {
+          const isActive = activeCategory === section.category;
+          return (
+            <button
+              key={section.category}
+              type="button"
+              onClick={() => scrollTo(section.id)}
+              style={{
+                fontFamily: "Abel, sans-serif",
+                fontSize: "12px",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: isActive ? "#F5EFE6" : "rgba(200,184,154,0.35)",
+                background: "none",
+                border: "none",
+                borderBottom: isActive ? "2px solid #C17D3E" : "2px solid transparent",
+                cursor: "pointer",
+                transition: "color 200ms ease, border-color 200ms ease",
+                paddingBottom: "4px",
+              }}
+            >
+              {CATEGORY_SHORT[section.category]}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function HighlightRow({ wine, index }: { wine: WineItem; index: number }) {
-  return (
-    <article className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-5 border-b border-[hsl(var(--wine-text)/0.06)] py-5">
-      <div className="min-w-0">
-          <div className="flex items-start gap-4">
-          <span className="wine-list-body pt-0.5 text-[13px] text-[hsl(var(--wine-muted)/0.25)]">({String(index + 1).padStart(2, "0")})</span>
-          <div className="min-w-0 space-y-1">
-            <p className="wine-list-body text-[11px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.5)]">{wine.producer}</p>
-            <h3 className="wine-list-display text-[20px] text-wine-text">{wine.name}</h3>
-            <p className="wine-list-body text-[12px] italic text-[hsl(var(--wine-muted)/0.4)]">{wine.grapes}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="min-w-[82px] text-right">
-        <p className="wine-list-body text-[13px] text-wine-muted">{formatVintage(wine.vintage)}</p>
-        <p className="mt-1 wine-list-body text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.3)]">{formatRegionLine(wine)}</p>
-        <p className="wine-list-display-roman mt-3 text-[20px] text-wine-text">{formatPrice(wine.price)}</p>
-      </div>
-    </article>
-  );
-}
-
-function CategoryTab({
-  active,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "wine-list-body border-b-2 pb-2 text-[12px] uppercase tracking-[0.12em] transition-colors duration-300",
-        active
-          ? "border-[hsl(var(--wine-accent))] text-wine-text"
-          : "border-transparent text-[hsl(var(--wine-muted)/0.4)] hover:text-[hsl(var(--wine-muted)/0.72)]",
-      )}
-    >
-      {label}
-    </button>
-  );
-}
-
-function WineListRow({ wine }: { wine: WineItem }) {
-  return (
-    <article className="grid grid-cols-[40px_minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-2 border-b border-[hsl(var(--wine-text)/0.04)] py-3 transition-colors duration-300 hover:bg-[hsl(var(--wine-text)/0.02)] md:grid-cols-[40px_minmax(0,1fr)_minmax(96px,140px)_auto]">
-      <div className="wine-list-body text-[13px] text-[hsl(var(--wine-muted)/0.4)]">{formatVintage(wine.vintage)}</div>
-
-      <div className="min-w-0 space-y-0.5">
-        <h4 className="wine-list-body truncate text-[15px] font-medium text-wine-text sm:whitespace-normal">{wine.name}</h4>
-        <p className="wine-list-body text-[12px] text-[hsl(var(--wine-muted)/0.45)]">{wine.producer}</p>
-        <p className="wine-list-body text-[11px] italic text-[hsl(var(--wine-muted)/0.3)]">{wine.grapes}</p>
-      </div>
-
-      <div className="hidden text-right md:block">
-        <p className="wine-list-body text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.2)]">{formatRegionLine(wine)}</p>
-      </div>
-
-      <div className="wine-list-display-roman text-right text-[16px] text-wine-muted">{formatPrice(wine.price)}</div>
-    </article>
-  );
-}
-
-function BrowsingGroup({
-  group,
-  expanded,
-  onToggle,
-  disableReveal,
-}: {
-  group: WineGroup;
-  expanded: boolean;
-  onToggle: () => void;
-  disableReveal: boolean;
-}) {
-  const needsToggle = group.wines.length > 5;
-  const visibleWines = needsToggle && !expanded ? group.wines.slice(0, 5) : group.wines;
-
-  return (
-    <div className="space-y-2">
-      <RevealBlock disabled={disableReveal} delay={200}>
-        <p className="wine-list-body mt-8 text-[11px] uppercase tracking-[0.14em] text-[hsl(var(--wine-muted)/0.3)] first:mt-0">{group.label}</p>
-      </RevealBlock>
-
-      <motion.div
-        layout
-        initial={false}
-        animate={disableReveal ? undefined : { opacity: 1 }}
-        className="overflow-hidden"
-        transition={{ duration: 0.3, ease: REVEAL_EASE }}
-      >
-        {visibleWines.map((wine) => (
-          <WineListRow key={wine.id} wine={wine} />
-        ))}
-      </motion.div>
-
-      {needsToggle ? (
-        <button
-          type="button"
-          onClick={onToggle}
-          className="wine-list-body pt-2 text-[12px] text-wine-accent transition-opacity duration-300 hover:opacity-80"
-        >
-          {expanded ? "Show less" : `Show all ${group.wines.length}`}
-        </button>
-      ) : null}
-    </div>
-  );
-}
+/* ─── main page ──────────────────────────────────────────────────────── */
 
 export default function WineListPage() {
-  const reducedMotion = useReducedMotion();
-  const [filters, setFilters] = useState<FilterState>({
-    query: "",
-    activeType: "all",
-    priceFrom: String(DEFAULT_PRICE_FROM),
-    priceTo: String(DEFAULT_PRICE_TO),
-  });
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<WineCategory | null>(null);
+  const [showNav, setShowNav] = useState(false);
 
-  const featuredWines = useMemo(
-    () => FEATURED_IDS.map((id) => wines.find((wine) => wine.id === id)).filter(Boolean) as WineItem[],
+  const headerRefs = useRef<Map<WineCategory, HTMLElement | null>>(new Map());
+  const firstHeaderRef = useRef<HTMLElement | null>(null);
+
+  const isSearching = query.trim().length > 0;
+  const normalizedQuery = normalize(query);
+
+  // Build full sections (unfiltered)
+  const allSections = useMemo(() => buildSections(wines), []);
+
+  // Filtered view when searching
+  const filteredWines = useMemo(() => {
+    if (!isSearching) return [];
+    return wines.filter((w) => wineMatches(w, normalizedQuery));
+  }, [isSearching, normalizedQuery]);
+
+  const resultCount = isSearching ? filteredWines.length : wines.length;
+
+  // Track active category via IntersectionObserver
+  useEffect(() => {
+    const elements = Array.from(headerRefs.current.entries())
+      .map(([cat, el]) => (el ? { cat, el } : null))
+      .filter(Boolean) as { cat: WineCategory; el: HTMLElement }[];
+
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const cat = (entry.target as HTMLElement).dataset.category as WineCategory;
+            if (cat) setActiveCategory(cat);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -40% 0px", threshold: 0.01 },
+    );
+
+    elements.forEach(({ el }) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [allSections]);
+
+  // Show/hide nav based on scroll past first header
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowNav(!entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+
+    const el = firstHeaderRef.current;
+    if (el) observer.observe(el);
+    return () => observer.disconnect();
+  }, [allSections]);
+
+  const setHeaderRef = useCallback(
+    (cat: WineCategory, el: HTMLElement | null) => {
+      headerRefs.current.set(cat, el);
+      if (cat === CATEGORY_ORDER[0]) firstHeaderRef.current = el;
+    },
     [],
   );
 
-  const normalizedQuery = normalizeText(filters.query);
-  const numericPriceFrom = parsePriceInput(filters.priceFrom, DEFAULT_PRICE_FROM);
-  const numericPriceTo = parsePriceInput(filters.priceTo, DEFAULT_PRICE_TO);
-  const isSearching = normalizedQuery.length > 0 || filters.activeType !== "all" || numericPriceFrom !== DEFAULT_PRICE_FROM || numericPriceTo !== DEFAULT_PRICE_TO;
-
-  const visibleWines = useMemo(() => filterByControls(wines, filters), [filters]);
-
-  const browsingSections = useMemo(() => buildBrowsingSections(wines), []);
-
-  const flatResults = useMemo(() => {
-    const results = [...visibleWines];
-
-    if (!normalizedQuery) {
-      return results.sort(compareWines);
-    }
-
-    return results.sort((a, b) => {
-      const scoreDifference = scoreWineRelevance(b, normalizedQuery) - scoreWineRelevance(a, normalizedQuery);
-      if (scoreDifference !== 0) return scoreDifference;
-      return compareWines(a, b);
-    });
-  }, [normalizedQuery, visibleWines]);
-
-  const resultCount = isSearching ? flatResults.length : wines.length;
-
   return (
-    <div className="wine-list-theme min-h-screen bg-wine-bg text-wine-text">
+    <div className="min-h-screen" style={{ backgroundColor: "#1A1410", color: "#F5EFE6" }}>
       <SeasonBar />
 
-      <main className="relative overflow-x-clip bg-wine-bg text-wine-text">
-        <section className="px-5 pb-20 pt-[120px] sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-[1400px]">
-            <p className="wine-list-body text-[11px] uppercase tracking-[0.15em] text-wine-micro">WINE LIST · 2026</p>
-            <h1 className="wine-list-display mt-5 max-w-5xl text-[clamp(48px,7vw,96px)] leading-[1] text-wine-text">
-              A collection of gems.
+      <main className="relative">
+        {/* Hero */}
+        <section className="px-6 pb-16 pt-[120px] sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-[1100px]">
+            <p
+              style={{
+                fontFamily: "Abel, sans-serif",
+                fontSize: "11px",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "rgba(200,184,154,0.25)",
+              }}
+            >
+              Wine list · 2026
+            </p>
+            <h1
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+                fontSize: "clamp(42px, 7vw, 80px)",
+                lineHeight: 1,
+                color: "#F5EFE6",
+                marginTop: "20px",
+              }}
+            >
+              The carta.
             </h1>
-            <p className="wine-list-display mt-6 max-w-3xl text-[clamp(18px,2.5vw,28px)] leading-[1.1] text-wine-muted">
-              Something for everyone and many personal favorites.
+          </div>
+        </section>
+
+        {/* Sommelier highlights */}
+        <section className="px-6 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-[1100px]">
+            <SommelierHighlights />
+          </div>
+        </section>
+
+        {/* Search bar */}
+        <section className="px-6 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-[1100px]">
+            <div className="relative" style={{ maxWidth: "480px", margin: "0 auto 0 0" }}>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Krug, Nebbiolo, Burgundy, red..."
+                aria-label="Search wines by name, producer, grape, region, or vintage"
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "1px solid rgba(245,239,230,0.15)",
+                  padding: "14px 40px 14px 20px",
+                  fontFamily: "Abel, sans-serif",
+                  fontSize: "15px",
+                  color: "#F5EFE6",
+                  outline: "none",
+                  borderRadius: 0,
+                }}
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  style={{
+                    position: "absolute",
+                    right: "14px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    fontFamily: "Abel, sans-serif",
+                    fontSize: "14px",
+                    color: "rgba(200,184,154,0.4)",
+                    cursor: "pointer",
+                    padding: "4px",
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            <p
+              className="text-right"
+              style={{
+                fontFamily: "Abel, sans-serif",
+                fontSize: "11px",
+                color: "rgba(200,184,154,0.2)",
+                marginTop: "8px",
+              }}
+            >
+              {resultCount} wines
             </p>
           </div>
         </section>
 
-        <motion.section
-          initial={false}
-          animate={
-            reducedMotion
-              ? { opacity: isSearching ? 0 : 1, height: isSearching ? 0 : "auto" }
-              : { opacity: isSearching ? 0 : 1, height: isSearching ? 0 : "auto", marginBottom: isSearching ? 0 : 0 }
-          }
-          transition={{ duration: isSearching ? 0.3 : 0.4, ease: REVEAL_EASE }}
-          className="overflow-hidden px-[8%] pb-16"
-          aria-hidden={isSearching}
-          style={{ backgroundColor: "hsl(var(--wine-bg))", pointerEvents: isSearching ? "none" : "auto" }}
-        >
-          <div className="mx-auto max-w-[1400px]">
-            <p className="wine-list-body mb-4 text-[12px] uppercase tracking-[0.18em] text-wine-accent">SOMMELIER SELECTION</p>
-            <h2 className="wine-list-display mb-12 text-[clamp(36px,5vw,56px)] text-wine-text">Conversation starters.</h2>
+        {/* Navigation */}
+        <SideIndex sections={allSections} activeCategory={activeCategory} visible={showNav && !isSearching} />
+        <MobileCategoryBar sections={allSections} activeCategory={activeCategory} visible={showNav && !isSearching} />
 
-            <div className="grid gap-x-12 md:grid-cols-2">
-              {Array.from({ length: 2 }).map((_, columnIndex) => {
-                const items = featuredWines.slice(columnIndex * 3, columnIndex * 3 + 3);
-                return (
-                  <div key={columnIndex}>
-                    {items.map((wine, index) => (
-                      <HighlightRow key={wine.id} wine={wine} index={columnIndex * 3 + index} />
+        {/* Wine list body */}
+        <section className="px-6 pt-8 pb-[120px] sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-[1100px]">
+            {/* Search results mode */}
+            {isSearching ? (
+              <div>
+                <p
+                  style={{
+                    fontFamily: "Abel, sans-serif",
+                    fontSize: "12px",
+                    color: "rgba(200,184,154,0.3)",
+                    marginBottom: "16px",
+                  }}
+                >
+                  Showing {filteredWines.length} results for &lsquo;{query}&rsquo;
+                </p>
+
+                {filteredWines.length > 0 ? (
+                  filteredWines.map((wine) => (
+                    <WineRow key={wine.id} wine={wine} query={normalizedQuery} />
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <p
+                      style={{
+                        fontFamily: "'Fraunces', serif",
+                        fontStyle: "italic",
+                        fontWeight: 300,
+                        fontSize: "22px",
+                        color: "rgba(200,184,154,0.35)",
+                      }}
+                    >
+                      No wines match &lsquo;{query}&rsquo;
+                    </p>
+                    <p
+                      style={{
+                        fontFamily: "Abel, sans-serif",
+                        fontSize: "13px",
+                        color: "rgba(200,184,154,0.2)",
+                        marginTop: "8px",
+                      }}
+                    >
+                      Try a grape, region, or producer name
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Full carta mode */
+              <div>
+                {allSections.map((section) => (
+                  <div key={section.category} className="mb-12">
+                    {/* Category header */}
+                    <h2
+                      id={section.id}
+                      data-category={section.category}
+                      ref={(el) => setHeaderRef(section.category, el)}
+                      style={{
+                        fontFamily: "'Fraunces', serif",
+                        fontStyle: "italic",
+                        fontWeight: 400,
+                        fontSize: "clamp(28px, 4vw, 42px)",
+                        color: "#F5EFE6",
+                        padding: "48px 0 16px",
+                        borderBottom: "1px solid rgba(245,239,230,0.06)",
+                      }}
+                    >
+                      {section.label}
+                    </h2>
+
+                    {/* Region groups */}
+                    {section.groups.map((group) => (
+                      <div key={group.key}>
+                        <p
+                          style={{
+                            fontFamily: "Abel, sans-serif",
+                            fontSize: "11px",
+                            letterSpacing: "0.12em",
+                            textTransform: "uppercase",
+                            color: "rgba(200,184,154,0.25)",
+                            padding: "32px 0 12px",
+                          }}
+                        >
+                          {group.label}
+                        </p>
+                        {group.wines.map((wine) => (
+                          <WineRow key={wine.id} wine={wine} query="" />
+                        ))}
+                      </div>
                     ))}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </motion.section>
-
-        <section className="bg-wine-bg px-[8%] pb-[120px] pt-0">
-          <div className="mx-auto max-w-[1400px]">
-            <div
-              className={cn(
-                "z-30 transition-all",
-                isSearching
-                  ? "sticky top-0 -mx-[8%] border-b border-[hsl(var(--wine-text)/0.06)] bg-[hsl(var(--wine-bg)/0.95)] px-[8%] py-4 backdrop-blur-[12px]"
-                  : "relative py-0",
-              )}
-              style={{ transitionDuration: "400ms" }}
-            >
-              <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-                <div className="w-full md:max-w-[320px] md:flex-none">
-                  <label htmlFor="wine-list-search" className="sr-only">
-                    Search wines
-                  </label>
-                  <input
-                    id="wine-list-search"
-                    type="text"
-                    value={filters.query}
-                    onChange={(event) => setFilters((current) => ({ ...current, query: event.target.value }))}
-                    placeholder="Search by producer, wine, grape or region..."
-                    className="wine-list-body h-[38px] w-full border-0 border-b border-[hsl(var(--wine-text)/0.15)] bg-transparent px-0 py-[10px] text-[14px] text-wine-text outline-none placeholder:text-[hsl(var(--wine-muted)/0.3)]"
-                  />
-                </div>
-
-                <div className="flex flex-wrap items-end gap-x-5 gap-y-3 md:justify-center">
-                  {TYPE_OPTIONS.map((option) => (
-                    <CategoryTab
-                      key={option.value}
-                      label={option.label}
-                      active={filters.activeType === option.value}
-                      onClick={() => setFilters((current) => ({ ...current, activeType: option.value }))}
-                    />
-                  ))}
-                </div>
-
-                <div className="flex items-end gap-6 md:ml-auto md:self-end">
-                  <div className="hidden items-end gap-3 md:flex">
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      value={filters.priceFrom}
-                      onChange={(event) => {
-                        const nextValue = event.target.value.replace(/[^0-9]/g, "");
-                        setFilters((current) => ({ ...current, priceFrom: nextValue }));
-                      }}
-                      className="wine-input-number wine-list-body h-[34px] w-[60px] border-0 border-b border-[hsl(var(--wine-text)/0.15)] bg-transparent px-0 text-center text-[13px] text-wine-muted outline-none"
-                      aria-label="Minimum price"
-                    />
-                    <span className="wine-list-body pb-1 text-[11px] text-[hsl(var(--wine-muted)/0.3)]">to</span>
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      value={filters.priceTo}
-                      onChange={(event) => {
-                        const nextValue = event.target.value.replace(/[^0-9]/g, "");
-                        setFilters((current) => ({ ...current, priceTo: nextValue }));
-                      }}
-                      className="wine-input-number wine-list-body h-[34px] w-[60px] border-0 border-b border-[hsl(var(--wine-text)/0.15)] bg-transparent px-0 text-center text-[13px] text-wine-muted outline-none"
-                      aria-label="Maximum price"
-                    />
-                  </div>
-
-                  <p className="wine-list-body whitespace-nowrap pb-1 text-[11px] text-[hsl(var(--wine-muted)/0.25)]">{resultCount} wines</p>
-                </div>
+                ))}
               </div>
-            </div>
-
-            <div className="pt-10">
-              <div className="mb-3 grid grid-cols-[40px_minmax(0,1fr)_auto] items-end gap-x-4 md:grid-cols-[40px_minmax(0,1fr)_minmax(96px,140px)_auto]">
-                <span className="wine-list-body text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.18)]">Vint</span>
-                <span className="wine-list-body text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.18)]">Wine</span>
-                <span className="hidden wine-list-body text-right text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.18)] md:block">Region</span>
-                <span className="wine-list-body text-right text-[10px] uppercase tracking-[0.1em] text-[hsl(var(--wine-muted)/0.18)]">€</span>
-              </div>
-
-              <div className="relative">
-                <motion.div
-                  initial={false}
-                  animate={
-                    reducedMotion
-                      ? { opacity: isSearching ? 0 : 1, height: isSearching ? 0 : "auto" }
-                      : { opacity: isSearching ? 0 : 1, height: isSearching ? 0 : "auto" }
-                  }
-                  transition={{ duration: 0.4, ease: REVEAL_EASE }}
-                  className="overflow-hidden"
-                  aria-hidden={isSearching}
-                  style={{ pointerEvents: isSearching ? "none" : "auto" }}
-                >
-                  <div className="space-y-10">
-                    {browsingSections.map((section, sectionIndex) => (
-                      <section key={section.type} className={cn(sectionIndex > 0 && "pt-6")}>
-                        <RevealBlock disabled={isSearching || reducedMotion}>
-                          <h3 className={cn("wine-list-display mb-6 text-[clamp(32px,4vw,48px)] text-wine-text", sectionIndex > 0 && "mt-16")}>
-                            {section.label}
-                          </h3>
-                        </RevealBlock>
-
-                        <div>
-                          {section.groups.map((group) => {
-                            const expanded = Boolean(expandedGroups[group.key]);
-                            return (
-                              <BrowsingGroup
-                                key={group.key}
-                                group={group}
-                                expanded={expanded}
-                                disableReveal={isSearching || reducedMotion}
-                                onToggle={() =>
-                                  setExpandedGroups((current) => ({
-                                    ...current,
-                                    [group.key]: !current[group.key],
-                                  }))
-                                }
-                              />
-                            );
-                          })}
-                        </div>
-                      </section>
-                    ))}
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={false}
-                  animate={
-                    reducedMotion
-                      ? { opacity: isSearching ? 1 : 0, height: isSearching ? "auto" : 0 }
-                      : { opacity: isSearching ? 1 : 0, height: isSearching ? "auto" : 0 }
-                  }
-                  transition={{ duration: 0.4, ease: REVEAL_EASE }}
-                  className="overflow-hidden"
-                  aria-hidden={!isSearching}
-                  style={{ pointerEvents: isSearching ? "auto" : "none" }}
-                >
-                  <AnimatePresence initial={false} mode="wait">
-                    {isSearching ? (
-                      <motion.div
-                        key="search-results"
-                        initial={reducedMotion ? false : { opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={reducedMotion ? undefined : { opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {flatResults.length > 0 ? (
-                          <div>
-                            {flatResults.map((wine) => (
-                              <WineListRow key={wine.id} wine={wine} />
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="flex min-h-[240px] flex-col items-center justify-center text-center">
-                            <p className="wine-list-display text-[24px] font-light text-[hsl(var(--wine-muted)/0.4)]">No wines found</p>
-                            <p className="wine-list-body mt-3 text-[13px] text-[hsl(var(--wine-muted)/0.25)]">Try broadening your search</p>
-                          </div>
-                        )}
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
-                </motion.div>
-              </div>
-            </div>
+            )}
           </div>
         </section>
 
-        <footer className="border-t border-[rgba(248,239,230,0.08)] px-5 py-12 text-center sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-[1400px] space-y-2">
-            <p className="wine-list-body text-[13px] text-wine-micro">Prices are subject to change. Wine list 2026.</p>
-            <p className="wine-list-body text-[13px] text-wine-micro">Ask your sommelier for the current selection by the glass.</p>
+        {/* Footer */}
+        <footer
+          className="px-6 py-12 text-center sm:px-8 lg:px-12"
+          style={{ borderTop: "1px solid rgba(245,239,230,0.06)" }}
+        >
+          <div className="mx-auto max-w-[1100px] space-y-2">
+            <p style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.2)" }}>
+              Prices are subject to change. Wine list 2026.
+            </p>
+            <p style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.2)" }}>
+              Ask your sommelier for the current selection by the glass.
+            </p>
             <p className="pt-6">
-              <Link to="/" className="wine-list-display text-[18px] text-wine-muted transition-colors duration-300 hover:text-wine-text hover:underline">
+              <Link
+                to="/"
+                style={{
+                  fontFamily: "'Fraunces', serif",
+                  fontSize: "18px",
+                  color: "rgba(200,184,154,0.5)",
+                  textDecoration: "none",
+                  transition: "color 300ms ease",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#F5EFE6")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(200,184,154,0.5)")}
+              >
                 Return to Tres
               </Link>
             </p>
