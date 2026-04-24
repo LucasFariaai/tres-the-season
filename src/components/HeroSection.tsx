@@ -136,9 +136,8 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
   }, []);
 
   useEffect(() => {
-    const section = (ref as React.RefObject<HTMLElement> | null)?.current;
     const video = videoRef.current;
-    if (!section || !video) return;
+    if (!video) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -150,9 +149,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
       { threshold: 0.1 }
     );
 
-    observer.observe(section);
+    const parent = video.closest("section");
+    if (parent) observer.observe(parent);
     return () => observer.disconnect();
-  }, [ref]);
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
