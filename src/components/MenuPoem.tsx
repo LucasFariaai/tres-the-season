@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-
 import logoTresNav from "@/assets/logo-tres-nav.svg";
 import { legacyDishImages, legacySeasonDescriptions } from "@/data/legacySeasonMenu";
 import { seasonLabels, seasonMenus, type Season, useSeason } from "@/lib/seasonContext";
+import { usePublishedHome } from "@/hooks/usePublishedHome";
 
 type MenuPoemProps = {
   seasonOverride?: Season;
@@ -11,11 +12,6 @@ type MenuPoemProps = {
   className?: string;
 };
 
-const menuMeta = {
-  servings: "18 servings",
-  tastingPrice: "€185",
-  pairingPrice: "Wine pairing €110",
-};
 
 const SCROLL_PER_DISH_VH = 40;
 
