@@ -274,7 +274,7 @@ function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent[
           )}
         </div>
       )}
-    </motion.article>
+    </article>
   );
 
   return (
