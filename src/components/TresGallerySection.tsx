@@ -326,11 +326,7 @@ function MobileCarousel({
   }, [emblaApi]);
 
   return (
-    <motion.section
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.45, 0, 0.15, 1] }}
+    <section
       className="relative"
       style={{ backgroundColor: "#F5EFE6" }}
       aria-label="Gallery carousel"
