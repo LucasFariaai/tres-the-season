@@ -400,6 +400,6 @@ function MobileCarousel({
           ))}
         </div>
       )}
-    </motion.section>
+    </section>
   );
 }
