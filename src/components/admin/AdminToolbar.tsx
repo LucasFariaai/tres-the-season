@@ -83,6 +83,9 @@ export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscrib
           <button type="button" onClick={onHistory} style={{ ...buttonBase, color: uiPalette.controlText }}>
             History
           </button>
+          <button type="button" onClick={onSubscribers} style={{ ...buttonBase, color: uiPalette.controlText }}>
+            Subscribers
+          </button>
           <button type="button" onClick={() => void onSignOut()} style={{ ...buttonBase, color: uiPalette.controlText }}>
             Sign out
           </button>
