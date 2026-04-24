@@ -12,6 +12,7 @@ type SectionTransitionProps = {
   from: string;
   to: string;
   height?: string;
+  mobileHeight?: string;
   content?: "logo" | TextContent;
 };
 
@@ -19,6 +20,7 @@ export default function SectionTransition({
   from,
   to,
   height = "180vh",
+  mobileHeight,
   content = "logo",
 }: SectionTransitionProps) {
   const ref = useRef<HTMLDivElement>(null);
