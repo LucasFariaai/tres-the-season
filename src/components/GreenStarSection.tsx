@@ -29,8 +29,8 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32 lg:px-12">
         {/* Header */}
-        <div className="flex justify-between items-start flex-wrap gap-8 mb-16">
-          <div style={{ maxWidth: "600px" }}>
+        <div className="flex flex-col items-center text-center gap-12 mb-16">
+          <div style={{ maxWidth: "720px" }}>
             <p
               style={{
                 fontFamily: "'Source Sans 3', sans-serif",
@@ -102,8 +102,8 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               justifyContent: "center",
               gap: "clamp(32px, 4vw, 64px)",
               flexShrink: 0,
-              alignSelf: "flex-start",
               flexWrap: "wrap",
+              width: "100%",
             }}
           >
             {/* 1. Green Star (trevo) — white, transparent */}
