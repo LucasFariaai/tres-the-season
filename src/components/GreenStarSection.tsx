@@ -62,7 +62,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                 src={michelinGreenStar}
                 alt="Michelin Green Star"
                 style={{
-                  height: "1em",
+                  height: "1.6em",
                   width: "auto",
                   display: "inline-block",
                   flexShrink: 0,
@@ -106,22 +106,6 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
             </p>
           </div>
 
-          {/* Green star watermark */}
-          <div
-            className="hidden sm:block"
-            style={{
-              fontSize: "80px",
-              lineHeight: 1,
-              opacity: 0.08,
-              color: "hsl(var(--wine-accent))",
-              flexShrink: 0,
-              userSelect: "none",
-              marginTop: "20px",
-            }}
-            aria-hidden="true"
-          >
-            🍀
-          </div>
         </div>
 
         {/* Three pillars */}
