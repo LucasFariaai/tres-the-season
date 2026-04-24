@@ -1,8 +1,111 @@
-import { forwardRef } from "react";
+import { forwardRef, useState, type FormEvent } from "react";
+import { z } from "zod";
 import { useSeason, seasonLabels } from "@/lib/seasonContext";
 import OrganicReserveButton from "@/components/OrganicReserveButton";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
 import type { ReserveContent, SiteThemeTokens } from "@/lib/site-editor/types";
+import { supabase } from "@/integrations/supabase/client";
+
+const emailSchema = z
+  .string()
+  .trim()
+  .email({ message: "Please enter a valid email" })
+  .max(255, { message: "Email is too long" });
+
+type SubscribeStatus = "idle" | "sending" | "success" | "error";
+
+function NewsletterField() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<SubscribeStatus>("idle");
+  const [message, setMessage] = useState<string>("");
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (status === "sending") return;
+
+    const parsed = emailSchema.safeParse(email);
+    if (!parsed.success) {
+      setStatus("error");
+      setMessage(parsed.error.issues[0]?.message ?? "Invalid email");
+      return;
+    }
+
+    setStatus("sending");
+    setMessage("");
+    const { error } = await supabase
+      .from("newsletter_subscribers")
+      .insert({ email: parsed.data, source: "reserve_section" });
+
+    if (error) {
+      const duplicate = error.code === "23505" || /duplicate/i.test(error.message);
+      setStatus(duplicate ? "success" : "error");
+      setMessage(duplicate ? "You're already on the list — thank you." : "Something went wrong. Please try again.");
+      return;
+    }
+
+    setStatus("success");
+    setMessage("Thank you — we'll be in touch.");
+    setEmail("");
+  };
+
+  return (
+    <div>
+      <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>Stay in touch</h3>
+      <form onSubmit={handleSubmit} className="flex items-end gap-3 max-w-sm">
+        <label className="flex-1">
+          <span className="sr-only">Your email</span>
+          <input
+            type="email"
+            required
+            value={email}
+            maxLength={255}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (status === "error") {
+                setStatus("idle");
+                setMessage("");
+              }
+            }}
+            placeholder="Your email"
+            disabled={status === "sending" || status === "success"}
+            className="w-full bg-transparent border-0 border-b pb-1.5 text-sm focus:outline-none transition-colors"
+            style={{
+              fontFamily: "'Source Sans 3', sans-serif",
+              borderColor: "rgba(26,20,16,0.2)",
+              color: "#1A1410",
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(26,20,16,0.6)")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(26,20,16,0.2)")}
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={status === "sending" || status === "success"}
+          className="pb-1.5 text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-60 disabled:opacity-40"
+          style={{
+            fontFamily: "'Source Sans 3', sans-serif",
+            color: "#1A1410",
+            background: "transparent",
+            border: "none",
+          }}
+        >
+          {status === "sending" ? "Sending…" : status === "success" ? "Joined" : "Subscribe"}
+        </button>
+      </form>
+      {message && (
+        <p
+          className="mt-2 text-xs italic"
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            color: status === "error" ? "rgba(140,30,30,0.8)" : "rgba(26,20,16,0.5)",
+          }}
+        >
+          {message}
+        </p>
+      )}
+    </div>
+  );
+}
 
 interface ReserveSectionProps {
   content?: ReserveContent;
