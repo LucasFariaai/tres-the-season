@@ -145,60 +145,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
       </div>
 
       {useSimpleLayout ? (
-        <div className="px-0 pb-0">
-          <div className="flex flex-col" style={{ backgroundColor: "#F5EFE6" }}>
-            {galleryItems.map((item, index) => (
-              <motion.article
-                key={item.id}
-                initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-                whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-10%" }}
-                transition={{
-                  duration: prefersReducedMotion ? 0 : 0.8,
-                  ease: [0.45, 0, 0.15, 1],
-                  delay: prefersReducedMotion ? 0 : index * 0.08,
-                }}
-                className="relative overflow-hidden"
-                style={{ height: "280px", backgroundColor: "#F5EFE6" }}
-              >
-                <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" />
-                {(item.label || item.caption) && (
-                  <div className="absolute bottom-0 left-0 p-8">
-                    {item.label && (
-                      <p
-                        style={{
-                          fontFamily: "'Source Sans 3', sans-serif",
-                          fontSize: "11px",
-                          fontWeight: 400,
-                          letterSpacing: "0.14em",
-                          color: "hsl(var(--wine-text) / 0.6)",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {item.label}
-                      </p>
-                    )}
-                    {item.caption && (
-                      <p
-                        className="mt-2 max-w-[18rem]"
-                        style={{
-                          fontFamily: "'Playfair Display', serif",
-                          fontStyle: "italic",
-                          fontSize: "22px",
-                          fontWeight: 300,
-                          lineHeight: 1.2,
-                          color: "hsl(var(--wine-text))",
-                        }}
-                      >
-                        {item.caption}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </motion.article>
-            ))}
-          </div>
-        </div>
+        <MobileGallery items={galleryItems} prefersReducedMotion={!!prefersReducedMotion} />
       ) : (
         <div ref={pinWrapRef} className="relative" style={{ height: "85vh", minHeight: "520px" }}>
           <div className="relative h-full overflow-hidden" style={{ backgroundColor: "#F5EFE6" }}>
