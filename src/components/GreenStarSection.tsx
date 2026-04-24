@@ -51,23 +51,9 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                 lineHeight: 1.05,
                 color: "hsl(var(--wine-text))",
                 marginBottom: "12px",
-                display: "flex",
-                alignItems: "center",
-                gap: "20px",
-                flexWrap: "wrap",
               }}
             >
-              <span>{sectionContent.title}</span>
-              <img
-                src={michelinGreenStar}
-                alt="Michelin Green Star"
-                style={{
-                  height: "1.6em",
-                  width: "auto",
-                  display: "inline-block",
-                  flexShrink: 0,
-                }}
-              />
+              {sectionContent.title}
             </h2>
 
             <p
@@ -106,6 +92,17 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
             </p>
           </div>
 
+          {/* Michelin Green Star image - large, right side */}
+          <img
+            src={michelinGreenStar}
+            alt="Michelin Green Star"
+            style={{
+              height: "clamp(180px, 22vw, 320px)",
+              width: "auto",
+              flexShrink: 0,
+              alignSelf: "flex-start",
+            }}
+          />
         </div>
 
         {/* Three pillars */}
