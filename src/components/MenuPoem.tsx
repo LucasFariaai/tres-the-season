@@ -96,6 +96,7 @@ export default function MenuPoem({
                 }}
               >
                 {seasonLabels[season]}
+                <span className="ml-3 align-baseline text-[24px] sm:text-[28px] not-italic tracking-[0.08em] text-[#c9b89e]" style={{ fontFamily: "'Source Sans 3', sans-serif", fontWeight: 300 }}>2025</span>
               </h1>
             </div>
           ) : null}
@@ -182,6 +183,7 @@ export default function MenuPoem({
                     }}
                   >
                     {seasonLabels[season]}
+                    <span className="ml-3 align-baseline text-[24px] sm:text-[28px] not-italic tracking-[0.08em] text-[#c9b89e]" style={{ fontFamily: "'Source Sans 3', sans-serif", fontWeight: 300 }}>2025</span>
                   </h1>
                 </div>
               ) : null}
