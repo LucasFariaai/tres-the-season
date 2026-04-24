@@ -16,6 +16,7 @@ const DARK = "#1b1310";
 const CREAM = "#F5EFE6";
 import { AdminEditPanel } from "@/components/admin/AdminEditPanel";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
+import { AdminSubscribersPanel } from "@/components/admin/AdminSubscribersPanel";
 import { AdminToolbar } from "@/components/admin/AdminToolbar";
 import { buttonBase, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
 import type { Selection } from "@/components/admin/types";
@@ -145,6 +146,7 @@ function AdminSignIn({ onSignedIn }: { onSignedIn: (session: Session) => void })
 export default function Admin() {
   const editor = useVisualSiteEditor();
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [subscribersOpen, setSubscribersOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const handlePublish = async () => {
@@ -215,9 +217,11 @@ export default function Admin() {
         onPublish={handlePublish}
         onReset={handleReset}
         onHistory={() => setSelection({ id: "history", label: "Version history" })}
+        onSubscribers={() => setSubscribersOpen(true)}
         onSignOut={handleSignOut}
       />
       <AdminEditPanel editor={editor} selection={selection} onClose={() => setSelection(null)} />
+      <AdminSubscribersPanel open={subscribersOpen} onClose={() => setSubscribersOpen(false)} />
       <div style={{ paddingTop: toolbarHeight, marginRight: selection && !isMobile ? 380 : 0, transition: "margin-right 200ms ease" }}>
         <EditableSection label="Hero" isSelected={selection?.id === "hero"} onSelect={() => setSelection({ id: "hero", label: "Hero" })}>
           <HeroSection shouldPlay={false} content={editor.content.hero} theme={editor.theme} />
