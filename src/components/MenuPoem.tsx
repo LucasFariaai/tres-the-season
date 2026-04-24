@@ -65,8 +65,7 @@ export default function MenuPoem({
 
   const activeDish = menu.items[activeIndex] ?? menu.items[0];
   const activeDescription = descriptions[activeIndex] ?? descriptions[0] ?? "";
-  const activeImage =
-    legacyDishImages[activeIndex % legacyDishImages.length] ?? legacyDishImages[0];
+  // activeImage is rendered via the stacked layer below (not a single swap).
 
   // Preload all dish images once so swaps are instant.
   useEffect(() => {
