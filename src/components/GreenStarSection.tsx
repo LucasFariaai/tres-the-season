@@ -93,17 +93,35 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
             </p>
           </div>
 
-          {/* Michelin Green Star image - large, right side */}
-          <img
-            src={michelinGreenStar}
-            alt="Michelin Green Star"
+          {/* Michelin Green Star + companion knife mark */}
+          <div
             style={{
-              height: "clamp(180px, 22vw, 320px)",
-              width: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: "clamp(20px, 2.5vw, 36px)",
               flexShrink: 0,
               alignSelf: "flex-start",
             }}
-          />
+          >
+            <img
+              src={michelinGreenStar}
+              alt="Michelin Green Star"
+              style={{
+                height: "clamp(180px, 22vw, 320px)",
+                width: "auto",
+              }}
+            />
+            <img
+              src={knifeCircle}
+              alt="Chef's knife emblem"
+              style={{
+                height: "clamp(140px, 18vw, 260px)",
+                width: "auto",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.85,
+              }}
+            />
+          </div>
         </div>
 
         {/* Three pillars */}
