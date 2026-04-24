@@ -134,6 +134,7 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                 <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.locationTitle}</h3>
                 {reserveContent.locationLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
               </div>
+              <NewsletterField />
               <div>
                 <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.travelTitle}</h3>
                 {reserveContent.travelLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
