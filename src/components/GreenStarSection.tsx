@@ -2,6 +2,7 @@ import { useState } from "react";
 import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
 import type { GreenStarContent } from "@/lib/site-editor/types";
 import michelinGreenStar from "@/assets/michelin-green-star.png";
+import knifeCircle from "@/assets/knife-circle.png";
 
 interface GreenStarSectionProps {
   content?: GreenStarContent;
