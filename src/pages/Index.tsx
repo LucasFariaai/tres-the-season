@@ -32,7 +32,8 @@ const Index = () => {
         <SectionTransition
           from={CREAM}
           to={CREAM}
-          height="200vh"
+          height="120vh"
+          mobileHeight="80vh"
           content={content.livingMenuTransition}
         />
       </div>
