@@ -339,7 +339,8 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
             <AdminFieldTextarea label="Location lines" value={toLineString(editor.content.reserve.locationLines)} minRows={3} onChange={(value) => setReserve("locationLines", toLines(value))} />
             <AdminFieldTextarea label="Travel title" value={editor.content.reserve.travelTitle} minRows={1} onChange={(value) => setReserve("travelTitle", value)} />
             <AdminFieldTextarea label="Travel lines" value={toLineString(editor.content.reserve.travelLines)} minRows={3} onChange={(value) => setReserve("travelLines", toLines(value))} />
-            <AdminFieldTextarea label="Price" value={editor.content.reserve.price} minRows={1} onChange={(value) => setReserve("price", value)} />
+            <AdminFieldInput label="Contact title" value={editor.content.reserve.contactTitle} onChange={(value) => setReserve("contactTitle", value)} />
+            <AdminFieldInput label="Contact phone" value={editor.content.reserve.contactPhone} onChange={(value) => setReserve("contactPhone", value)} />
             <AdminFieldTextarea label="Reserve button label" value={editor.content.reserve.reserveButton} minRows={1} onChange={(value) => setReserve("reserveButton", value)} />
             <AdminFieldTextarea label="Note" value={editor.content.reserve.note} minRows={2} onChange={(value) => setReserve("note", value)} />
           </div>
