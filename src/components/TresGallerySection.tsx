@@ -234,17 +234,9 @@ function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent[
   const fixedSlots = [top, second].filter(Boolean) as GalleryContent["items"];
   const tailSlots = last ? [last] : [];
 
-  const renderFixed = (item: GalleryContent["items"][number], index: number) => (
-    <motion.article
+  const renderFixed = (item: GalleryContent["items"][number], _index: number) => (
+    <article
       key={item.id}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{
-        duration: prefersReducedMotion ? 0 : 0.8,
-        ease: [0.45, 0, 0.15, 1],
-        delay: prefersReducedMotion ? 0 : index * 0.08,
-      }}
       className="relative overflow-hidden"
       style={{ height: "280px", backgroundColor: "#F5EFE6" }}
     >
