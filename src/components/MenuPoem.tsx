@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-
 import logoTresNav from "@/assets/logo-tres-nav.svg";
 import { legacyDishImages, legacySeasonDescriptions } from "@/data/legacySeasonMenu";
 import { seasonLabels, seasonMenus, type Season, useSeason } from "@/lib/seasonContext";
+import { usePublishedHome } from "@/hooks/usePublishedHome";
 
 type MenuPoemProps = {
   seasonOverride?: Season;
@@ -11,11 +12,6 @@ type MenuPoemProps = {
   className?: string;
 };
 
-const menuMeta = {
-  servings: "18 servings",
-  tastingPrice: "€185",
-  pairingPrice: "Wine pairing €110",
-};
 
 const SCROLL_PER_DISH_VH = 40;
 
@@ -45,6 +41,12 @@ export default function MenuPoem({
   const descriptions = legacySeasonDescriptions[season] || legacySeasonDescriptions.spring;
   const reducedMotion = useReducedMotion();
   const totalCount = menu.items.length;
+  const { content: cmsContent } = usePublishedHome();
+  const menuMeta = {
+    servings: "18 servings",
+    tastingPrice: cmsContent.reserve.price,
+    pairingPrice: `Wine pairing ${cmsContent.reserve.alcoholicPairingPrice}`,
+  };
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);

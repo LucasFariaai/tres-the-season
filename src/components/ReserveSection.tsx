@@ -179,7 +179,7 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                   className="mb-8 text-[14px] leading-[1.4]"
                   style={{ fontFamily: "'Source Sans 3', sans-serif", color: "rgba(26,20,16,0.5)" }}
                 >
-                  €185
+                  {reserveContent.price}
                 </p>
 
                 <div
