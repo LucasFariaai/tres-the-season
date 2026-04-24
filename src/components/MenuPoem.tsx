@@ -258,18 +258,32 @@ export default function MenuPoem({
                 className="relative mx-auto h-[58vh] w-full max-w-[560px] overflow-hidden rounded-[32px] bg-[#c6b8a5]/20 sm:h-[62vh] lg:h-[68vh] xl:h-[72vh]"
                 style={{ boxShadow: "0 40px 80px rgba(0,0,0,0.14)" }}
               >
-                <AnimatePresence mode="sync" initial={false}>
-                  <motion.img
-                    key={`img-${season}-${activeIndex}`}
-                    src={activeImage}
-                    alt={activeDish}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    initial={{ opacity: 0, scale: 1.06, filter: "blur(10px)" }}
-                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, scale: 1.02, filter: "blur(6px)" }}
-                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                </AnimatePresence>
+                {menu.items.map((item, index) => {
+                  const src = legacyDishImages[index % legacyDishImages.length];
+                  const isActive = index === activeIndex;
+                  // Eager-load current + next; lazy for the rest.
+                  const isPriority = isActive || index === (activeIndex + 1) % totalCount;
+                  return (
+                    <motion.img
+                      key={`dish-${index}`}
+                      src={src}
+                      alt={item}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      decoding="async"
+                      loading={isPriority ? "eager" : "lazy"}
+                      // @ts-expect-error fetchpriority is a valid HTML attr
+                      fetchpriority={isActive ? "high" : "low"}
+                      draggable={false}
+                      initial={false}
+                      animate={{
+                        opacity: isActive ? 1 : 0,
+                        scale: isActive ? 1 : 1.04,
+                      }}
+                      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ willChange: "opacity, transform" }}
+                    />
+                  );
+                })}
 
                 <div
                   className="pointer-events-none absolute bottom-5 right-5 text-[11px] tracking-[0.3em] text-white/85 mix-blend-difference"
