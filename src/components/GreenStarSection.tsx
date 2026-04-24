@@ -106,7 +106,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               flexWrap: "wrap",
             }}
           >
-            {/* 1. Green Star (trevo) — scaled larger to compensate for transparent padding */}
+            {/* 1. Green Star (trevo) — white, transparent */}
             <div
               style={{
                 display: "flex",
@@ -120,14 +120,16 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                 src={michelinGreenStar}
                 alt="Michelin Green Star"
                 style={{
-                  height: "115%",
+                  height: "100%",
                   width: "auto",
                   objectFit: "contain",
+                  filter: "brightness(0) invert(1)",
+                  opacity: 0.95,
                 }}
               />
             </div>
 
-            {/* 2. Michelin knife emblem — reduced so it doesn't dominate */}
+            {/* 2. Michelin knife emblem */}
             <div
               style={{
                 display: "flex",
@@ -149,7 +151,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               />
             </div>
 
-            {/* 3. Gault&Millau logo + native rating (transparent, white) */}
+            {/* 3. Gault&Millau logo + native rating (16,5/20 + 3 chef hats) */}
             <div
               style={{
                 display: "flex",
@@ -177,24 +179,11 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "8px",
+                  gap: "10px",
                   color: "hsl(var(--wine-text))",
                   opacity: 0.92,
                 }}
               >
-                {/* Chef hat icons */}
-                {[0, 1].map((i) => (
-                  <svg
-                    key={i}
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M17 21H7a1 1 0 0 1-1-1v-6.05A4.5 4.5 0 0 1 4 10a4.5 4.5 0 0 1 8-2.91A4.5 4.5 0 0 1 20 10a4.5 4.5 0 0 1-2 3.95V20a1 1 0 0 1-1 1Zm-9-2h8v-5.2l.55-.2A2.5 2.5 0 0 0 18 10a2.5 2.5 0 0 0-4.95-.5l-.32 1.62-1.18-1.16A2.5 2.5 0 0 0 6 10a2.5 2.5 0 0 0 1.45 2.6l.55.2V19Z" />
-                  </svg>
-                ))}
                 <span
                   style={{
                     fontFamily: "'Playfair Display', serif",
@@ -202,12 +191,25 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                     fontWeight: 400,
                     fontSize: "clamp(15px, 1.4vw, 19px)",
                     letterSpacing: "0.02em",
-                    marginLeft: "4px",
                   }}
                 >
                   <span>16,5</span>
                   <span style={{ opacity: 0.55, margin: "0 4px" }}>/</span>
                   <span>20</span>
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  {[0, 1, 2].map((i) => (
+                    <svg
+                      key={i}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M17 21H7a1 1 0 0 1-1-1v-6.05A4.5 4.5 0 0 1 4 10a4.5 4.5 0 0 1 8-2.91A4.5 4.5 0 0 1 20 10a4.5 4.5 0 0 1-2 3.95V20a1 1 0 0 1-1 1Zm-9-2h8v-5.2l.55-.2A2.5 2.5 0 0 0 18 10a2.5 2.5 0 0 0-4.95-.5l-.32 1.62-1.18-1.16A2.5 2.5 0 0 0 6 10a2.5 2.5 0 0 0 1.45 2.6l.55.2V19Z" />
+                    </svg>
+                  ))}
                 </span>
               </div>
             </div>
