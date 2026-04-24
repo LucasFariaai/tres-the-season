@@ -68,6 +68,15 @@ export default function MenuPoem({
   const activeImage =
     legacyDishImages[activeIndex % legacyDishImages.length] ?? legacyDishImages[0];
 
+  // Preload all dish images once so swaps are instant.
+  useEffect(() => {
+    legacyDishImages.forEach((src) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+    });
+  }, []);
+
   const sectionHeight = reducedMotion
     ? "auto"
     : `calc(100vh + ${totalCount * SCROLL_PER_DISH_VH}vh)`;
