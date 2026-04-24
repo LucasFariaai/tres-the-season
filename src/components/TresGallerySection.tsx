@@ -1,7 +1,8 @@
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
 import { resolveMediaUrl } from "@/lib/site-editor/mapper";
@@ -144,60 +145,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
       </div>
 
       {useSimpleLayout ? (
-        <div className="px-0 pb-0">
-          <div className="flex flex-col" style={{ backgroundColor: "#F5EFE6" }}>
-            {galleryItems.map((item, index) => (
-              <motion.article
-                key={item.id}
-                initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-                whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-10%" }}
-                transition={{
-                  duration: prefersReducedMotion ? 0 : 0.8,
-                  ease: [0.45, 0, 0.15, 1],
-                  delay: prefersReducedMotion ? 0 : index * 0.08,
-                }}
-                className="relative overflow-hidden"
-                style={{ height: "280px", backgroundColor: "#F5EFE6" }}
-              >
-                <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" />
-                {(item.label || item.caption) && (
-                  <div className="absolute bottom-0 left-0 p-8">
-                    {item.label && (
-                      <p
-                        style={{
-                          fontFamily: "'Source Sans 3', sans-serif",
-                          fontSize: "11px",
-                          fontWeight: 400,
-                          letterSpacing: "0.14em",
-                          color: "hsl(var(--wine-text) / 0.6)",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {item.label}
-                      </p>
-                    )}
-                    {item.caption && (
-                      <p
-                        className="mt-2 max-w-[18rem]"
-                        style={{
-                          fontFamily: "'Playfair Display', serif",
-                          fontStyle: "italic",
-                          fontSize: "22px",
-                          fontWeight: 300,
-                          lineHeight: 1.2,
-                          color: "hsl(var(--wine-text))",
-                        }}
-                      >
-                        {item.caption}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </motion.article>
-            ))}
-          </div>
-        </div>
+        <MobileGallery items={galleryItems} prefersReducedMotion={!!prefersReducedMotion} />
       ) : (
         <div ref={pinWrapRef} className="relative" style={{ height: "85vh", minHeight: "520px" }}>
           <div className="relative h-full overflow-hidden" style={{ backgroundColor: "#F5EFE6" }}>
@@ -262,5 +210,200 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
         </div>
       )}
     </section>
+  );
+}
+
+interface MobileGalleryProps {
+  items: ReturnType<typeof Array.prototype.map> extends infer _ ? GalleryContent["items"] : never;
+  prefersReducedMotion: boolean;
+}
+
+function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent["items"]; prefersReducedMotion: boolean }) {
+  // 4 visual areas on mobile:
+  //  1) first item (fixed)
+  //  2) second item (fixed)
+  //  3) horizontal swipe carousel with the middle items
+  //  4) last item (fixed)
+  // Falls back gracefully when there are fewer than 4 items.
+  const safe = items ?? [];
+  const top = safe[0];
+  const second = safe[1];
+  const last = safe.length >= 4 ? safe[safe.length - 1] : undefined;
+  const middle = safe.length >= 4 ? safe.slice(2, -1) : safe.slice(2);
+
+  const fixedSlots = [top, second].filter(Boolean) as GalleryContent["items"];
+  const tailSlots = last ? [last] : [];
+
+  const renderFixed = (item: GalleryContent["items"][number], index: number) => (
+    <motion.article
+      key={item.id}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-10%" }}
+      transition={{
+        duration: prefersReducedMotion ? 0 : 0.8,
+        ease: [0.45, 0, 0.15, 1],
+        delay: prefersReducedMotion ? 0 : index * 0.08,
+      }}
+      className="relative overflow-hidden"
+      style={{ height: "280px", backgroundColor: "#F5EFE6" }}
+    >
+      <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" loading="lazy" />
+      {(item.label || item.caption) && (
+        <div className="absolute bottom-0 left-0 p-8">
+          {item.label && (
+            <p
+              style={{
+                fontFamily: "'Source Sans 3', sans-serif",
+                fontSize: "11px",
+                fontWeight: 400,
+                letterSpacing: "0.14em",
+                color: "hsl(var(--wine-text) / 0.6)",
+                textTransform: "uppercase",
+              }}
+            >
+              {item.label}
+            </p>
+          )}
+          {item.caption && (
+            <p
+              className="mt-2 max-w-[18rem]"
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontStyle: "italic",
+                fontSize: "22px",
+                fontWeight: 300,
+                lineHeight: 1.2,
+                color: "hsl(var(--wine-text))",
+              }}
+            >
+              {item.caption}
+            </p>
+          )}
+        </div>
+      )}
+    </motion.article>
+  );
+
+  return (
+    <div className="px-0 pb-0">
+      <div className="flex flex-col" style={{ backgroundColor: "#F5EFE6" }}>
+        {fixedSlots.map((item, idx) => renderFixed(item, idx))}
+        {middle.length > 0 && (
+          <MobileCarousel items={middle} prefersReducedMotion={prefersReducedMotion} />
+        )}
+        {tailSlots.map((item, idx) => renderFixed(item, fixedSlots.length + idx))}
+      </div>
+    </div>
+  );
+}
+
+function MobileCarousel({
+  items,
+  prefersReducedMotion,
+}: {
+  items: GalleryContent["items"];
+  prefersReducedMotion: boolean;
+}) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    dragFree: false,
+    align: "center",
+    containScroll: "trimSnaps",
+  });
+  const [selected, setSelected] = useState(0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setSelected(emblaApi.selectedScrollSnap());
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi]);
+
+  return (
+    <motion.section
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-10%" }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.45, 0, 0.15, 1] }}
+      className="relative"
+      style={{ backgroundColor: "#F5EFE6" }}
+      aria-label="Gallery carousel"
+    >
+      <div ref={emblaRef} className="overflow-hidden">
+        <div className="flex touch-pan-y">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="relative shrink-0 basis-[88%] pl-3 first:pl-4 last:pr-4"
+            >
+              <div className="relative h-[320px] overflow-hidden">
+                <img
+                  src={item.mediaSrc}
+                  alt={item.alt}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  draggable={false}
+                />
+                {(item.label || item.caption) && (
+                  <div className="absolute bottom-0 left-0 p-6">
+                    {item.label && (
+                      <p
+                        style={{
+                          fontFamily: "'Source Sans 3', sans-serif",
+                          fontSize: "11px",
+                          fontWeight: 400,
+                          letterSpacing: "0.14em",
+                          color: "hsl(var(--wine-text) / 0.65)",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {item.label}
+                      </p>
+                    )}
+                    {item.caption && (
+                      <p
+                        className="mt-2 max-w-[16rem]"
+                        style={{
+                          fontFamily: "'Playfair Display', serif",
+                          fontStyle: "italic",
+                          fontSize: "20px",
+                          fontWeight: 300,
+                          lineHeight: 1.2,
+                          color: "hsl(var(--wine-text))",
+                        }}
+                      >
+                        {item.caption}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {items.length > 1 && (
+        <div className="flex items-center justify-center gap-1.5 py-4" aria-hidden="true">
+          {items.map((it, i) => (
+            <span
+              key={it.id}
+              className="h-1 rounded-full transition-all duration-300"
+              style={{
+                width: i === selected ? 18 : 6,
+                backgroundColor:
+                  i === selected ? "hsl(var(--wine-text) / 0.7)" : "hsl(var(--wine-text) / 0.25)",
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </motion.section>
   );
 }
