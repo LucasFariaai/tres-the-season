@@ -216,7 +216,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
         type="button"
         onClick={toggleMute}
         aria-label={muted ? "Ativar som" : "Mutar som"}
-        className="absolute bottom-6 right-6 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white/70 backdrop-blur-md transition-all duration-300 hover:bg-black/50 hover:text-white sm:bottom-8 sm:right-8"
+        className="absolute bottom-16 right-6 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white/70 backdrop-blur-md transition-all duration-300 hover:bg-black/50 hover:text-white sm:bottom-20 sm:right-8"
       >
         {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </button>
