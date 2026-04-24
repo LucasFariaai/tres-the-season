@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import { useSeason, seasonLabels } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
@@ -73,9 +74,22 @@ function FloatingParticles() {
 const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, content: _content, theme }, ref) => {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
+  const [muted, setMuted] = useState(true);
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroTheme = theme ?? defaultSiteTheme;
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const next = !video.muted;
+    video.muted = next;
+    if (!next) {
+      video.volume = 1;
+      video.play().catch(() => {});
+    }
+    setMuted(next);
+  };
 
   useEffect(() => {
     if (shouldPlay && videoRef.current) {
@@ -90,8 +104,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
     const unmute = () => {
       video.muted = false;
       video.volume = 1;
+      setMuted(false);
       video.play().catch(() => {
         video.muted = true;
+        setMuted(true);
         video.play().catch(() => {});
       });
       window.removeEventListener("pointerdown", unmute);
