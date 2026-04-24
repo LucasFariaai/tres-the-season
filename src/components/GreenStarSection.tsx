@@ -120,7 +120,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                 src={michelinGreenStar}
                 alt="Michelin Green Star"
                 style={{
-                  height: "100%",
+                  height: "62%",
                   width: "auto",
                   objectFit: "contain",
                   filter: "brightness(0) invert(1)",
@@ -207,7 +207,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                       fill="currentColor"
                       aria-hidden="true"
                     >
-                      <path d="M17 21H7a1 1 0 0 1-1-1v-6.05A4.5 4.5 0 0 1 4 10a4.5 4.5 0 0 1 8-2.91A4.5 4.5 0 0 1 20 10a4.5 4.5 0 0 1-2 3.95V20a1 1 0 0 1-1 1Zm-9-2h8v-5.2l.55-.2A2.5 2.5 0 0 0 18 10a2.5 2.5 0 0 0-4.95-.5l-.32 1.62-1.18-1.16A2.5 2.5 0 0 0 6 10a2.5 2.5 0 0 0 1.45 2.6l.55.2V19Z" />
+                      <path d="M12 2c-2.5 0-4.5 1.8-4.85 4.13A4 4 0 0 0 4 10c0 1.86 1.27 3.43 3 3.87V20a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-6.13c1.73-.44 3-2.01 3-3.87a4 4 0 0 0-3.15-3.87C16.5 3.8 14.5 2 12 2Zm-3 16v-3h2v3H9Zm4 0v-3h2v3h-2Z" />
                     </svg>
                   ))}
                 </span>
