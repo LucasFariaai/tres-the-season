@@ -125,34 +125,43 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
           <div>
             <p className="mb-4 font-body text-sm uppercase tracking-[0.3em]" style={{ color: "rgba(26,20,16,0.45)" }}>{reserveContent.eyebrow}</p>
             <h2 className="mb-8 font-display text-3xl sm:text-4xl" style={{ color: "#1A1410" }}>{reserveContent.title}</h2>
-            <div className="space-y-6 font-body text-foreground">
-              <div>
-                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.hoursTitle}</h3>
-                {reserveContent.hoursLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
-              </div>
-              <div>
-                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.locationTitle}</h3>
-                {reserveContent.locationLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
-              </div>
-              <NewsletterField />
-              <div>
-                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.travelTitle}</h3>
-                {reserveContent.travelLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
-              </div>
-              {reserveContent.contactPhone && (
+            <div className="font-body text-foreground">
+              {/* Block 1: Visit (Hours + Location, tight grouping) */}
+              <div className="space-y-4">
                 <div>
-                  <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.contactTitle}</h3>
+                  <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.hoursTitle}</h3>
+                  {reserveContent.hoursLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
+                </div>
+                <div>
+                  <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.locationTitle}</h3>
+                  {reserveContent.locationLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
+                </div>
+              </div>
+
+              {/* Block 2: Contact (phone + newsletter) */}
+              <div className="mt-10">
+                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.contactTitle}</h3>
+                {reserveContent.contactPhone && (
                   <p className="text-sm">
                     <a
                       href={`tel:${reserveContent.contactPhone.replace(/[^+\d]/g, "")}`}
-                      className="text-muted-foreground transition-opacity hover:opacity-70"
+                      className="transition-opacity hover:opacity-70"
                       style={{ color: "rgba(26,20,16,0.65)", textDecoration: "none" }}
                     >
                       {reserveContent.contactPhone}
                     </a>
                   </p>
+                )}
+                <div className="mt-4">
+                  <NewsletterField />
                 </div>
-              )}
+              </div>
+
+              {/* Block 3: Getting here (separated context) */}
+              <div className="mt-14">
+                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.travelTitle}</h3>
+                {reserveContent.travelLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
+              </div>
             </div>
           </div>
 
