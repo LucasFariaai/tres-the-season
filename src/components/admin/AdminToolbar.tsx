@@ -8,10 +8,11 @@ type AdminToolbarProps = {
   onPublish: () => Promise<void>;
   onReset: () => Promise<void>;
   onHistory: () => void;
+  onSubscribers: () => void;
   onSignOut: () => Promise<void>;
 };
 
-export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSignOut }: AdminToolbarProps) {
+export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscribers, onSignOut }: AdminToolbarProps) {
   const isMobile = useIsMobile();
 
   return (
