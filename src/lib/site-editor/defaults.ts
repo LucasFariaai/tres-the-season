@@ -1,12 +1,12 @@
-import chefImg from "@/assets/chef-kitchen.jpg";
-import foundersImg from "@/assets/founders-cellar.jpg";
-import foodTableSpread from "@/assets/food-table-spread.jpg";
-import foodDryage from "@/assets/food-dryage.jpg";
-import foodCotton from "@/assets/food-cotton.jpg";
-import foodMeatPlate from "@/assets/food-meat-plate.jpg";
-import foodSouffle from "@/assets/food-souffle.jpg";
-import foodDessert from "@/assets/food-dessert.jpg";
-import foodGlazed from "@/assets/food-glazed.jpg";
+import chefImg from "@/assets/photos-2026/concept-chef.jpg";
+import foundersImg from "@/assets/photos-2026/concept-founders.jpg";
+import zoom1 from "@/assets/photos-2026/zoom-1.jpg";
+import zoom2 from "@/assets/photos-2026/zoom-2.jpg";
+import zoom3 from "@/assets/photos-2026/zoom-3.jpg";
+import zoom4 from "@/assets/photos-2026/zoom-4.jpg";
+import zoom5 from "@/assets/photos-2026/zoom-5.jpg";
+import zoom6 from "@/assets/photos-2026/zoom-6.jpg";
+import zoom7 from "@/assets/photos-2026/zoom-7.jpg";
 import { producers } from "@/components/producers/data";
 import { tresGalleryItems } from "@/data/tresGalleryItems";
 import type { HomeCmsContent, SiteMediaItem, SiteThemeTokens } from "@/lib/site-editor/types";
@@ -25,13 +25,13 @@ export const defaultHomeCmsContent: HomeCmsContent = {
   },
   zoom: {
     images: [
-      { src: foodTableSpread, alt: "Tasting menu spread at Tres Rotterdam" },
-      { src: foodDryage, alt: "Dry-aging cabinet with heritage meats" },
-      { src: foodCotton, alt: "Cotton flower dish on moss" },
-      { src: foodMeatPlate, alt: "Dry-aged meat with sourdough bread" },
-      { src: foodSouffle, alt: "Herb-crusted soufflé" },
-      { src: foodDessert, alt: "Quenelle dessert on pink linen" },
-      { src: foodGlazed, alt: "Glazed bite on charred board" },
+      { src: zoom1, alt: "An overhead spread of small plates at Tres" },
+      { src: zoom2, alt: "Mise en place of small bowls and tools" },
+      { src: zoom3, alt: "A caramelised block of dry-aged meat on a dark plate" },
+      { src: zoom4, alt: "A risotto course with glazed fish at Tres" },
+      { src: zoom5, alt: "A signature chicken-foot course finished with sauce" },
+      { src: zoom6, alt: "A crisp flower presented on a stone pedestal" },
+      { src: zoom7, alt: "A scallop served in its own shell" },
     ],
   },
   concept: {
