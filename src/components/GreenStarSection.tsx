@@ -27,82 +27,84 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32 lg:px-12">
         {/* Header */}
-        <div className="flex justify-between items-start flex-wrap gap-8 mb-16">
-          <div style={{ maxWidth: "600px" }}>
-            <p
-              style={{
-                fontFamily: "'Source Sans 3', sans-serif",
-                fontSize: "12px",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "hsl(var(--wine-accent))",
-                marginBottom: "24px",
-              }}
-            >
-              {sectionContent.eyebrow}
-            </p>
-
-            <h2
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: "clamp(36px, 6vw, 64px)",
-                lineHeight: 1.05,
-                color: "hsl(var(--wine-text))",
-                marginBottom: "12px",
-              }}
-            >
-              {sectionContent.title}
-            </h2>
-
-            <p
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontStyle: "italic",
-                fontWeight: 300,
-                fontSize: "18px",
-                color: "hsl(var(--wine-muted) / 0.6)",
-                marginBottom: "28px",
-              }}
-            >
-              {sectionContent.award}
-            </p>
-
-            <p
-              style={{
-                fontFamily: "'Source Sans 3', sans-serif",
-                fontSize: "17px",
-                lineHeight: 1.7,
-                color: "hsl(var(--wine-muted))",
-                marginBottom: "16px",
-              }}
-            >
-              {sectionContent.body}
-            </p>
-            <p
-              style={{
-                fontFamily: "'Source Sans 3', sans-serif",
-                fontSize: "17px",
-                lineHeight: 1.7,
-                color: "hsl(var(--wine-muted))",
-              }}
-            >
-              {sectionContent.body2}
-            </p>
-          </div>
-
-          {/* Michelin Green Star image - large, right side */}
-          <img
-            src={michelinGreenStar}
-            alt="Michelin Green Star"
+        <div style={{ maxWidth: "720px" }} className="mb-16">
+          <p
             style={{
-              height: "clamp(180px, 22vw, 320px)",
-              width: "auto",
-              flexShrink: 0,
-              alignSelf: "flex-start",
+              fontFamily: "'Source Sans 3', sans-serif",
+              fontSize: "12px",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "hsl(var(--wine-accent))",
+              marginBottom: "24px",
             }}
-          />
+          >
+            {sectionContent.eyebrow}
+          </p>
+
+          <h2
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              fontSize: "clamp(36px, 6vw, 64px)",
+              lineHeight: 1.05,
+              color: "hsl(var(--wine-text))",
+              marginBottom: "12px",
+              display: "flex",
+              alignItems: "baseline",
+              gap: "0.4em",
+              flexWrap: "wrap",
+            }}
+          >
+            <span>{sectionContent.title}</span>
+            <img
+              src={michelinGreenStar}
+              alt="Michelin Green Star"
+              style={{
+                height: "0.95em",
+                width: "auto",
+                display: "inline-block",
+                flexShrink: 0,
+                opacity: 0.9,
+                transform: "translateY(0.12em)",
+              }}
+            />
+          </h2>
+
+          <p
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontStyle: "italic",
+              fontWeight: 300,
+              fontSize: "18px",
+              color: "hsl(var(--wine-muted) / 0.6)",
+              marginBottom: "28px",
+            }}
+          >
+            {sectionContent.award}
+          </p>
+
+          <p
+            style={{
+              fontFamily: "'Source Sans 3', sans-serif",
+              fontSize: "17px",
+              lineHeight: 1.7,
+              color: "hsl(var(--wine-muted))",
+              marginBottom: "16px",
+            }}
+          >
+            {sectionContent.body}
+          </p>
+          <p
+            style={{
+              fontFamily: "'Source Sans 3', sans-serif",
+              fontSize: "17px",
+              lineHeight: 1.7,
+              color: "hsl(var(--wine-muted))",
+            }}
+          >
+            {sectionContent.body2}
+          </p>
         </div>
 
         {/* Three pillars */}
