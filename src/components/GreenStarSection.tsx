@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
 import type { GreenStarContent } from "@/lib/site-editor/types";
+import michelinGreenStar from "@/assets/michelin-green-star.png";
 
 interface GreenStarSectionProps {
   content?: GreenStarContent;
@@ -50,9 +51,23 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                 lineHeight: 1.05,
                 color: "hsl(var(--wine-text))",
                 marginBottom: "12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "20px",
+                flexWrap: "wrap",
               }}
             >
-              {sectionContent.title}
+              <span>{sectionContent.title}</span>
+              <img
+                src={michelinGreenStar}
+                alt="Michelin Green Star"
+                style={{
+                  height: "1em",
+                  width: "auto",
+                  display: "inline-block",
+                  flexShrink: 0,
+                }}
+              />
             </h2>
 
             <p
