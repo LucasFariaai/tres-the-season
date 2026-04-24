@@ -45,6 +45,12 @@ export default function MenuPoem({
   const descriptions = legacySeasonDescriptions[season] || legacySeasonDescriptions.spring;
   const reducedMotion = useReducedMotion();
   const totalCount = menu.items.length;
+  const { content: cmsContent } = usePublishedHome();
+  const menuMeta = {
+    servings: "18 servings",
+    tastingPrice: cmsContent.reserve.price,
+    pairingPrice: `Wine pairing ${cmsContent.reserve.alcoholicPairingPrice}`,
+  };
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
