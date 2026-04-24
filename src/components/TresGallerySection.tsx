@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import useEmblaCarousel from "embla-carousel-react";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
