@@ -214,36 +214,25 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
   );
 }
 
-interface MobileGalleryProps {
-  items: ReturnType<typeof Array.prototype.map> extends infer _ ? GalleryContent["items"] : never;
-  prefersReducedMotion: boolean;
-}
-
 function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent["items"]; prefersReducedMotion: boolean }) {
-  // 4 visual areas on mobile:
+  // Mobile composition:
   //  1) first item (fixed)
-  //  2) second item (fixed)
-  //  3) horizontal swipe carousel with the middle items
-  //  4) last item (fixed)
-  // Falls back gracefully when there are fewer than 4 items.
+  //  2) carousel containing the second item + all middle items (autoplay + swipe)
+  //  3) last item (fixed)
   const safe = items ?? [];
   const top = safe[0];
-  const second = safe[1];
-  const last = safe.length >= 4 ? safe[safe.length - 1] : undefined;
-  const middle = safe.length >= 4 ? safe.slice(2, -1) : safe.slice(2);
+  const last = safe.length >= 3 ? safe[safe.length - 1] : undefined;
+  const carouselItems = last ? safe.slice(1, -1) : safe.slice(1);
 
-  const fixedSlots = [top, second].filter(Boolean) as GalleryContent["items"];
-  const tailSlots = last ? [last] : [];
-
-  const renderFixed = (item: GalleryContent["items"][number], _index: number) => (
+  const renderFixed = (item: GalleryContent["items"][number]) => (
     <article
       key={item.id}
       className="relative overflow-hidden"
-      style={{ height: "280px", backgroundColor: "#F5EFE6" }}
+      style={{ height: "320px", backgroundColor: "#F5EFE6" }}
     >
-      <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" loading="lazy" />
+      <img src={item.mediaSrc} alt={item.alt} className="block h-full w-full object-cover" loading="lazy" />
       {(item.label || item.caption) && (
-        <div className="absolute bottom-0 left-0 p-8">
+        <div className="absolute bottom-0 left-0 p-6">
           {item.label && (
             <p
               style={{
@@ -264,7 +253,7 @@ function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent[
               style={{
                 fontFamily: "'Playfair Display', serif",
                 fontStyle: "italic",
-                fontSize: "22px",
+                fontSize: "20px",
                 fontWeight: 300,
                 lineHeight: 1.2,
                 color: "hsl(var(--wine-text))",
@@ -279,14 +268,12 @@ function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent[
   );
 
   return (
-    <div className="px-0 pb-0">
-      <div className="flex flex-col" style={{ backgroundColor: "#F5EFE6" }}>
-        {fixedSlots.map((item, idx) => renderFixed(item, idx))}
-        {middle.length > 0 && (
-          <MobileCarousel items={middle} prefersReducedMotion={prefersReducedMotion} />
-        )}
-        {tailSlots.map((item, idx) => renderFixed(item, fixedSlots.length + idx))}
-      </div>
+    <div className="flex flex-col" style={{ backgroundColor: "#F5EFE6" }}>
+      {top && renderFixed(top)}
+      {carouselItems.length > 0 && (
+        <MobileCarousel items={carouselItems} prefersReducedMotion={prefersReducedMotion} />
+      )}
+      {last && renderFixed(last)}
     </div>
   );
 }
@@ -298,12 +285,19 @@ function MobileCarousel({
   items: GalleryContent["items"];
   prefersReducedMotion: boolean;
 }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    dragFree: false,
-    align: "center",
-    containScroll: "trimSnaps",
-  });
+  const autoplayRef = useRef(
+    Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: false }),
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "start",
+      containScroll: "trimSnaps",
+      dragFree: false,
+    },
+    prefersReducedMotion ? [] : [autoplayRef.current],
+  );
   const [selected, setSelected] = useState(0);
 
   useEffect(() => {
@@ -318,24 +312,19 @@ function MobileCarousel({
     };
   }, [emblaApi]);
 
+  const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
+
   return (
-    <section
-      className="relative"
-      style={{ backgroundColor: "#F5EFE6" }}
-      aria-label="Gallery carousel"
-    >
+    <section className="relative" style={{ backgroundColor: "#F5EFE6" }} aria-label="Gallery carousel">
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex touch-pan-y">
           {items.map((item) => (
-            <div
-              key={item.id}
-              className="relative shrink-0 basis-[88%] pl-3 first:pl-4 last:pr-4"
-            >
-              <div className="relative h-[320px] overflow-hidden">
+            <div key={item.id} className="relative shrink-0 grow-0 basis-full">
+              <div className="relative h-[360px] overflow-hidden">
                 <img
                   src={item.mediaSrc}
                   alt={item.alt}
-                  className="h-full w-full object-cover"
+                  className="block h-full w-full object-cover"
                   loading="lazy"
                   draggable={false}
                 />
@@ -379,15 +368,18 @@ function MobileCarousel({
       </div>
 
       {items.length > 1 && (
-        <div className="flex items-center justify-center gap-1.5 py-4" aria-hidden="true">
+        <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5">
           {items.map((it, i) => (
-            <span
+            <button
               key={it.id}
+              type="button"
+              onClick={() => scrollTo(i)}
+              aria-label={`Go to slide ${i + 1}`}
               className="h-1 rounded-full transition-all duration-300"
               style={{
                 width: i === selected ? 18 : 6,
                 backgroundColor:
-                  i === selected ? "hsl(var(--wine-text) / 0.7)" : "hsl(var(--wine-text) / 0.25)",
+                  i === selected ? "hsl(var(--wine-text) / 0.85)" : "hsl(var(--wine-text) / 0.35)",
               }}
             />
           ))}
