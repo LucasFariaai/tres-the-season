@@ -139,6 +139,20 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                 <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.travelTitle}</h3>
                 {reserveContent.travelLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
               </div>
+              {reserveContent.contactPhone && (
+                <div>
+                  <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.contactTitle}</h3>
+                  <p className="text-sm">
+                    <a
+                      href={`tel:${reserveContent.contactPhone.replace(/[^+\d]/g, "")}`}
+                      className="text-muted-foreground transition-opacity hover:opacity-70"
+                      style={{ color: "rgba(26,20,16,0.65)", textDecoration: "none" }}
+                    >
+                      {reserveContent.contactPhone}
+                    </a>
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
