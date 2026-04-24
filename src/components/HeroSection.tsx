@@ -137,6 +137,25 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
 
   useEffect(() => {
     const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting && !video.muted) {
+          video.muted = true;
+          setMuted(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const parent = video.closest("section");
+    if (parent) observer.observe(parent);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
     if (!video || !shouldPlay) return;
 
     let fired = false;
