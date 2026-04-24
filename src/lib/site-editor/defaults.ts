@@ -75,6 +75,8 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     travelLines: ["Take the watertaxi from Rotterdam harbour.", "A seven-minute crossing across the Maas."],
     contactTitle: "Contact us",
     contactPhone: "+31 6 18 02 73 16",
+    alcoholicPairingPrice: "€110",
+    nonAlcoholicPairingPrice: "€100",
     price: "€185",
     reserveButton: "Reserve",
     note: "Reservations recommended 2–3 weeks ahead",
