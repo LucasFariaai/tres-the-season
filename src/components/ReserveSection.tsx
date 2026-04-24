@@ -188,11 +188,11 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                   </div>
                   <div className="flex items-baseline justify-between gap-6">
                     <span>Alcoholic pairing</span>
-                    <span style={{ color: "#1A1410" }}>€180</span>
+                    <span style={{ color: "#1A1410" }}>{reserveContent.alcoholicPairingPrice}</span>
                   </div>
                   <div className="flex items-baseline justify-between gap-6">
                     <span>Non-alcoholic pairing</span>
-                    <span style={{ color: "#1A1410" }}>€100</span>
+                    <span style={{ color: "#1A1410" }}>{reserveContent.nonAlcoholicPairingPrice}</span>
                   </div>
                   <div
                     className="pt-3 mt-1 border-t italic"
