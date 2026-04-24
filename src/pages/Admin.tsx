@@ -146,6 +146,7 @@ function AdminSignIn({ onSignedIn }: { onSignedIn: (session: Session) => void })
 export default function Admin() {
   const editor = useVisualSiteEditor();
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [subscribersOpen, setSubscribersOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const handlePublish = async () => {
