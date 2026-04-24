@@ -49,10 +49,9 @@ function NewsletterField() {
   };
 
   return (
-    <div>
-      <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>Stay in touch</h3>
-      <form onSubmit={handleSubmit} className="flex items-end gap-3 max-w-sm">
-        <label className="flex-1">
+    <div className="max-w-sm">
+      <form onSubmit={handleSubmit} className="flex flex-col items-start gap-3">
+        <label className="block w-full">
           <span className="sr-only">Your email</span>
           <input
             type="email"
@@ -81,12 +80,13 @@ function NewsletterField() {
         <button
           type="submit"
           disabled={status === "sending" || status === "success"}
-          className="pb-1.5 text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-60 disabled:opacity-40"
+          className="text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-60 disabled:opacity-40"
           style={{
             fontFamily: "'Source Sans 3', sans-serif",
             color: "#1A1410",
             background: "transparent",
             border: "none",
+            padding: 0,
           }}
         >
           {status === "sending" ? "Sending…" : status === "success" ? "Joined" : "Subscribe"}
