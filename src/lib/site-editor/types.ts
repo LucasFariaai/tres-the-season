@@ -84,6 +84,8 @@ export interface ReserveContent {
   travelLines: string[];
   contactTitle: string;
   contactPhone: string;
+  alcoholicPairingPrice: string;
+  nonAlcoholicPairingPrice: string;
   price: string;
   reserveButton: string;
   note: string;
