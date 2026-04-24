@@ -3,6 +3,8 @@ import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
 import type { GreenStarContent } from "@/lib/site-editor/types";
 import michelinGreenStar from "@/assets/michelin-green-star.png";
 import knifeCircle from "@/assets/knife-circle.png";
+import gaultMillau from "@/assets/gault-millau.png";
+import gaultMillauRating from "@/assets/gault-millau-rating.jpeg";
 
 interface GreenStarSectionProps {
   content?: GreenStarContent;
@@ -93,34 +95,94 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
             </p>
           </div>
 
-          {/* Michelin Green Star + companion knife mark */}
+          {/* Recognition emblems: Green Star + Michelin knife + Gault&Millau */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "clamp(20px, 2.5vw, 36px)",
+              justifyContent: "center",
+              gap: "clamp(24px, 3.5vw, 56px)",
               flexShrink: 0,
               alignSelf: "flex-start",
+              flexWrap: "wrap",
             }}
           >
-            <img
-              src={michelinGreenStar}
-              alt="Michelin Green Star"
+            {/* 1. Green Star (trevo) */}
+            <div
               style={{
-                height: "clamp(180px, 22vw, 320px)",
-                width: "auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "clamp(160px, 20vw, 280px)",
               }}
-            />
-            <img
-              src={knifeCircle}
-              alt="Chef's knife emblem"
+            >
+              <img
+                src={michelinGreenStar}
+                alt="Michelin Green Star"
+                style={{
+                  height: "100%",
+                  width: "auto",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+
+            {/* 2. Michelin knife emblem */}
+            <div
               style={{
-                height: "clamp(140px, 18vw, 260px)",
-                width: "auto",
-                filter: "brightness(0) invert(1)",
-                opacity: 0.85,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "clamp(160px, 20vw, 280px)",
               }}
-            />
+            >
+              <img
+                src={knifeCircle}
+                alt="Chef's knife emblem"
+                style={{
+                  height: "85%",
+                  width: "auto",
+                  objectFit: "contain",
+                  filter: "brightness(0) invert(1)",
+                  opacity: 0.9,
+                }}
+              />
+            </div>
+
+            {/* 3. Gault&Millau logo + rating block */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "clamp(8px, 1vw, 14px)",
+                height: "clamp(160px, 20vw, 280px)",
+              }}
+            >
+              <img
+                src={gaultMillau}
+                alt="Gault&Millau"
+                style={{
+                  height: "55%",
+                  width: "auto",
+                  objectFit: "contain",
+                  filter: "brightness(0) invert(1)",
+                  opacity: 0.9,
+                }}
+              />
+              <img
+                src={gaultMillauRating}
+                alt="Gault&Millau rating: 16,5 / 20"
+                style={{
+                  height: "22%",
+                  width: "auto",
+                  objectFit: "contain",
+                  filter: "brightness(0) invert(1)",
+                  opacity: 0.9,
+                }}
+              />
+            </div>
           </div>
         </div>
 
