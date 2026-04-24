@@ -120,7 +120,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                 src={michelinGreenStar}
                 alt="Michelin Green Star"
                 style={{
-                  height: "100%",
+                  height: "62%",
                   width: "auto",
                   objectFit: "contain",
                   filter: "brightness(0) invert(1)",
