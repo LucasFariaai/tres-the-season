@@ -73,6 +73,8 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     locationLines: ["Walhalla, Veerhaven 1", "3011 BK Rotterdam", "The Netherlands"],
     travelTitle: "Getting here",
     travelLines: ["Take the watertaxi from Rotterdam harbour.", "A seven-minute crossing across the Maas."],
+    contactTitle: "Contact us",
+    contactPhone: "+31 6 18 02 73 16",
     price: "€185",
     reserveButton: "Reserve",
     note: "Reservations recommended 2–3 weeks ahead",
