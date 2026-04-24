@@ -102,8 +102,8 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               justifyContent: "center",
               gap: "clamp(32px, 4vw, 64px)",
               flexShrink: 0,
-              alignSelf: "flex-start",
               flexWrap: "wrap",
+              width: "100%",
             }}
           >
             {/* 1. Green Star (trevo) — white, transparent */}
