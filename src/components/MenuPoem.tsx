@@ -131,6 +131,8 @@ export default function MenuPoem({
                 <img
                   src={legacyDishImages[index % legacyDishImages.length]}
                   alt={item}
+                  loading="lazy"
+                  decoding="async"
                   className="aspect-[4/5] w-full rounded-[28px] object-cover"
                 />
               </li>
