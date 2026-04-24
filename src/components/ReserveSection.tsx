@@ -51,7 +51,7 @@ function NewsletterField() {
   return (
     <div className="max-w-sm">
       <form onSubmit={handleSubmit} className="flex flex-col items-start gap-3">
-        <label className="block w-full">
+        <label className="block">
           <span className="sr-only">Your email</span>
           <input
             type="email"
@@ -66,8 +66,9 @@ function NewsletterField() {
               }
             }}
             placeholder="Your email"
+            size={Math.max(10, email.length || 10)}
             disabled={status === "sending" || status === "success"}
-            className="w-full bg-transparent border-0 border-b pb-1.5 text-sm focus:outline-none transition-colors"
+            className="bg-transparent border-0 border-b pb-1.5 text-sm focus:outline-none transition-colors"
             style={{
               fontFamily: "'Source Sans 3', sans-serif",
               borderColor: "rgba(26,20,16,0.2)",
