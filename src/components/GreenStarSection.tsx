@@ -205,7 +205,9 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                     marginLeft: "4px",
                   }}
                 >
-                  16,5<span style={{ opacity: 0.55, margin: "0 4px" }}>/</span>20
+                  <span>16,5</span>
+                  <span style={{ opacity: 0.55, margin: "0 4px" }}>/</span>
+                  <span>20</span>
                 </span>
               </div>
             </div>
