@@ -98,8 +98,27 @@ export default function SectionTransition({
     );
   }
 
+  // Default mobile height: tighter than desktop to avoid huge empty cream area.
+  const effectiveMobileHeight = mobileHeight ?? (isText ? "115vh" : height);
+
   return (
-    <div ref={ref} aria-hidden={isText ? undefined : true} style={{ position: "relative", height }}>
+    <div
+      ref={ref}
+      aria-hidden={isText ? undefined : true}
+      className="section-transition-root"
+      style={
+        {
+          position: "relative",
+          height,
+          ["--mt-mobile-h" as string]: effectiveMobileHeight,
+        } as React.CSSProperties
+      }
+    >
+      <style>{`
+        @media (max-width: 767px) {
+          .section-transition-root { height: var(--mt-mobile-h) !important; }
+        }
+      `}</style>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <motion.div
           className="absolute inset-0"
