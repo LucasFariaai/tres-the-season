@@ -57,6 +57,34 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
     editor.setContent((current) => ({ ...current, footer: { ...current.footer, [key]: value } }));
   };
 
+  const setGreenStar = <K extends keyof VisualEditor["content"]["greenStar"]>(key: K, value: VisualEditor["content"]["greenStar"][K]) => {
+    editor.setContent((current) => ({ ...current, greenStar: { ...current.greenStar, [key]: value } }));
+  };
+
+  const setGreenStarPillar = (
+    index: number,
+    key: keyof VisualEditor["content"]["greenStar"]["pillars"][number],
+    value: string,
+  ) => {
+    editor.setContent((current) => ({
+      ...current,
+      greenStar: {
+        ...current.greenStar,
+        pillars: current.greenStar.pillars.map((pillar, pillarIndex) =>
+          pillarIndex === index ? { ...pillar, [key]: value } : pillar,
+        ),
+      },
+    }));
+  };
+
+  const setLivingMenuTransition = <K extends keyof VisualEditor["content"]["livingMenuTransition"]>(key: K, value: VisualEditor["content"]["livingMenuTransition"][K]) => {
+    editor.setContent((current) => ({ ...current, livingMenuTransition: { ...current.livingMenuTransition, [key]: value } }));
+  };
+
+  const setCircleTransition = <K extends keyof VisualEditor["content"]["circleTransition"]>(key: K, value: VisualEditor["content"]["circleTransition"][K]) => {
+    editor.setContent((current) => ({ ...current, circleTransition: { ...current.circleTransition, [key]: value } }));
+  };
+
   const setGallery = <K extends keyof VisualEditor["content"]["gallery"]>(key: K, value: VisualEditor["content"]["gallery"][K]) => {
     editor.setContent((current) => ({ ...current, gallery: { ...current.gallery, [key]: value } }));
   };
@@ -324,9 +352,45 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
             <AdminFieldInput label="Facebook URL" value={editor.content.footer.facebookUrl} onChange={(value) => setFooter("facebookUrl", value)} type="url" />
           </div>
         );
-      case "heroBand":
-      case "zoomBand":
-      case "darkTransition":
+      case "greenStar":
+        return (
+          <div style={{ display: "grid", gap: 16 }}>
+            <AdminFieldTextarea label="Eyebrow" value={editor.content.greenStar.eyebrow} minRows={1} onChange={(value) => setGreenStar("eyebrow", value)} />
+            <AdminFieldTextarea label="Title" value={editor.content.greenStar.title} minRows={2} onChange={(value) => setGreenStar("title", value)} />
+            <AdminFieldTextarea label="Award" value={editor.content.greenStar.award} minRows={1} onChange={(value) => setGreenStar("award", value)} />
+            <AdminFieldTextarea label="First paragraph" value={editor.content.greenStar.body} minRows={5} onChange={(value) => setGreenStar("body", value)} />
+            <AdminFieldTextarea label="Second paragraph" value={editor.content.greenStar.body2} minRows={3} onChange={(value) => setGreenStar("body2", value)} />
+            {editor.content.greenStar.pillars.map((pillar, index) => (
+              <div key={pillar.id} style={{ display: "grid", gap: 12, padding: 12, border: `1px solid ${uiPalette.panelBorder}` }}>
+                <p style={{ margin: 0, fontFamily: '"Abel", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
+                  Pillar {index + 1}
+                </p>
+                <AdminFieldInput label="Number" value={pillar.number} onChange={(value) => setGreenStarPillar(index, "number", value)} />
+                <AdminFieldInput label="Label" value={pillar.label} onChange={(value) => setGreenStarPillar(index, "label", value)} />
+                <AdminFieldInput label="Title" value={pillar.title} onChange={(value) => setGreenStarPillar(index, "title", value)} />
+                <AdminFieldTextarea label="Body" value={pillar.body} minRows={3} onChange={(value) => setGreenStarPillar(index, "body", value)} />
+              </div>
+            ))}
+            <AdminFieldTextarea label="CTA label" value={editor.content.greenStar.ctaLabel} minRows={1} onChange={(value) => setGreenStar("ctaLabel", value)} />
+          </div>
+        );
+      case "livingMenuTransition":
+        return (
+          <div style={{ display: "grid", gap: 16 }}>
+            <AdminFieldTextarea label="Eyebrow" value={editor.content.livingMenuTransition.eyebrow} minRows={1} onChange={(value) => setLivingMenuTransition("eyebrow", value)} />
+            <AdminFieldTextarea label="Title" value={editor.content.livingMenuTransition.title} minRows={2} onChange={(value) => setLivingMenuTransition("title", value)} />
+            <AdminFieldTextarea label="Subtitle" value={editor.content.livingMenuTransition.subtitle} minRows={3} onChange={(value) => setLivingMenuTransition("subtitle", value)} />
+          </div>
+        );
+      case "circleTransition":
+        return (
+          <div style={{ display: "grid", gap: 16 }}>
+            <AdminFieldTextarea label="Eyebrow" value={editor.content.circleTransition.eyebrow} minRows={1} onChange={(value) => setCircleTransition("eyebrow", value)} />
+            <AdminFieldTextarea label="Title" value={editor.content.circleTransition.title} minRows={2} onChange={(value) => setCircleTransition("title", value)} />
+            <AdminFieldTextarea label="Subtitle" value={editor.content.circleTransition.subtitle} minRows={3} onChange={(value) => setCircleTransition("subtitle", value)} />
+          </div>
+        );
+      case "heroToZoomTransition":
       case "seasonsReadonly":
       case "menuReadonly":
       case "producersReadonly":

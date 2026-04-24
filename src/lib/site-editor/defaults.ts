@@ -83,14 +83,57 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     facebookUrl: "#",
     logoAlt: "Tres",
   },
+  greenStar: {
+    eyebrow: "Recognised",
+    title: "The Green Star.",
+    award: "Michelin Guide Netherlands, 2025",
+    body:
+      "In 2025, Tres was awarded the Green Michelin Star, a distinction that recognises restaurants committed to a more sustainable vision of gastronomy. For us, this was not a new direction. It was a recognition of how we have always worked.",
+    body2:
+      'The inspectors described us as "raw and pure, vintage and warm." We take that as the highest compliment.',
+    pillars: [
+      {
+        id: "local",
+        number: "30km",
+        label: "radius",
+        title: "Radically local",
+        body: "Every ingredient is sourced within 30 kilometres of Rotterdam. The fields, the coast, the forests nearby are our entire pantry.",
+      },
+      {
+        id: "waste",
+        number: "0",
+        label: "waste",
+        title: "Root to leaf, nose to tail",
+        body: "Nothing is discarded. What others see as scraps, our fermentation lab transforms into garums, misos and vinegars aged for months.",
+      },
+      {
+        id: "salt",
+        number: "0g",
+        label: "salt",
+        title: "No salt. Ever.",
+        body: "Flavour comes from fermentation, pickling, dehydration and koji. Seaweed crystals and misos aged nine months replace what salt once did.",
+      },
+    ],
+    ctaLabel: "Meet the people behind this",
+  },
+  livingMenuTransition: {
+    eyebrow: "What follows",
+    title: "The Living Menu",
+    subtitle: "Eighteen movements, each a trace of a season already behind us.",
+  },
+  circleTransition: {
+    eyebrow: "Our producers",
+    title: "The Circle",
+    subtitle: "Every name here has a shape — the shape of what you will taste.",
+  },
 };
 
 export const defaultSiteTheme: SiteThemeTokens = {
   heroOverlay: "radial-gradient(ellipse at center, rgba(26,20,16,0.15) 0%, rgba(26,20,16,0.55) 60%, rgba(26,20,16,0.85) 100%)",
   conceptBackground: "hsl(24 24% 8%)",
-  zoomBackground: "hsl(36 33% 95%)",
-  producersBackground: "hsl(var(--background))",
-  reserveBackground: "hsl(var(--background))",
+  zoomBackground: "#F5EFE6",
+  producersBackground: "#F5EFE6",
+  reserveBackground: "#F5EFE6",
   footerBackground: "hsl(var(--season-darkest))",
   bandHeroToZoom:
     "linear-gradient(to bottom, hsl(24 24% 8%) 0%, hsl(24 24% 8%) 12%, hsl(48 13% 9%) 22%, hsl(33 25% 13%) 34%, hsl(24 29% 18%) 46%, hsl(26 21% 29%) 58%, hsl(38 13% 48%) 70%, hsl(36 20% 67%) 81%, hsl(38 25% 80%) 90%, hsl(36 33% 95%) 100%)",

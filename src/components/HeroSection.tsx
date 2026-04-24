@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useSeason, seasonLabels } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import logoTres from "@/assets/logo-tres-svg.svg";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
 import type { HeroContent, SiteThemeTokens } from "@/lib/site-editor/types";
 
@@ -71,12 +70,11 @@ function FloatingParticles() {
   return <canvas ref={canvasRef} className="absolute inset-0 z-[2] h-full w-full pointer-events-none" />;
 }
 
-const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, content, theme }, ref) => {
+const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, content: _content, theme }, ref) => {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const heroContent = content ?? defaultHomeCmsContent.hero;
   const heroTheme = theme ?? defaultSiteTheme;
 
   useEffect(() => {
@@ -90,6 +88,29 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !shouldPlay) return;
+
+    let fired = false;
+    const onTimeUpdate = () => {
+      if (fired) return;
+      if (window.scrollY > 40) {
+        fired = true;
+        return;
+      }
+      const d = video.duration;
+      if (!Number.isFinite(d) || d <= 0) return;
+      if (d - video.currentTime < 1.2) {
+        fired = true;
+        window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+      }
+    };
+
+    video.addEventListener("timeupdate", onTimeUpdate);
+    return () => video.removeEventListener("timeupdate", onTimeUpdate);
+  }, [shouldPlay]);
 
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden bg-[hsl(var(--wine-bg))]">
@@ -108,42 +129,22 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
       <div className="absolute inset-0 z-[1]" style={{ background: heroTheme.heroOverlay }} />
       <FloatingParticles />
 
-      <div className="relative z-10 flex h-full flex-col items-center px-4" style={{ justifyContent: "start", paddingTop: "35vh" }}>
-        <div className="hero-stagger-1 mb-8 flex items-center gap-4 opacity-0">
-          <span className="block h-px w-12 bg-white/30 sm:w-16" />
-          <span className="font-accent text-sm uppercase tracking-[0.2em] text-white">{seasonLabels[season]}</span>
-          <span className="block h-px w-12 bg-white/30 sm:w-16" />
-        </div>
-
-        <div className="hero-stagger-2 opacity-0">
-          <img src={logoTres} alt="Tres" style={{ height: "45px", width: "auto", filter: "brightness(0) invert(1)" }} />
-        </div>
-
-        <p className="hero-stagger-3 mt-6 font-accent text-lg text-[#B8B0A3] opacity-0 sm:text-xl">{heroContent.tagline}</p>
-        <p className="hero-stagger-4 mt-4 font-body text-xs uppercase tracking-[0.2em] text-[#B8B0A3] opacity-0 sm:text-[13px]">{heroContent.location}</p>
-
-        <button
-          onClick={() => document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" })}
-          className="hero-stagger-5 mt-10 flex items-center gap-1.5 rounded-full px-6 py-3 font-body text-[13px] tracking-wide text-[#F7F3ED] opacity-0 transition-all duration-300 hover:opacity-90"
-          style={{
-            backgroundColor: "rgba(247, 243, 237, 0.15)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-          }}
+      <div
+        className={`pointer-events-none absolute inset-x-0 bottom-6 z-10 flex items-end justify-between px-6 transition-opacity duration-500 sm:px-10 lg:px-12 ${
+          scrolled ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <span
+          className="font-body text-[11px] uppercase tracking-[0.3em] text-white/70 sm:text-[12px]"
         >
-          {heroContent.reserveLabel}
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M4 12L12 4M12 4H6M12 4V10" />
-          </svg>
-        </button>
-      </div>
-
-      <div className={`absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-500 ${scrolled ? "pointer-events-none opacity-0" : "opacity-60"}`}>
-        <span className="block h-8 w-px bg-gradient-to-b from-transparent to-[#B8B0A3] animate-scroll-line" />
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#B8B0A3" strokeWidth="1" className="animate-scroll-chevron">
-          <path d="M3 6l5 5 5-5" />
-        </svg>
+          {seasonLabels[season]}
+        </span>
+        <span
+          className="max-w-[60%] text-right text-[13px] italic text-white/80 sm:text-[14px]"
+          style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
+        >
+          Complex without being complicated
+        </span>
       </div>
     </section>
   );

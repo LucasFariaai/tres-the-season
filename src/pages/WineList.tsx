@@ -246,7 +246,7 @@ export default function WineListPage() {
               Wine list · 2026
             </p>
             <h1 style={{ fontFamily: "'Fraunces', serif", fontStyle: "italic", fontWeight: 400, fontSize: "clamp(42px, 7vw, 80px)", lineHeight: 1, color: "#F5EFE6", marginTop: "20px" }}>
-              The carta.
+              The wine list.
             </h1>
           </div>
         </section>
@@ -258,9 +258,9 @@ export default function WineListPage() {
           </div>
         </section>
 
-        {/* Sticky filter bar */}
+        {/* Sticky filter bar — positioned below the floating nav island */}
         <div
-          className="sticky top-0 z-30 px-6 sm:px-8 lg:px-12"
+          className="sticky top-24 z-30 px-6 pt-3 sm:px-8 lg:px-12"
           style={{
             backgroundColor: "rgba(26,20,16,0.97)",
             backdropFilter: "blur(12px)",

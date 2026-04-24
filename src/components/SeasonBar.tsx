@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import logoTres from "@/assets/logo-tres-nav.svg";
 
+const RESERVATION_URL = "https://www.exploretock.com/tresrotterdam";
+
 const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -94,13 +96,15 @@ const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => 
           </div>
 
           {/* CTA */}
-          <button
-            onClick={() => goToSection("reserve")}
+          <a
+            href={RESERVATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-white text-black rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-1.5 shrink-0"
           >
             Reserve
             <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          </a>
         </nav>
       </div>
 
@@ -118,13 +122,15 @@ const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => 
             />
           </button>
 
-          <button
-            onClick={() => goToSection("reserve")}
+          <a
+            href={RESERVATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-white text-black rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-1.5"
           >
             Reserve
             <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          </a>
         </div>
       </div>
     </div>

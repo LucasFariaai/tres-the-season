@@ -1,30 +1,13 @@
 import { useState } from "react";
+import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
+import type { GreenStarContent } from "@/lib/site-editor/types";
 
-const pillars = [
-  {
-    id: "local",
-    number: "30km",
-    label: "radius",
-    title: "Radically local",
-    body: "Every ingredient is sourced within 30 kilometres of Rotterdam. The fields, the coast, the forests nearby are our entire pantry.",
-  },
-  {
-    id: "waste",
-    number: "0",
-    label: "waste",
-    title: "Root to leaf, nose to tail",
-    body: "Nothing is discarded. What others see as scraps, our fermentation lab transforms into garums, misos and vinegars aged for months.",
-  },
-  {
-    id: "salt",
-    number: "0g",
-    label: "salt",
-    title: "No salt. Ever.",
-    body: "Flavour comes from fermentation, pickling, dehydration and koji. Seaweed crystals and misos aged nine months replace what salt once did.",
-  },
-];
+interface GreenStarSectionProps {
+  content?: GreenStarContent;
+}
 
-export default function GreenStarSection() {
+export default function GreenStarSection({ content }: GreenStarSectionProps) {
+  const sectionContent = content ?? defaultHomeCmsContent.greenStar;
   const [hoveredPillar, setHoveredPillar] = useState<string | null>(null);
 
   return (
@@ -55,7 +38,7 @@ export default function GreenStarSection() {
                 marginBottom: "24px",
               }}
             >
-              Recognised
+              {sectionContent.eyebrow}
             </p>
 
             <h2
@@ -69,7 +52,7 @@ export default function GreenStarSection() {
                 marginBottom: "12px",
               }}
             >
-              The Green Star.
+              {sectionContent.title}
             </h2>
 
             <p
@@ -82,7 +65,7 @@ export default function GreenStarSection() {
                 marginBottom: "28px",
               }}
             >
-              Michelin Guide Netherlands, 2025
+              {sectionContent.award}
             </p>
 
             <p
@@ -94,10 +77,7 @@ export default function GreenStarSection() {
                 marginBottom: "16px",
               }}
             >
-              In 2025, Tres was awarded the Green Michelin Star, a distinction
-              that recognises restaurants committed to a more sustainable vision
-              of gastronomy. For us, this was not a new direction. It was a
-              recognition of how we have always worked.
+              {sectionContent.body}
             </p>
             <p
               style={{
@@ -107,8 +87,7 @@ export default function GreenStarSection() {
                 color: "hsl(var(--wine-muted))",
               }}
             >
-              The inspectors described us as "raw and pure, vintage and warm." We
-              take that as the highest compliment.
+              {sectionContent.body2}
             </p>
           </div>
 
@@ -135,7 +114,7 @@ export default function GreenStarSection() {
           className="grid gap-px sm:grid-cols-3"
           style={{ backgroundColor: "hsl(var(--wine-text) / 0.06)" }}
         >
-          {pillars.map((pillar) => {
+          {sectionContent.pillars.map((pillar) => {
             const isHovered = hoveredPillar === pillar.id;
             return (
               <div
@@ -240,7 +219,7 @@ export default function GreenStarSection() {
                 color: "hsl(var(--wine-accent) / 0.4)",
               }}
             >
-              Meet the people behind this
+              {sectionContent.ctaLabel}
             </span>
           </button>
           <svg

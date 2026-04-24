@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMemo, useState } from "react";
 import { seasonLabels, type Season, useSeason } from "@/lib/seasonContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -9,36 +7,34 @@ import foodTableSpread from "@/assets/food-table-spread.jpg";
 import foodDessert from "@/assets/food-dessert.jpg";
 import foodDryage from "@/assets/food-dryage.jpg";
 
-gsap.registerPlugin(ScrollTrigger);
-
 const allSeasons: Season[] = ["spring", "summer", "autumn", "winter"];
 
 const seasonMeta: Record<Season, { ordinal: string; teaser: string; year: string; image: string; video?: string | null }> = {
   spring: {
     ordinal: "01",
     teaser: "First growth, wild garlic, elderflower",
-    year: "2024",
+    year: "2025",
     image: foodCotton,
     video: null,
   },
   summer: {
     ordinal: "02",
     teaser: "Stone fruit, langoustine, edible flowers",
-    year: "2024",
+    year: "2025",
     image: foodTableSpread,
     video: null,
   },
   autumn: {
     ordinal: "03",
     teaser: "Wild game, porcini, fermented berries",
-    year: "2024",
+    year: "2025",
     image: foodDessert,
     video: null,
   },
   winter: {
     ordinal: "04",
     teaser: "Smoked eel, black truffle, bone marrow",
-    year: "2024",
+    year: "2025",
     image: foodDryage,
     video: null,
   },
@@ -48,95 +44,15 @@ export default function SeasonsArchiveSection() {
   const { season, setSeason } = useSeason();
   const isMobile = useIsMobile();
   const [hoveredSeason, setHoveredSeason] = useState<Season | null>(null);
-  const chapterRef = useRef<HTMLDivElement | null>(null);
-  const chapterLabelRef = useRef<HTMLParagraphElement | null>(null);
-  const chapterLineRefs = useRef<Array<HTMLParagraphElement | null>>([]);
-  const chapterSubtitleRef = useRef<HTMLParagraphElement | null>(null);
 
   const activeSeason = useMemo(() => hoveredSeason && !isMobile ? hoveredSeason : season, [hoveredSeason, isMobile, season]);
 
-  useEffect(() => {
-    setSeason("spring");
-  }, [setSeason]);
-
-  useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const chapter = chapterRef.current;
-    const label = chapterLabelRef.current;
-    const subtitle = chapterSubtitleRef.current;
-    const lines = chapterLineRefs.current.filter(Boolean) as HTMLParagraphElement[];
-    if (!chapter || !label || !subtitle || !lines.length) return;
-
-    if (prefersReduced) {
-      label.classList.add("is-visible");
-      subtitle.classList.add("is-visible");
-      lines.forEach((line) => line.classList.add("is-visible"));
-      return;
-    }
-
-    [label, subtitle, ...lines].forEach((node) => node.classList.remove("is-visible"));
-
-    const trigger = ScrollTrigger.create({
-      trigger: chapter,
-      start: "top 72%",
-      onEnter: () => {
-        label.classList.add("is-visible");
-        lines.forEach((line, index) => {
-          window.setTimeout(() => line.classList.add("is-visible"), 200 + index * 200);
-        });
-        window.setTimeout(() => subtitle.classList.add("is-visible"), 850);
-      },
-      onLeaveBack: () => {
-        label.classList.remove("is-visible");
-        subtitle.classList.remove("is-visible");
-        lines.forEach((line) => line.classList.remove("is-visible"));
-      },
-    });
-
-    return () => trigger.kill();
-  }, []);
-
   return (
-    <section className="tres-editorial-theme relative overflow-hidden px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+    <section
+      className="relative overflow-hidden px-4 py-14 sm:px-6 sm:py-16 lg:px-8"
+      style={{ backgroundColor: "#F5EFE6" }}
+    >
       <div className="mx-auto flex w-full max-w-7xl flex-col">
-        <div className="mb-12 text-center sm:mb-16">
-          <p
-            className="mb-4 uppercase"
-            style={{
-              color: "hsl(var(--wine-accent))",
-              fontFamily: "'Source Sans 3', sans-serif",
-              fontSize: "12px",
-              letterSpacing: "0.18em",
-            }}
-          >
-            THE SEASONS
-          </p>
-          <h2
-            style={{
-              color: "hsl(var(--wine-text))",
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(40px, 6vw, 72px)",
-              fontStyle: "italic",
-              fontWeight: 400,
-              lineHeight: 1,
-            }}
-          >
-            A living menu
-          </h2>
-          <p
-            className="mx-auto mt-3 max-w-2xl"
-            style={{
-              color: "hsl(var(--wine-muted))",
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "18px",
-              fontStyle: "italic",
-              fontWeight: 300,
-            }}
-          >
-            Each season reshapes the entire experience.
-          </p>
-        </div>
-
         <div className="flex flex-col md:flex-row" style={{ minHeight: isMobile ? "auto" : "420px" }}>
           {allSeasons.map((item) => {
             const meta = seasonMeta[item];
@@ -255,84 +171,6 @@ export default function SeasonsArchiveSection() {
           })}
         </div>
 
-        <p
-          className="mx-auto mt-6 max-w-3xl text-center"
-          style={{
-            color: "hsl(var(--wine-muted) / 0.45)",
-            fontFamily: "'Playfair Display', serif",
-            fontSize: "16px",
-            fontStyle: "italic",
-            fontWeight: 300,
-          }}
-        >
-          What you see here is memory. What arrives at your table will be its own story.
-        </p>
-
-        <div
-          ref={chapterRef}
-          className="flex min-h-[360px] items-center justify-center"
-          style={{
-            backgroundColor: "hsl(var(--wine-bg))",
-            minHeight: "50vh",
-          }}
-        >
-          <div className="w-full py-20 md:px-[8%]">
-            <div className="mx-auto w-full max-w-6xl text-center md:text-left">
-              <p
-                ref={chapterLabelRef}
-                className="tres-philosophy-reveal uppercase"
-                style={{
-                  color: "hsl(var(--wine-accent))",
-                  fontFamily: "'Source Sans 3', sans-serif",
-                  fontSize: "12px",
-                  letterSpacing: "0.18em",
-                }}
-              >
-                OUR PHILOSOPHY
-              </p>
-
-              <div className="mt-6 space-y-1">
-                {[
-                  "This is",
-                  "how we",
-                  "think.",
-                ].map((line, index) => (
-                  <p
-                    key={line}
-                    ref={(node) => {
-                      chapterLineRefs.current[index] = node;
-                    }}
-                    className="tres-philosophy-reveal"
-                    style={{
-                      color: "hsl(var(--wine-text))",
-                      fontFamily: "'Playfair Display', serif",
-                      fontSize: "clamp(48px, 8vw, 96px)",
-                      fontStyle: "italic",
-                      fontWeight: 400,
-                      lineHeight: 0.95,
-                    }}
-                  >
-                    {line}
-                  </p>
-                ))}
-              </div>
-
-              <p
-                ref={chapterSubtitleRef}
-                className="tres-philosophy-reveal mx-auto mt-8 max-w-2xl md:mx-0"
-                style={{
-                  color: "hsl(var(--wine-muted))",
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "20px",
-                  fontStyle: "italic",
-                  fontWeight: 300,
-                }}
-              >
-                Every dish begins in the land and ends at the table.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

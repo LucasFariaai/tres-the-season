@@ -9,7 +9,10 @@ export type HomeSectionId =
   | "gallery"
   | "producers"
   | "reserve"
-  | "footer";
+  | "footer"
+  | "greenStar"
+  | "livingMenuTransition"
+  | "circleTransition";
 
 export interface SiteMediaItem {
   id?: string;
@@ -91,6 +94,30 @@ export interface FooterContent {
   logoAlt: string;
 }
 
+export interface GreenStarPillar {
+  id: string;
+  number: string;
+  label: string;
+  title: string;
+  body: string;
+}
+
+export interface GreenStarContent {
+  eyebrow: string;
+  title: string;
+  award: string;
+  body: string;
+  body2: string;
+  pillars: GreenStarPillar[];
+  ctaLabel: string;
+}
+
+export interface TransitionContent {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+}
+
 export interface HomeCmsContent {
   hero: HeroContent;
   bands: BandContent;
@@ -100,6 +127,9 @@ export interface HomeCmsContent {
   producers: ProducersContent;
   reserve: ReserveContent;
   footer: FooterContent;
+  greenStar: GreenStarContent;
+  livingMenuTransition: TransitionContent;
+  circleTransition: TransitionContent;
 }
 
 export interface SiteThemeTokens {

@@ -1,7 +1,8 @@
 import { type FormEvent, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import ConceptSection from "@/components/ConceptSection";
-import DarkToCreamTransition from "@/components/DarkToCreamTransition";
+import GreenStarSection from "@/components/GreenStarSection";
+import SectionTransition from "@/components/SectionTransition";
 import FooterSection from "@/components/FooterSection";
 import HeroSection from "@/components/HeroSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
@@ -10,6 +11,9 @@ import ReserveSection from "@/components/ReserveSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
 import TresGallerySection from "@/components/TresGallerySection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
+
+const DARK = "#1b1310";
+const CREAM = "#F5EFE6";
 import { AdminEditPanel } from "@/components/admin/AdminEditPanel";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminToolbar } from "@/components/admin/AdminToolbar";
@@ -219,26 +223,28 @@ export default function Admin() {
           <HeroSection shouldPlay={false} content={editor.content.hero} theme={editor.theme} />
         </EditableSection>
 
-        <EditableSection label="Hero to zoom" isSelected={selection?.id === "heroBand"} onSelect={() => setSelection({ id: "heroBand", label: "Hero to zoom" })}>
-          <div
-            aria-hidden="true"
-            style={{
-              height: isMobile ? 340 : 500,
-              background:
-                "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, hsl(24 24% 8% / 0.95) 100%), linear-gradient(to bottom, hsl(24 24% 8%) 0%, hsl(24 24% 8%) 8%, hsl(20 37% 12%) 18%, hsl(20 29% 18%) 30%, hsl(24 21% 29%) 44%, hsl(39 13% 48%) 58%, hsl(40 21% 67%) 72%, hsl(40 24% 80%) 84%, hsl(43 31% 88%) 93%, hsl(36 38% 93%) 100%)",
-            }}
-          />
+        <EditableSection label="Transition · Hero to Zoom" isSelected={selection?.id === "heroToZoomTransition"} onSelect={() => setSelection({ id: "heroToZoomTransition", label: "Transition · Hero to Zoom" })}>
+          <SectionTransition from={DARK} to={CREAM} />
         </EditableSection>
 
         <EditableSection label="Zoom" isSelected={selection?.id === "zoom"} onSelect={() => setSelection({ id: "zoom", label: "Zoom" })}>
           <ZoomParallaxSection content={editor.content.zoom} theme={editor.theme} />
         </EditableSection>
 
+        <EditableSection label="Transition · The Living Menu" isSelected={selection?.id === "livingMenuTransition"} onSelect={() => setSelection({ id: "livingMenuTransition", label: "Transition · The Living Menu" })}>
+          <SectionTransition
+            from={CREAM}
+            to={CREAM}
+            height="200vh"
+            content={editor.content.livingMenuTransition}
+          />
+        </EditableSection>
+
         <EditableSection label="Seasons archive" isSelected={selection?.id === "seasonsReadonly"} onSelect={() => setSelection({ id: "seasonsReadonly", label: "Seasons archive" })}>
           <SeasonsArchiveSection />
         </EditableSection>
 
-        <EditableSection label="Menu Poem" isSelected={selection?.id === "menuReadonly"} onSelect={() => setSelection({ id: "menuReadonly", label: "Menu Poem" })}>
+        <EditableSection label="Tasting Menu" isSelected={selection?.id === "menuReadonly"} onSelect={() => setSelection({ id: "menuReadonly", label: "Tasting Menu" })}>
           <MenuPoemSection showCta={false} />
         </EditableSection>
 
@@ -246,8 +252,17 @@ export default function Admin() {
           <ConceptSection content={editor.content.concept} theme={editor.theme} />
         </EditableSection>
 
-        <EditableSection label="Zoom to producers" isSelected={selection?.id === "zoomBand"} onSelect={() => setSelection({ id: "zoomBand", label: "Zoom to producers" })}>
-          <div aria-hidden="true" style={{ width: "100%", height: 400, background: editor.content.bands.zoomToProducers || editor.theme.bandZoomToProducers }} />
+        <EditableSection label="Green Star" isSelected={selection?.id === "greenStar"} onSelect={() => setSelection({ id: "greenStar", label: "Green Star" })}>
+          <GreenStarSection content={editor.content.greenStar} />
+        </EditableSection>
+
+        <EditableSection label="Transition · The Circle" isSelected={selection?.id === "circleTransition"} onSelect={() => setSelection({ id: "circleTransition", label: "Transition · The Circle" })}>
+          <SectionTransition
+            from={DARK}
+            to={CREAM}
+            height="200vh"
+            content={editor.content.circleTransition}
+          />
         </EditableSection>
 
         <EditableSection label="Producers" isSelected={selection?.id === "producersReadonly"} onSelect={() => setSelection({ id: "producersReadonly", label: "Producers" })}>
@@ -256,10 +271,6 @@ export default function Admin() {
 
         <EditableSection label="Reserve" isSelected={selection?.id === "reserve"} onSelect={() => setSelection({ id: "reserve", label: "Reserve" })}>
           <ReserveSection content={editor.content.reserve} theme={editor.theme} />
-        </EditableSection>
-
-        <EditableSection label="Dark to cream transition" isSelected={selection?.id === "darkTransition"} onSelect={() => setSelection({ id: "darkTransition", label: "Dark to cream transition" })}>
-          <DarkToCreamTransition />
         </EditableSection>
 
         <EditableSection label="Gallery" isSelected={selection?.id === "gallery"} onSelect={() => setSelection({ id: "gallery", label: "Gallery" })}>

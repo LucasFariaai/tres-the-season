@@ -68,9 +68,9 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 
         gsap.fromTo(
           mediaEl,
-          { xPercent: -7.5 },
+          { xPercent: -6 },
           {
-            xPercent: 7.5,
+            xPercent: 6,
             ease: "none",
             scrollTrigger: {
               trigger: itemEl,
@@ -145,7 +145,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 
       {useSimpleLayout ? (
         <div className="px-0 pb-0">
-          <div className="flex flex-col gap-[2px]" style={{ backgroundColor: "#F5EFE6" }}>
+          <div className="flex flex-col" style={{ backgroundColor: "#F5EFE6" }}>
             {galleryItems.map((item, index) => (
               <motion.article
                 key={item.id}
@@ -160,7 +160,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                 className="relative overflow-hidden"
                 style={{ height: "280px", backgroundColor: "#F5EFE6" }}
               >
-                <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" loading="lazy" />
+                <img src={item.mediaSrc} alt={item.alt} className="h-full w-full object-cover" />
                 {(item.label || item.caption) && (
                   <div className="absolute bottom-0 left-0 p-8">
                     {item.label && (
@@ -201,7 +201,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
       ) : (
         <div ref={pinWrapRef} className="relative" style={{ height: "85vh", minHeight: "520px" }}>
           <div className="relative h-full overflow-hidden" style={{ backgroundColor: "#F5EFE6" }}>
-            <div ref={trackRef} className="flex h-full gap-[3px] pr-[3px] will-change-transform">
+            <div ref={trackRef} className="flex h-full will-change-transform">
               {galleryItems.map((item, index) => (
                 <article
                   key={item.id}
@@ -218,8 +218,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                       }}
                       src={item.mediaSrc}
                       alt={item.alt}
-                      className="absolute left-1/2 top-1/2 h-[115%] w-[115%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
-                      loading="lazy"
+                      className="absolute left-1/2 top-1/2 h-[125%] w-[125%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
                     />
                   </div>
 

@@ -16,23 +16,23 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
   const tastingSeason = seasonLabels[season] || "Spring";
 
   return (
-    <section ref={ref} id="reserve" className="season-transition py-24 sm:py-32" style={{ backgroundColor: reserveTheme.reserveBackground }}>
+    <section ref={ref} id="reserve" className="py-24 sm:py-32" style={{ backgroundColor: reserveTheme.reserveBackground }}>
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-16 md:grid-cols-2">
           <div>
-            <p className="mb-4 font-body text-sm uppercase tracking-[0.3em] text-season-mid season-transition">{reserveContent.eyebrow}</p>
-            <h2 className="mb-8 font-display text-3xl text-season-dark season-transition sm:text-4xl">{reserveContent.title}</h2>
+            <p className="mb-4 font-body text-sm uppercase tracking-[0.3em]" style={{ color: "rgba(26,20,16,0.45)" }}>{reserveContent.eyebrow}</p>
+            <h2 className="mb-8 font-display text-3xl sm:text-4xl" style={{ color: "#1A1410" }}>{reserveContent.title}</h2>
             <div className="space-y-6 font-body text-foreground">
               <div>
-                <h3 className="mb-2 font-display text-lg text-season-dark season-transition">{reserveContent.hoursTitle}</h3>
+                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.hoursTitle}</h3>
                 {reserveContent.hoursLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
               </div>
               <div>
-                <h3 className="mb-2 font-display text-lg text-season-dark season-transition">{reserveContent.locationTitle}</h3>
+                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.locationTitle}</h3>
                 {reserveContent.locationLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
               </div>
               <div>
-                <h3 className="mb-2 font-display text-lg text-season-dark season-transition">{reserveContent.travelTitle}</h3>
+                <h3 className="mb-2 font-display text-lg" style={{ color: "#1A1410" }}>{reserveContent.travelTitle}</h3>
                 {reserveContent.travelLines.map((line) => <p key={line} className="text-sm text-muted-foreground">{line}</p>)}
               </div>
             </div>
@@ -40,9 +40,9 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
 
           <div className="flex flex-col justify-center">
             <div className="flex h-full w-full flex-col items-center md:items-start md:justify-center">
-              <div className="w-full text-center md:max-w-[320px] md:text-left">
+              <div className="w-full text-center md:max-w-[340px] md:text-left">
                 <p
-                  className="mb-2 text-[24px] font-normal italic leading-[1.2]"
+                  className="mb-3 text-[24px] font-normal italic leading-[1.2]"
                   style={{ fontFamily: "'Playfair Display', serif", color: "#1A1410" }}
                 >
                   {tastingSeason} Tasting Menu
@@ -51,18 +51,47 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                   className="mb-8 text-[14px] leading-[1.4]"
                   style={{ fontFamily: "'Source Sans 3', sans-serif", color: "rgba(26,20,16,0.5)" }}
                 >
-                  €185 per guest
+                  €185
                 </p>
-                <p
-                  className="text-[14px] leading-[1.6]"
-                  style={{ fontFamily: "'Source Sans 3', sans-serif", color: "rgba(26,20,16,0.55)" }}
+
+                <div
+                  className="space-y-3 border-t pt-6"
+                  style={{
+                    borderColor: "rgba(26,20,16,0.12)",
+                    fontFamily: "'Source Sans 3', sans-serif",
+                    color: "rgba(26,20,16,0.65)",
+                    fontSize: "14px",
+                    lineHeight: 1.5,
+                  }}
                 >
-                  18 servings. Alcoholic pairing €110. Non-alcoholic pairing €100. Reservations recommended 2 to 3 weeks ahead.
-                </p>
+                  <div className="flex items-baseline justify-between gap-6">
+                    <span>18 servings</span>
+                    <span style={{ color: "rgba(26,20,16,0.35)" }}>Tasting menu</span>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-6">
+                    <span>Alcoholic pairing</span>
+                    <span style={{ color: "#1A1410" }}>€180</span>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-6">
+                    <span>Non-alcoholic pairing</span>
+                    <span style={{ color: "#1A1410" }}>€100</span>
+                  </div>
+                  <div
+                    className="pt-3 mt-1 border-t italic"
+                    style={{
+                      borderColor: "rgba(26,20,16,0.08)",
+                      fontFamily: "'Playfair Display', serif",
+                      fontSize: "13px",
+                      color: "rgba(26,20,16,0.5)",
+                    }}
+                  >
+                    Reservation recommended 2–3 weeks ahead.
+                  </div>
+                </div>
 
                 <a
                   href="/wine-list"
-                  className="mt-4 inline-flex items-center gap-1.5 transition-opacity hover:opacity-70"
+                  className="mt-6 inline-flex items-center gap-1.5 transition-opacity hover:opacity-70"
                   style={{
                     fontFamily: "'Source Sans 3', sans-serif",
                     fontSize: "13px",
@@ -74,14 +103,14 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                     borderRadius: 0,
                   }}
                 >
-                  Explore the carta
+                  Explore the wine list
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M4 12L12 4M12 4H6M12 4V10" />
                   </svg>
                 </a>
               </div>
 
-              <div className="mt-12 flex w-full justify-center md:max-w-[320px] md:justify-center">
+              <div className="mt-12 flex w-full justify-center md:max-w-[340px] md:justify-center">
                 <OrganicReserveButton
                   label="RESERVE"
                   href="https://www.exploretock.com/tresrotterdam"
@@ -89,13 +118,6 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                   textColor="#1A1410"
                 />
               </div>
-
-              <p
-                className="mt-6 text-center text-[11px] leading-[1.4]"
-                style={{ fontFamily: "'Source Sans 3', sans-serif", color: "rgba(26,20,16,0.3)" }}
-              >
-                You will be redirected to Tock
-              </p>
             </div>
           </div>
         </div>
