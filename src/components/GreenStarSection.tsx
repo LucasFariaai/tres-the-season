@@ -28,130 +28,6 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
       />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32 lg:px-12">
-        {/* Header */}
-        <div className="flex flex-col items-center text-center gap-12 mb-16">
-          {/* Recognition emblems: Green Star + Michelin knife + Gault&Millau */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "clamp(32px, 4vw, 64px)",
-              flexShrink: 0,
-              flexWrap: "wrap",
-              width: "100%",
-            }}
-          >
-            {/* 1. Green Star (trevo) — white, transparent */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "clamp(170px, 21vw, 290px)",
-                width: "clamp(170px, 21vw, 290px)",
-              }}
-            >
-              <img
-                src={michelinGreenStar}
-                alt="Michelin Green Star"
-                style={{
-                  height: "62%",
-                  width: "auto",
-                  objectFit: "contain",
-                  filter: "brightness(0) invert(1)",
-                  opacity: 0.95,
-                }}
-              />
-            </div>
-
-            {/* 2. Michelin knife emblem */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "clamp(170px, 21vw, 290px)",
-              }}
-            >
-              <img
-                src={knifeCircle}
-                alt="Chef's knife emblem"
-                style={{
-                  height: "62%",
-                  width: "auto",
-                  objectFit: "contain",
-                  filter: "brightness(0) invert(1)",
-                  opacity: 0.9,
-                }}
-              />
-            </div>
-
-            {/* 3. Gault&Millau logo + native rating (16,5/20 + 3 chef hats) */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "clamp(10px, 1.2vw, 16px)",
-                height: "clamp(170px, 21vw, 290px)",
-              }}
-            >
-              <img
-                src={gaultMillau}
-                alt="Gault&Millau"
-                style={{
-                  height: "42%",
-                  width: "auto",
-                  objectFit: "contain",
-                  filter: "brightness(0) invert(1)",
-                  opacity: 0.9,
-                }}
-              />
-              <div
-                aria-label="Gault&Millau rating: 16,5 out of 20"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "10px",
-                  color: "hsl(var(--wine-text))",
-                  opacity: 0.92,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontStyle: "italic",
-                    fontWeight: 400,
-                    fontSize: "clamp(15px, 1.4vw, 19px)",
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  <span>16,5</span>
-                  <span style={{ opacity: 0.55, margin: "0 4px" }}>/</span>
-                  <span>20</span>
-                </span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                  {[0, 1, 2].map((i) => (
-                    <svg
-                      key={i}
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 2c-2.5 0-4.5 1.8-4.85 4.13A4 4 0 0 0 4 10c0 1.86 1.27 3.43 3 3.87V20a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-6.13c1.73-.44 3-2.01 3-3.87a4 4 0 0 0-3.15-3.87C16.5 3.8 14.5 2 12 2Zm-3 16v-3h2v3H9Zm4 0v-3h2v3h-2Z" />
-                    </svg>
-                  ))}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Three pillars */}
         <div
           className="grid gap-px sm:grid-cols-3"
@@ -226,6 +102,128 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               </div>
             );
           })}
+        </div>
+
+        {/* Recognition emblems: Green Star + Michelin knife + Gault&Millau */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "clamp(32px, 4vw, 64px)",
+            flexShrink: 0,
+            flexWrap: "wrap",
+            width: "100%",
+            marginTop: "64px",
+          }}
+        >
+          {/* 1. Green Star (trevo) — white, transparent */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "clamp(170px, 21vw, 290px)",
+              width: "clamp(170px, 21vw, 290px)",
+            }}
+          >
+            <img
+              src={michelinGreenStar}
+              alt="Michelin Green Star"
+              style={{
+                height: "62%",
+                width: "auto",
+                objectFit: "contain",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.95,
+              }}
+            />
+          </div>
+
+          {/* 2. Michelin knife emblem */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "clamp(170px, 21vw, 290px)",
+            }}
+          >
+            <img
+              src={knifeCircle}
+              alt="Chef's knife emblem"
+              style={{
+                height: "62%",
+                width: "auto",
+                objectFit: "contain",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.9,
+              }}
+            />
+          </div>
+
+          {/* 3. Gault&Millau logo + native rating (16,5/20 + 3 chef hats) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "clamp(10px, 1.2vw, 16px)",
+              height: "clamp(170px, 21vw, 290px)",
+            }}
+          >
+            <img
+              src={gaultMillau}
+              alt="Gault&Millau"
+              style={{
+                height: "42%",
+                width: "auto",
+                objectFit: "contain",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.9,
+              }}
+            />
+            <div
+              aria-label="Gault&Millau rating: 16,5 out of 20"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "10px",
+                color: "hsl(var(--wine-text))",
+                opacity: 0.92,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  fontSize: "clamp(15px, 1.4vw, 19px)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <span>16,5</span>
+                <span style={{ opacity: 0.55, margin: "0 4px" }}>/</span>
+                <span>20</span>
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                {[0, 1, 2].map((i) => (
+                  <svg
+                    key={i}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2c-2.5 0-4.5 1.8-4.85 4.13A4 4 0 0 0 4 10c0 1.86 1.27 3.43 3 3.87V20a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-6.13c1.73-.44 3-2.01 3-3.87a4 4 0 0 0-3.15-3.87C16.5 3.8 14.5 2 12 2Zm-3 16v-3h2v3H9Zm4 0v-3h2v3h-2Z" />
+                  </svg>
+                ))}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Transition to producers */}
