@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import ConceptSection from "@/components/ConceptSection";
 import GreenStarSection from "@/components/GreenStarSection";
@@ -149,6 +150,7 @@ export default function Admin() {
   const [selection, setSelection] = useState<Selection | null>(null);
   const [subscribersOpen, setSubscribersOpen] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const handlePublish = async () => {
     const result = await editor.publish();
@@ -219,7 +221,7 @@ export default function Admin() {
         onReset={handleReset}
         onHistory={() => setSelection({ id: "history", label: "Version history" })}
         onSubscribers={() => setSubscribersOpen(true)}
-        onWines={() => setSelection({ id: "wines", label: "Wine list · Edit" })}
+        onWines={() => navigate("/admin/wines")}
         onSignOut={handleSignOut}
       />
       <AdminEditPanel editor={editor} selection={selection} onClose={() => setSelection(null)} />
@@ -245,7 +247,7 @@ export default function Admin() {
           <SeasonsArchiveSection />
         </EditableSection>
 
-        <EditableSection label="Tasting Menu · Dishes" isSelected={selection?.id === "menus"} onSelect={() => setSelection({ id: "menus", label: "Tasting Menu · Dishes" })}>
+        <EditableSection label="Tasting Menu · Open editor →" isSelected={false} onSelect={() => navigate("/admin/menus")}>
           <MenuPoemSection showCta={false} menus={editor.content.menus} />
         </EditableSection>
 
@@ -266,7 +268,7 @@ export default function Admin() {
           />
         </EditableSection>
 
-        <EditableSection label="Producers · Map points" isSelected={selection?.id === "producers"} onSelect={() => setSelection({ id: "producers", label: "Producers · Map points" })}>
+        <EditableSection label="Producers · Open editor →" isSelected={false} onSelect={() => navigate("/admin/producers")}>
           <ProducersSection content={editor.content.producers} theme={editor.theme} />
         </EditableSection>
 
