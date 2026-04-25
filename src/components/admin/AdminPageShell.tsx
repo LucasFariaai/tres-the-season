@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoTres from "@/assets/logo-tres-nav.svg";
 import { buttonBase, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
 import type { VisualEditor } from "@/components/admin/types";
@@ -11,7 +11,15 @@ type Props = {
   children: React.ReactNode;
 };
 
+const NAV_LINKS: { to: string; label: string }[] = [
+  { to: "/admin/menus", label: "Menus" },
+  { to: "/admin/producers", label: "Producers" },
+  { to: "/admin/wines", label: "Wines" },
+];
+
 export function AdminPageShell({ editor, title, subtitle, onPublish, children }: Props) {
+  const navigate = useNavigate();
+  const location = useLocation();
   return (
     <div style={{ minHeight: "100vh", background: uiPalette.panel, color: uiPalette.controlText }}>
       <style>{`
@@ -44,16 +52,39 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
             </span>
           </Link>
 
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center", flex: 1 }}>
+            {NAV_LINKS.map((link) => {
+              const isActive = location.pathname === link.to;
+              return (
+                <button
+                  key={link.to}
+                  type="button"
+                  onClick={() => navigate(link.to)}
+                  style={{
+                    ...buttonBase,
+                    padding: "6px 14px",
+                    fontSize: 11,
+                    background: isActive ? uiPalette.accent : "transparent",
+                    borderColor: isActive ? uiPalette.accent : uiPalette.ghostBorder,
+                    color: isActive ? uiPalette.accentText : uiPalette.controlText,
+                  }}
+                >
+                  {link.label}
+                </button>
+              );
+            })}
+          </div>
+
           <div
             style={{
-              flex: 1,
-              textAlign: "center",
               fontFamily: '"Abel", sans-serif',
               fontSize: 11,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
               color: uiPalette.toolbarBadge,
               animation: editor.saving ? "adminPulse 1.6s ease-in-out infinite" : "none",
+              minWidth: 100,
+              textAlign: "right",
             }}
           >
             {editor.saving ? "Saving..." : "Editing draft"}

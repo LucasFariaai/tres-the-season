@@ -222,6 +222,8 @@ export default function Admin() {
         onHistory={() => setSelection({ id: "history", label: "Version history" })}
         onSubscribers={() => setSubscribersOpen(true)}
         onWines={() => navigate("/admin/wines")}
+        onMenus={() => navigate("/admin/menus")}
+        onProducers={() => navigate("/admin/producers")}
         onSignOut={handleSignOut}
       />
       <AdminEditPanel editor={editor} selection={selection} onClose={() => setSelection(null)} />

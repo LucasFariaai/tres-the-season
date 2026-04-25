@@ -10,10 +10,12 @@ type AdminToolbarProps = {
   onHistory: () => void;
   onSubscribers: () => void;
   onWines: () => void;
+  onMenus: () => void;
+  onProducers: () => void;
   onSignOut: () => Promise<void>;
 };
 
-export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscribers, onWines, onSignOut }: AdminToolbarProps) {
+export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscribers, onWines, onMenus, onProducers, onSignOut }: AdminToolbarProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -80,6 +82,12 @@ export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscrib
           </button>
           <button type="button" onClick={() => void onReset()} style={{ ...buttonBase, color: uiPalette.controlText }}>
             Reset
+          </button>
+          <button type="button" onClick={onMenus} style={{ ...buttonBase, color: uiPalette.controlText }}>
+            Menus
+          </button>
+          <button type="button" onClick={onProducers} style={{ ...buttonBase, color: uiPalette.controlText }}>
+            Producers
           </button>
           <button type="button" onClick={onWines} style={{ ...buttonBase, color: uiPalette.controlText }}>
             Wines

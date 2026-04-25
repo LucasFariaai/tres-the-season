@@ -275,12 +275,19 @@ export function useVisualSiteEditor() {
         return;
       }
 
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        void reload(session);
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION") {
+        if (session) {
+          void reload(session);
+        } else {
+          setState((current) => ({ ...current, session: null, isAdmin: false, loading: false, saving: false, publishing: false }));
+        }
         return;
       }
 
-      setState((current) => ({ ...current, session: session ?? null, loading: false }));
+      // Other events (USER_UPDATED, PASSWORD_RECOVERY): track session but don't
+      // flip loading — that's the bootstrap/reload's job and flipping it here
+      // races with reload() and can briefly show isAdmin=false before roles load.
+      setState((current) => ({ ...current, session: session ?? current.session }));
     });
 
     return () => {
