@@ -58,6 +58,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
           start: "top top",
           end: () => `+=${Math.max(getMaxX() * 1.2, window.innerHeight)}`,
           pin: true,
+          pinSpacing: false,
           scrub: 1,
           invalidateOnRefresh: true,
         },
@@ -126,7 +127,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
       {useSimpleLayout ? (
         <MobileGallery items={galleryItems} prefersReducedMotion={!!prefersReducedMotion} />
       ) : (
-        <div ref={pinWrapRef} className="relative" style={{ height: "85vh", minHeight: "520px" }}>
+        <div ref={pinWrapRef} className="relative" style={{ height: "78vh", minHeight: "480px" }}>
           <div className="relative h-full overflow-hidden" style={{ backgroundColor: "#191310" }}>
             <div ref={trackRef} className="flex h-full will-change-transform">
               {galleryItems.map((item, index) => (
