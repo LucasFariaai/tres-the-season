@@ -118,11 +118,10 @@ export default function ProducerMap({ producers, activeIndex, hoveredIndex, onPi
     });
   }, [producers]);
 
-  // React to active/hovered index changes
+  // Marker styling reacts to either active (clicked) or hovered card so the
+  // user still gets visual feedback while moving the cursor over the list.
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
+    if (!mapRef.current) return;
     const effectiveActive = activeIndex ?? hoveredIndex;
 
     markersRef.current.forEach((marker, i) => {
@@ -133,19 +132,31 @@ export default function ProducerMap({ producers, activeIndex, hoveredIndex, onPi
         weight: isActive ? 6 : 4,
       });
     });
+  }, [activeIndex, hoveredIndex, producers]);
 
-    if (effectiveActive !== null && effectiveActive >= 0 && effectiveActive < producers.length) {
-      const p = producers[effectiveActive];
+  // Camera ONLY reacts to clicks (activeIndex). Hovering a card no longer
+  // moves the map. When nothing is active, fly back to the full 30km view.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (activeIndex !== null && activeIndex >= 0 && activeIndex < producers.length) {
+      const p = producers[activeIndex];
       const lat = Number(p.lat);
       const lng = Number(p.lng);
       if (Number.isFinite(lat) && Number.isFinite(lng)) {
         try {
-          map.flyTo([lat, lng], 12, { duration: 0.4 });
+          map.flyTo([lat, lng], 12, { duration: 0.6 });
         } catch (_) { /* map not ready */ }
       }
-      markersRef.current[effectiveActive]?.openPopup();
+      markersRef.current[activeIndex]?.openPopup();
+    } else {
+      try {
+        map.flyTo([TRES_LOCATION.lat, TRES_LOCATION.lng], 11, { duration: 0.6 });
+      } catch (_) { /* map not ready */ }
+      markersRef.current.forEach((marker) => marker.closePopup());
     }
-  }, [activeIndex, hoveredIndex, producers]);
+  }, [activeIndex, producers]);
 
   return (
     <div
