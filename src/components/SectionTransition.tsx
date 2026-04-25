@@ -32,10 +32,11 @@ export default function SectionTransition({
     offset: ["start end", "end start"],
   });
 
-  // Background holds `from` while the title is locked in centre. The colour
-  // morph only kicks in once the title starts leaving the frame, which is
-  // also where the dissolve is intended to happen.
-  const bgColor = useTransform(scrollYProgress, [0.55, 0.95], [from, to]);
+  // Background morph happens while the sticky child is pinned (roughly
+  // scrollYProgress 0.33 → 0.67 for a 200vh section + 100vh sticky child).
+  // Pin the colour change inside that window so the bg fully reaches `to`
+  // before the sticky unsticks and the next section comes into view.
+  const bgColor = useTransform(scrollYProgress, [0.32, 0.6], [from, to]);
 
   // Logo marker: enters, holds, fades — lifetime offset so it only appears
   // during the cross-fade phase.
@@ -50,20 +51,19 @@ export default function SectionTransition({
     [0.94, 1, 1, 1.04],
   );
 
-  // Text: slides in fast (0→0.12), then sits centred and untouched through
-  // the hold (0.12→0.55), then slides up out of frame at the same time the
-  // background starts catching up to the text colour (0.55→0.95). No
-  // opacity fade — the dissolve comes from the cream bg meeting the cream
-  // text while it exits.
+  // Text: slides in fast (0 → 0.2), then sits centred for the rest of the
+  // section. No vertical exit — the dissolve comes from the bg morph above
+  // catching up to the cream text colour. The title stays fixed in centre
+  // until the next section physically scrolls past it.
   const textOpacity = useTransform(
     scrollYProgress,
-    [0.0, 0.12],
+    [0.0, 0.2],
     [0, 1],
   );
   const textY = useTransform(
     scrollYProgress,
-    [0.0, 0.12, 0.55, 0.95],
-    [40, 0, 0, -120],
+    [0.0, 0.2],
+    [40, 0],
   );
 
   if (reducedMotion) {
