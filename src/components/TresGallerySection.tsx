@@ -158,7 +158,10 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                     itemRefs.current[index] = el;
                   }}
                   className="relative h-full shrink-0 overflow-hidden"
-                  style={{ width: widthMap[item.width], marginRight: -1 }}
+                  style={{
+                    width: widthMap[item.width],
+                    marginRight: index === galleryItems.length - 1 ? 0 : -2,
+                  }}
                 >
                   <div className="absolute inset-0 overflow-hidden">
                     <img
@@ -170,40 +173,6 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                       className="absolute left-1/2 top-1/2 h-[140%] w-[140%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
                     />
                   </div>
-
-                  {(item.label || item.caption) && (
-                    <div className="absolute bottom-0 left-0 z-[2] p-8">
-                      {item.label && (
-                        <p
-                          style={{
-                            fontFamily: "'Source Sans 3', sans-serif",
-                            fontSize: "11px",
-                            fontWeight: 400,
-                            letterSpacing: "0.14em",
-                            color: "hsl(var(--wine-text) / 0.6)",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          {item.label}
-                        </p>
-                      )}
-                      {item.caption && (
-                        <p
-                          className="mt-2 max-w-[18rem]"
-                          style={{
-                            fontFamily: "'Playfair Display', serif",
-                            fontStyle: "italic",
-                            fontSize: "22px",
-                            fontWeight: 300,
-                            lineHeight: 1.2,
-                            color: "hsl(var(--wine-text))",
-                          }}
-                        >
-                          {item.caption}
-                        </p>
-                      )}
-                    </div>
-                  )}
                 </article>
               ))}
             </div>
@@ -228,42 +197,9 @@ function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent[
     <article
       key={item.id}
       className="relative overflow-hidden"
-      style={{ height: "320px", backgroundColor: "#F5EFE6" }}
+      style={{ height: "320px", backgroundColor: "#191310" }}
     >
       <img src={item.mediaSrc} alt={item.alt} className="block h-full w-full object-cover" loading="lazy" />
-      {(item.label || item.caption) && (
-        <div className="absolute bottom-0 left-0 p-6">
-          {item.label && (
-            <p
-              style={{
-                fontFamily: "'Source Sans 3', sans-serif",
-                fontSize: "11px",
-                fontWeight: 400,
-                letterSpacing: "0.14em",
-                color: "hsl(var(--wine-text) / 0.6)",
-                textTransform: "uppercase",
-              }}
-            >
-              {item.label}
-            </p>
-          )}
-          {item.caption && (
-            <p
-              className="mt-2 max-w-[18rem]"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontStyle: "italic",
-                fontSize: "20px",
-                fontWeight: 300,
-                lineHeight: 1.2,
-                color: "hsl(var(--wine-text))",
-              }}
-            >
-              {item.caption}
-            </p>
-          )}
-        </div>
-      )}
     </article>
   );
 
@@ -328,39 +264,6 @@ function MobileCarousel({
                   loading="lazy"
                   draggable={false}
                 />
-                {(item.label || item.caption) && (
-                  <div className="absolute bottom-0 left-0 p-6">
-                    {item.label && (
-                      <p
-                        style={{
-                          fontFamily: "'Source Sans 3', sans-serif",
-                          fontSize: "11px",
-                          fontWeight: 400,
-                          letterSpacing: "0.14em",
-                          color: "hsl(var(--wine-text) / 0.65)",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {item.label}
-                      </p>
-                    )}
-                    {item.caption && (
-                      <p
-                        className="mt-2 max-w-[16rem]"
-                        style={{
-                          fontFamily: "'Playfair Display', serif",
-                          fontStyle: "italic",
-                          fontSize: "20px",
-                          fontWeight: 300,
-                          lineHeight: 1.2,
-                          color: "hsl(var(--wine-text))",
-                        }}
-                      >
-                        {item.caption}
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
           ))}
