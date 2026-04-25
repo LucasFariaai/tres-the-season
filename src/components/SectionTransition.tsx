@@ -50,16 +50,17 @@ export default function SectionTransition({
     [0.94, 1, 1, 1.04],
   );
 
-  // Text: slides in early, locks in the middle (no movement), and exits
-  // completely before the background begins changing.
+  // Text: slides in as soon as the section enters the viewport, locks in the
+  // middle (no movement), and exits completely before the background begins
+  // changing.
   const textOpacity = useTransform(
     scrollYProgress,
-    [0.08, 0.3, 0.6, 0.76],
+    [0.0, 0.15, 0.6, 0.76],
     [0, 1, 1, 0],
   );
   const textY = useTransform(
     scrollYProgress,
-    [0.08, 0.3, 0.6, 0.76],
+    [0.0, 0.15, 0.6, 0.76],
     [40, 0, 0, -40],
   );
 
