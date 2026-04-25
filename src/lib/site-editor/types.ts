@@ -122,6 +122,41 @@ export interface TransitionContent {
   subtitle: string;
 }
 
+export interface MenuDish {
+  name: string;
+  description: string;
+  image: string;
+}
+
+export interface SeasonMenu {
+  subtitle: string;
+  items: MenuDish[];
+}
+
+export type Season = "spring" | "summer" | "autumn" | "winter";
+
+export type MenusContent = Record<Season, SeasonMenu>;
+
+export type WineCategory = "sparkling" | "white" | "red" | "dessert";
+
+export interface WineItem {
+  id: string;
+  category: WineCategory;
+  country: string;
+  region: string;
+  subregion?: string;
+  vintage?: string;
+  name: string;
+  producer: string;
+  grapes: string;
+  price: number;
+  featured?: boolean;
+}
+
+export interface WinesContent {
+  items: WineItem[];
+}
+
 export interface HomeCmsContent {
   hero: HeroContent;
   bands: BandContent;
@@ -134,6 +169,8 @@ export interface HomeCmsContent {
   greenStar: GreenStarContent;
   livingMenuTransition: TransitionContent;
   circleTransition: TransitionContent;
+  menus: MenusContent;
+  wines: WinesContent;
 }
 
 export interface SiteThemeTokens {

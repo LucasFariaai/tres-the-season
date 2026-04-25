@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { Season } from "@/lib/site-editor/types";
 import type { TresGalleryItem, TresGalleryWidth } from "@/data/tresGalleryItems";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminHistoryPanel } from "@/components/admin/AdminHistoryPanel";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
+import { AdminWinesPanel } from "@/components/admin/AdminWinesPanel";
 import { buttonBase, fieldLabelStyle, sectionHeaderStyle, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
 import type { Selection, VisualEditor } from "@/components/admin/types";
 import { toast } from "@/components/ui/use-toast";
@@ -31,6 +33,7 @@ type AdminEditPanelProps = {
 
 export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelProps) {
   const isMobile = useIsMobile();
+  const [activeMenuSeason, setActiveMenuSeason] = useState<Season>("spring");
 
   useEffect(() => {
     if (!selection) return;
@@ -83,6 +86,135 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
 
   const setCircleTransition = <K extends keyof VisualEditor["content"]["circleTransition"]>(key: K, value: VisualEditor["content"]["circleTransition"][K]) => {
     editor.setContent((current) => ({ ...current, circleTransition: { ...current.circleTransition, [key]: value } }));
+  };
+
+  type Producer = VisualEditor["content"]["producers"]["items"][number];
+
+  const setProducer = (index: number, key: keyof Producer, value: Producer[keyof Producer]) => {
+    editor.setContent((current) => ({
+      ...current,
+      producers: {
+        ...current.producers,
+        items: current.producers.items.map((producer, producerIndex) =>
+          producerIndex === index ? { ...producer, [key]: value } : producer,
+        ),
+      },
+    }));
+  };
+
+  const addProducer = () => {
+    editor.setContent((current) => ({
+      ...current,
+      producers: {
+        ...current.producers,
+        items: [
+          ...current.producers.items,
+          {
+            name: "New producer",
+            specialty: "",
+            distance: "0km",
+            image: "",
+            region: "",
+            lat: 51.9,
+            lng: 4.495,
+            quote: "",
+          },
+        ],
+      },
+    }));
+  };
+
+  const removeProducer = (index: number) => {
+    editor.setContent((current) => ({
+      ...current,
+      producers: {
+        ...current.producers,
+        items: current.producers.items.filter((_, producerIndex) => producerIndex !== index),
+      },
+    }));
+  };
+
+  const moveProducer = (index: number, direction: -1 | 1) => {
+    editor.setContent((current) => {
+      const nextItems = [...current.producers.items];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= nextItems.length) return current;
+      [nextItems[index], nextItems[targetIndex]] = [nextItems[targetIndex], nextItems[index]];
+      return { ...current, producers: { ...current.producers, items: nextItems } };
+    });
+  };
+
+  const setProducers = <K extends keyof VisualEditor["content"]["producers"]>(key: K, value: VisualEditor["content"]["producers"][K]) => {
+    editor.setContent((current) => ({ ...current, producers: { ...current.producers, [key]: value } }));
+  };
+
+  type MenuDish = VisualEditor["content"]["menus"][Season]["items"][number];
+
+  const setSeasonSubtitle = (season: Season, value: string) => {
+    editor.setContent((current) => ({
+      ...current,
+      menus: {
+        ...current.menus,
+        [season]: { ...current.menus[season], subtitle: value },
+      },
+    }));
+  };
+
+  const setDish = (season: Season, index: number, key: keyof MenuDish, value: string) => {
+    editor.setContent((current) => ({
+      ...current,
+      menus: {
+        ...current.menus,
+        [season]: {
+          ...current.menus[season],
+          items: current.menus[season].items.map((dish, dishIndex) =>
+            dishIndex === index ? { ...dish, [key]: value } : dish,
+          ),
+        },
+      },
+    }));
+  };
+
+  const addDish = (season: Season) => {
+    editor.setContent((current) => ({
+      ...current,
+      menus: {
+        ...current.menus,
+        [season]: {
+          ...current.menus[season],
+          items: [
+            ...current.menus[season].items,
+            { name: "New dish", description: "", image: "" },
+          ],
+        },
+      },
+    }));
+  };
+
+  const removeDish = (season: Season, index: number) => {
+    editor.setContent((current) => ({
+      ...current,
+      menus: {
+        ...current.menus,
+        [season]: {
+          ...current.menus[season],
+          items: current.menus[season].items.filter((_, dishIndex) => dishIndex !== index),
+        },
+      },
+    }));
+  };
+
+  const moveDish = (season: Season, index: number, direction: -1 | 1) => {
+    editor.setContent((current) => {
+      const nextItems = [...current.menus[season].items];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= nextItems.length) return current;
+      [nextItems[index], nextItems[targetIndex]] = [nextItems[targetIndex], nextItems[index]];
+      return {
+        ...current,
+        menus: { ...current.menus, [season]: { ...current.menus[season], items: nextItems } },
+      };
+    });
   };
 
   const setGallery = <K extends keyof VisualEditor["content"]["gallery"]>(key: K, value: VisualEditor["content"]["gallery"][K]) => {
@@ -394,6 +526,197 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
             <AdminFieldTextarea label="Subtitle" value={editor.content.circleTransition.subtitle} minRows={3} onChange={(value) => setCircleTransition("subtitle", value)} />
           </div>
         );
+      case "menus": {
+        const seasons: { id: Season; label: string }[] = [
+          { id: "spring", label: "Spring" },
+          { id: "summer", label: "Summer" },
+          { id: "autumn", label: "Autumn" },
+          { id: "winter", label: "Winter" },
+        ];
+        const activeMenu = editor.content.menus[activeMenuSeason];
+        return (
+          <div style={{ display: "grid", gap: 16 }}>
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap", borderBottom: `1px solid ${uiPalette.controlBorder}`, paddingBottom: 8 }}>
+              {seasons.map((season) => {
+                const isActive = activeMenuSeason === season.id;
+                return (
+                  <button
+                    key={season.id}
+                    type="button"
+                    onClick={() => setActiveMenuSeason(season.id)}
+                    style={{
+                      ...buttonBase,
+                      padding: "6px 12px",
+                      background: isActive ? uiPalette.accent : "transparent",
+                      borderColor: isActive ? uiPalette.accent : uiPalette.ghostBorder,
+                      color: isActive ? uiPalette.accentText : uiPalette.controlText,
+                      fontSize: 12,
+                    }}
+                  >
+                    {season.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <AdminFieldInput
+              label="Season subtitle"
+              value={activeMenu.subtitle}
+              onChange={(value) => setSeasonSubtitle(activeMenuSeason, value)}
+            />
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h2 style={sectionHeaderStyle}>Dishes ({activeMenu.items.length})</h2>
+              <button type="button" onClick={() => addDish(activeMenuSeason)} style={{ ...buttonBase, padding: "6px 12px", color: uiPalette.controlText }}>
+                + Add dish
+              </button>
+            </div>
+
+            <div style={{ display: "grid", gap: 12, maxHeight: isMobile ? "none" : "62vh", overflowY: "auto", paddingRight: 4 }}>
+              {activeMenu.items.map((dish, index) => {
+                const previewUrl = resolveMediaUrl(dish.image, 240, 80) ?? dish.image;
+                return (
+                  <div key={`${activeMenuSeason}-${index}`} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
+                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "hsl(24 18% 10%)", flexShrink: 0 }}>
+                          {previewUrl ? <img src={previewUrl} alt={dish.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
+                        </div>
+                        <span style={{ fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText }}>
+                          {String(index + 1).padStart(2, "0")} · {dish.name || "Untitled"}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        <button type="button" onClick={() => moveDish(activeMenuSeason, index, -1)} disabled={index === 0} style={{ ...buttonBase, padding: "5px 9px", opacity: index === 0 ? 0.4 : 1, color: uiPalette.controlText, fontSize: 11 }}>
+                          ↑
+                        </button>
+                        <button type="button" onClick={() => moveDish(activeMenuSeason, index, 1)} disabled={index === activeMenu.items.length - 1} style={{ ...buttonBase, padding: "5px 9px", opacity: index === activeMenu.items.length - 1 ? 0.4 : 1, color: uiPalette.controlText, fontSize: 11 }}>
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`Remove "${dish.name || `dish ${index + 1}`}"?`)) removeDish(activeMenuSeason, index);
+                          }}
+                          style={{ ...buttonBase, padding: "5px 9px", color: "#c0533b", borderColor: "rgba(192,83,59,0.4)", fontSize: 11 }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+
+                    <AdminImagePicker
+                      title="Dish photo"
+                      value={dish.image}
+                      mediaLibrary={editor.mediaLibrary}
+                      uploadTags={["menus", activeMenuSeason]}
+                      quickPickTags={["menus", activeMenuSeason]}
+                      quickPickLimit={3}
+                      onApply={(filePath) => setDish(activeMenuSeason, index, "image", filePath)}
+                      onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setDish(activeMenuSeason, index, "image", filePath))}
+                    />
+                    <AdminFieldInput label="Name" value={dish.name} onChange={(value) => setDish(activeMenuSeason, index, "name", value)} />
+                    <AdminFieldTextarea label="Description" value={dish.description} minRows={2} onChange={(value) => setDish(activeMenuSeason, index, "description", value)} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+      case "producers":
+        return (
+          <div style={{ display: "grid", gap: 16 }}>
+            <AdminFieldTextarea label="Eyebrow" value={editor.content.producers.eyebrow} minRows={1} onChange={(value) => setProducers("eyebrow", value)} />
+            <AdminFieldTextarea label="Title" value={editor.content.producers.title} minRows={1} onChange={(value) => setProducers("title", value)} />
+            <AdminFieldTextarea label="Body" value={editor.content.producers.body} minRows={2} onChange={(value) => setProducers("body", value)} />
+            <AdminFieldTextarea label="Helper" value={editor.content.producers.helper} minRows={1} onChange={(value) => setProducers("helper", value)} />
+            <AdminFieldTextarea label="Closing quote" value={editor.content.producers.closingQuote} minRows={2} onChange={(value) => setProducers("closingQuote", value)} />
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+              <h2 style={sectionHeaderStyle}>Map points ({editor.content.producers.items.length})</h2>
+              <button type="button" onClick={addProducer} style={{ ...buttonBase, padding: "6px 12px", color: uiPalette.controlText }}>
+                + Add point
+              </button>
+            </div>
+
+            <div style={{ display: "grid", gap: 12, maxHeight: isMobile ? "none" : "62vh", overflowY: "auto", paddingRight: 4 }}>
+              {editor.content.producers.items.map((producer, index) => {
+                const previewUrl = resolveMediaUrl(producer.image, 240, 80) ?? producer.image;
+                return (
+                  <div key={`${producer.name}-${index}`} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
+                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "hsl(24 18% 10%)", flexShrink: 0 }}>
+                          {previewUrl ? <img src={previewUrl} alt={producer.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
+                        </div>
+                        <span style={{ fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {producer.name || `Point ${index + 1}`}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        <button type="button" onClick={() => moveProducer(index, -1)} disabled={index === 0} style={{ ...buttonBase, padding: "5px 9px", opacity: index === 0 ? 0.4 : 1, color: uiPalette.controlText, fontSize: 11 }}>
+                          ↑
+                        </button>
+                        <button type="button" onClick={() => moveProducer(index, 1)} disabled={index === editor.content.producers.items.length - 1} style={{ ...buttonBase, padding: "5px 9px", opacity: index === editor.content.producers.items.length - 1 ? 0.4 : 1, color: uiPalette.controlText, fontSize: 11 }}>
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`Remove "${producer.name || `point ${index + 1}`}"?`)) removeProducer(index);
+                          }}
+                          style={{ ...buttonBase, padding: "5px 9px", color: "#c0533b", borderColor: "rgba(192,83,59,0.4)", fontSize: 11 }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+
+                    <AdminImagePicker
+                      title="Photo"
+                      value={producer.image}
+                      mediaLibrary={editor.mediaLibrary}
+                      uploadTags={["producers"]}
+                      quickPickTags={["producers"]}
+                      quickPickLimit={3}
+                      onApply={(filePath) => setProducer(index, "image", filePath)}
+                      onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setProducer(index, "image", filePath))}
+                    />
+
+                    <AdminFieldInput label="Name" value={producer.name} onChange={(value) => setProducer(index, "name", value)} />
+                    <AdminFieldInput label="Specialty" value={producer.specialty} onChange={(value) => setProducer(index, "specialty", value)} />
+                    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
+                      <AdminFieldInput label="Region" value={producer.region} onChange={(value) => setProducer(index, "region", value)} />
+                      <AdminFieldInput label="Distance" value={producer.distance} onChange={(value) => setProducer(index, "distance", value)} />
+                    </div>
+                    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
+                      <AdminFieldInput
+                        label="Latitude"
+                        value={String(producer.lat)}
+                        onChange={(value) => {
+                          const parsed = parseFloat(value);
+                          if (!Number.isNaN(parsed)) setProducer(index, "lat", parsed);
+                        }}
+                      />
+                      <AdminFieldInput
+                        label="Longitude"
+                        value={String(producer.lng)}
+                        onChange={(value) => {
+                          const parsed = parseFloat(value);
+                          if (!Number.isNaN(parsed)) setProducer(index, "lng", parsed);
+                        }}
+                      />
+                    </div>
+                    <AdminFieldTextarea label="Quote (shown when card is expanded)" value={producer.quote} minRows={3} onChange={(value) => setProducer(index, "quote", value)} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      case "wines":
+        return <AdminWinesPanel editor={editor} />;
       case "heroToZoomTransition":
       case "seasonsReadonly":
       case "menuReadonly":

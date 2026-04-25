@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import SeasonBar from "@/components/SeasonBar";
-import { wines, type Wine, type WineCategory } from "@/data/tres-wine-data";
+import { usePublishedHome } from "@/hooks/usePublishedHome";
+import type { WineItem as Wine, WineCategory } from "@/lib/site-editor/types";
 
 /* ── constants ───────────────────────────────────────────────────────── */
 
@@ -161,8 +162,8 @@ function WineRow({ wine, query }: { wine: Wine; query: string }) {
 
 /* ── sommelier highlights ────────────────────────────────────────────── */
 
-function SommelierHighlights() {
-  const featured = useMemo(() => wines.filter((w) => w.featured), []);
+function SommelierHighlights({ wines }: { wines: Wine[] }) {
+  const featured = useMemo(() => wines.filter((w) => w.featured), [wines]);
   if (featured.length === 0) return null;
 
   return (
@@ -200,6 +201,8 @@ function SommelierHighlights() {
 /* ── main page ───────────────────────────────────────────────────────── */
 
 export default function WineListPage() {
+  const { content } = usePublishedHome();
+  const wines = content.wines.items;
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeCountry, setActiveCountry] = useState("all");
@@ -209,7 +212,7 @@ export default function WineListPage() {
   const countryOptions = useMemo(() => {
     const set = new Set(wines.map((w) => w.country));
     return ["all", ...Array.from(set).sort()];
-  }, []);
+  }, [wines]);
 
   const filtered = useMemo(() => {
     return wines.filter((w) => {
@@ -217,7 +220,7 @@ export default function WineListPage() {
       if (activeCountry !== "all" && w.country !== activeCountry) return false;
       return wineMatches(w, normalizedQuery);
     });
-  }, [activeCategory, activeCountry, normalizedQuery]);
+  }, [wines, activeCategory, activeCountry, normalizedQuery]);
 
   const grouped = useMemo(() => buildGrouped(filtered), [filtered]);
 
@@ -238,6 +241,13 @@ export default function WineListPage() {
     <div className="min-h-screen" style={{ backgroundColor: "#1A1410", color: "#F5EFE6" }}>
       <SeasonBar />
 
+      {/* Shield behind the floating nav — hides content scrolling through the top strip */}
+      <div
+        aria-hidden="true"
+        className="fixed left-0 right-0 top-0 z-20 pointer-events-none"
+        style={{ height: "96px", backgroundColor: "#1A1410" }}
+      />
+
       <main className="relative">
         {/* Hero */}
         <section className="px-6 pb-16 pt-[120px] sm:px-8 lg:px-12">
@@ -254,7 +264,7 @@ export default function WineListPage() {
         {/* Sommelier highlights */}
         <section className="px-6 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-[1100px]">
-            <SommelierHighlights />
+            <SommelierHighlights wines={wines} />
           </div>
         </section>
 

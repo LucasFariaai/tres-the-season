@@ -41,12 +41,12 @@ export default function ProducersSection({ content, theme }: ProducersSectionPro
             ))}
           </div>
           <div className="w-[55%]">
-            <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="h-full w-full" />
+            <ProducerMap producers={sectionContent.items} activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="h-full w-full" />
           </div>
         </div>
       ) : (
         <div className="relative z-[2]">
-          <ProducerMap activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="w-full" style={{ height: "50vh" }} />
+          <ProducerMap producers={sectionContent.items} activeIndex={activeIndex} hoveredIndex={hoveredIndex} onPinClick={handlePinClick} className="w-full" style={{ height: "50vh" }} />
           <div className="px-2">
             {sectionContent.items.map((producer, index) => (
               <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>

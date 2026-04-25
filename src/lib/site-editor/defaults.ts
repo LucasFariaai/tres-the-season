@@ -9,7 +9,26 @@ import zoom6 from "@/assets/photos-2026/zoom-6.jpg";
 import zoom7 from "@/assets/photos-2026/zoom-7.jpg";
 import { producers } from "@/components/producers/data";
 import { tresGalleryItems } from "@/data/tresGalleryItems";
-import type { HomeCmsContent, SiteMediaItem, SiteThemeTokens } from "@/lib/site-editor/types";
+import { legacyDishImages, legacySeasonDescriptions } from "@/data/legacySeasonMenu";
+import { seasonMenus } from "@/lib/seasonContext";
+import { wines as defaultWineItems } from "@/data/tres-wine-data";
+import type { HomeCmsContent, MenusContent, Season, SiteMediaItem, SiteThemeTokens } from "@/lib/site-editor/types";
+
+const seasonOrder: Season[] = ["spring", "summer", "autumn", "winter"];
+
+const defaultMenus: MenusContent = seasonOrder.reduce((accumulator, season) => {
+  const sourceMenu = seasonMenus[season];
+  const sourceDescriptions = legacySeasonDescriptions[season];
+  accumulator[season] = {
+    subtitle: sourceMenu.subtitle,
+    items: sourceMenu.items.map((name, index) => ({
+      name,
+      description: sourceDescriptions[index] ?? "",
+      image: legacyDishImages[index % legacyDishImages.length],
+    })),
+  };
+  return accumulator;
+}, {} as MenusContent);
 
 export const defaultHomeCmsContent: HomeCmsContent = {
   hero: {
@@ -130,6 +149,8 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     title: "The Circle",
     subtitle: "Every name here has a shape — the shape of what you will taste.",
   },
+  menus: defaultMenus,
+  wines: { items: defaultWineItems },
 };
 
 export const defaultSiteTheme: SiteThemeTokens = {
@@ -181,4 +202,13 @@ export const defaultMediaLibrary: SiteMediaItem[] = [
     tags: ["producers"],
     metadata: {},
   })),
+  ...seasonOrder.flatMap((season) =>
+    defaultHomeCmsContent.menus[season].items.map((dish, index) => ({
+      file_path: dish.image,
+      title: `${season} dish ${index + 1}: ${dish.name}`,
+      alt_text: dish.name,
+      tags: ["menus", season],
+      metadata: {},
+    })),
+  ),
 ];

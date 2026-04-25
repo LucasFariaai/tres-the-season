@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import ConceptSection from "@/components/ConceptSection";
 import GreenStarSection from "@/components/GreenStarSection";
 import SectionTransition from "@/components/SectionTransition";
+import LivingMenuIntro from "@/components/LivingMenuIntro";
 import FooterSection from "@/components/FooterSection";
 import HeroSection from "@/components/HeroSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
@@ -218,6 +219,7 @@ export default function Admin() {
         onReset={handleReset}
         onHistory={() => setSelection({ id: "history", label: "Version history" })}
         onSubscribers={() => setSubscribersOpen(true)}
+        onWines={() => setSelection({ id: "wines", label: "Wine list · Edit" })}
         onSignOut={handleSignOut}
       />
       <AdminEditPanel editor={editor} selection={selection} onClose={() => setSelection(null)} />
@@ -236,20 +238,15 @@ export default function Admin() {
         </EditableSection>
 
         <EditableSection label="Transition · The Living Menu" isSelected={selection?.id === "livingMenuTransition"} onSelect={() => setSelection({ id: "livingMenuTransition", label: "Transition · The Living Menu" })}>
-          <SectionTransition
-            from={CREAM}
-            to={CREAM}
-            height="200vh"
-            content={editor.content.livingMenuTransition}
-          />
+          <LivingMenuIntro content={editor.content.livingMenuTransition} />
         </EditableSection>
 
         <EditableSection label="Seasons archive" isSelected={selection?.id === "seasonsReadonly"} onSelect={() => setSelection({ id: "seasonsReadonly", label: "Seasons archive" })}>
           <SeasonsArchiveSection />
         </EditableSection>
 
-        <EditableSection label="Tasting Menu" isSelected={selection?.id === "menuReadonly"} onSelect={() => setSelection({ id: "menuReadonly", label: "Tasting Menu" })}>
-          <MenuPoemSection showCta={false} />
+        <EditableSection label="Tasting Menu · Dishes" isSelected={selection?.id === "menus"} onSelect={() => setSelection({ id: "menus", label: "Tasting Menu · Dishes" })}>
+          <MenuPoemSection showCta={false} menus={editor.content.menus} />
         </EditableSection>
 
         <EditableSection label="Concept" isSelected={selection?.id === "concept"} onSelect={() => setSelection({ id: "concept", label: "Concept" })}>
@@ -269,7 +266,7 @@ export default function Admin() {
           />
         </EditableSection>
 
-        <EditableSection label="Producers" isSelected={selection?.id === "producersReadonly"} onSelect={() => setSelection({ id: "producersReadonly", label: "Producers" })}>
+        <EditableSection label="Producers · Map points" isSelected={selection?.id === "producers"} onSelect={() => setSelection({ id: "producers", label: "Producers · Map points" })}>
           <ProducersSection content={editor.content.producers} theme={editor.theme} />
         </EditableSection>
 

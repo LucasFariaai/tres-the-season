@@ -8,6 +8,8 @@ export type EditableSectionKey =
   | "livingMenuTransition"
   | "circleTransition"
   | "greenStar"
+  | "menus"
+  | "wines"
   | "seasonsReadonly"
   | "menuReadonly"
   | "producersReadonly";

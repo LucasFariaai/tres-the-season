@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import logoTresNav from "@/assets/logo-tres-nav.svg";
-import { legacyDishImages, legacySeasonDescriptions } from "@/data/legacySeasonMenu";
-import { seasonLabels, seasonMenus, type Season, useSeason } from "@/lib/seasonContext";
+import { seasonLabels, type Season, useSeason } from "@/lib/seasonContext";
 import { usePublishedHome } from "@/hooks/usePublishedHome";
+import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
+import type { MenusContent } from "@/lib/site-editor/types";
 
 type MenuPoemProps = {
   seasonOverride?: Season;
   showHeader?: boolean;
   showCta?: boolean;
   className?: string;
+  menus?: MenusContent;
 };
-
 
 const SCROLL_PER_DISH_VH = 40;
 
@@ -34,13 +35,15 @@ export default function MenuPoem({
   showHeader = true,
   showCta = true,
   className = "",
+  menus,
 }: MenuPoemProps) {
   const { season: contextSeason } = useSeason();
   const season = seasonOverride ?? contextSeason;
-  const menu = seasonMenus[season];
-  const descriptions = legacySeasonDescriptions[season] || legacySeasonDescriptions.spring;
+  const sourceMenus = menus ?? defaultHomeCmsContent.menus;
+  const seasonMenu = sourceMenus[season] ?? defaultHomeCmsContent.menus[season];
+  const dishes = seasonMenu.items.length > 0 ? seasonMenu.items : defaultHomeCmsContent.menus[season].items;
   const reducedMotion = useReducedMotion();
-  const totalCount = menu.items.length;
+  const totalCount = dishes.length;
   const { content: cmsContent } = usePublishedHome();
   const menuMeta = {
     servings: "18 servings",
@@ -63,18 +66,23 @@ export default function MenuPoem({
     setActiveIndex((prev) => (prev === idx ? prev : idx));
   });
 
-  const activeDish = menu.items[activeIndex] ?? menu.items[0];
-  const activeDescription = descriptions[activeIndex] ?? descriptions[0] ?? "";
-  // activeImage is rendered via the stacked layer below (not a single swap).
+  // Reset to first dish when the season changes so the active index never points past the end.
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [season, totalCount]);
+
+  const activeDish = dishes[activeIndex] ?? dishes[0];
+  const dishImages = useMemo(() => dishes.map((dish) => dish.image), [dishes]);
 
   // Preload all dish images once so swaps are instant.
   useEffect(() => {
-    legacyDishImages.forEach((src) => {
+    dishImages.forEach((src) => {
+      if (!src) return;
       const img = new Image();
       img.decoding = "async";
       img.src = src;
     });
-  }, []);
+  }, [dishImages]);
 
   const sectionHeight = reducedMotion
     ? "auto"
@@ -111,25 +119,25 @@ export default function MenuPoem({
             </div>
           ) : null}
           <ul className="space-y-12">
-            {menu.items.map((item, index) => (
+            {dishes.map((dish, index) => (
               <li key={`${season}-${index}`} className="grid gap-6 lg:grid-cols-[0.9fr_1fr] lg:gap-10">
                 <div>
                   <h3
                     className="text-[28px] leading-[1.12] text-[#332925]"
                     style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
                   >
-                    {item}
+                    {dish.name}
                   </h3>
                   <p
                     className="mt-2 text-[16px] italic text-[#c9b89e]"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
-                    {descriptions[index] || ""}
+                    {dish.description}
                   </p>
                 </div>
                 <img
-                  src={legacyDishImages[index % legacyDishImages.length]}
-                  alt={item}
+                  src={dish.image}
+                  alt={dish.name}
                   loading="lazy"
                   decoding="async"
                   className="aspect-[4/5] w-full rounded-[28px] object-cover"
@@ -214,13 +222,13 @@ export default function MenuPoem({
                       className="max-w-[520px] text-[36px] leading-[1.08] text-[#332925] xl:text-[44px]"
                       style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
                     >
-                      {activeDish}
+                      {activeDish?.name}
                     </h2>
                     <p
                       className="mt-4 max-w-[520px] text-[17px] italic text-[#c9b89e] xl:text-[19px]"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                      {activeDescription}
+                      {activeDish?.description}
                     </p>
                   </motion.div>
                 </AnimatePresence>
@@ -228,7 +236,7 @@ export default function MenuPoem({
 
               <div className="mt-10 space-y-4">
                 <div className="flex items-center gap-2">
-                  {menu.items.map((_, dot) => {
+                  {dishes.map((_, dot) => {
                     const isActive = dot === activeIndex;
                     return (
                       <span
@@ -259,16 +267,15 @@ export default function MenuPoem({
                 className="relative mx-auto h-[58vh] w-full max-w-[560px] overflow-hidden rounded-[32px] bg-[#c6b8a5]/20 sm:h-[62vh] lg:h-[68vh] xl:h-[72vh]"
                 style={{ boxShadow: "0 40px 80px rgba(0,0,0,0.14)" }}
               >
-                {menu.items.map((item, index) => {
-                  const src = legacyDishImages[index % legacyDishImages.length];
+                {dishes.map((dish, index) => {
                   const isActive = index === activeIndex;
                   // Eager-load current + next; lazy for the rest.
                   const isPriority = isActive || index === (activeIndex + 1) % totalCount;
                   return (
                     <motion.img
-                      key={`dish-${index}`}
-                      src={src}
-                      alt={item}
+                      key={`dish-${season}-${index}`}
+                      src={dish.image}
+                      alt={dish.name}
                       className="absolute inset-0 h-full w-full object-cover"
                       decoding="async"
                       loading={isPriority ? "eager" : "lazy"}

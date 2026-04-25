@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { TRES_LOCATION, RADIUS_KM, producers } from "./data";
+import { TRES_LOCATION, RADIUS_KM } from "./data";
+import type { Producer } from "./types";
 
 interface Props {
+  producers: Producer[];
   activeIndex: number | null;
   hoveredIndex: number | null;
   onPinClick: (index: number) => void;
@@ -11,14 +13,19 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, className, style }: Props) {
+export default function ProducerMap({ producers, activeIndex, hoveredIndex, onPinClick, className, style }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.CircleMarker[]>([]);
   const popupsRef = useRef<L.Popup[]>([]);
+  const onPinClickRef = useRef(onPinClick);
   const invalidateTimerRef = useRef<number | null>(null);
 
-  // Initialize map once
+  useEffect(() => {
+    onPinClickRef.current = onPinClick;
+  }, [onPinClick]);
+
+  // Initialize map + Tres marker once
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -31,7 +38,6 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
     }).addTo(map);
 
-    // 30km radius
     L.circle([TRES_LOCATION.lat, TRES_LOCATION.lng], {
       radius: RADIUS_KM * 1000,
       color: "#8B7355",
@@ -41,7 +47,6 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
       fillOpacity: 0.08,
     }).addTo(map);
 
-    // Ensure tiles load after container is laid out
     invalidateTimerRef.current = window.setTimeout(() => {
       if (!containerRef.current || mapRef.current !== map) return;
       try {
@@ -51,7 +56,6 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
       }
     }, 100);
 
-    // Tres marker
     const tresIcon = L.divIcon({
       className: "",
       html: `<div style="display:flex;flex-direction:column;align-items:center;">
@@ -62,30 +66,6 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
       iconAnchor: [20, 4],
     });
     L.marker([TRES_LOCATION.lat, TRES_LOCATION.lng], { icon: tresIcon }).addTo(map);
-
-    // Producer pins
-    producers.forEach((p, i) => {
-      const marker = L.circleMarker([p.lat, p.lng], {
-        radius: 6,
-        fillColor: "#2A1F18",
-        fillOpacity: 1,
-        color: "rgba(139,115,85,0.3)",
-        weight: 4,
-      }).addTo(map);
-
-      const popup = L.popup({ closeButton: false, offset: [0, -6], className: "producer-popup" })
-        .setLatLng([p.lat, p.lng])
-        .setContent(`
-          <div style="font-family:'Playfair Display',serif;font-size:14px;color:#2A1F18;">${p.name}</div>
-          <div style="font-family:'Lora',serif;font-style:italic;font-size:12px;color:#8B7355;margin-top:2px;">${p.specialty}</div>
-        `);
-
-      marker.on("click", () => onPinClick(i));
-      marker.bindPopup(popup);
-
-      markersRef.current.push(marker);
-      popupsRef.current.push(popup);
-    });
 
     mapRef.current = map;
 
@@ -99,7 +79,44 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
       markersRef.current = [];
       popupsRef.current = [];
     };
-  }, [onPinClick]);
+  }, []);
+
+  // Sync producer markers whenever the list changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+    popupsRef.current = [];
+
+    producers.forEach((p, i) => {
+      const lat = Number(p.lat);
+      const lng = Number(p.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+      const marker = L.circleMarker([lat, lng], {
+        radius: 6,
+        fillColor: "#2A1F18",
+        fillOpacity: 1,
+        color: "rgba(139,115,85,0.3)",
+        weight: 4,
+      }).addTo(map);
+
+      const popup = L.popup({ closeButton: false, offset: [0, -6], className: "producer-popup" })
+        .setLatLng([lat, lng])
+        .setContent(`
+          <div style="font-family:'Playfair Display',serif;font-size:14px;color:#2A1F18;">${p.name}</div>
+          <div style="font-family:'Lora',serif;font-style:italic;font-size:12px;color:#8B7355;margin-top:2px;">${p.specialty}</div>
+        `);
+
+      marker.on("click", () => onPinClickRef.current(i));
+      marker.bindPopup(popup);
+
+      markersRef.current.push(marker);
+      popupsRef.current.push(popup);
+    });
+  }, [producers]);
 
   // React to active/hovered index changes
   useEffect(() => {
@@ -128,7 +145,7 @@ export default function ProducerMap({ activeIndex, hoveredIndex, onPinClick, cla
       }
       markersRef.current[effectiveActive]?.openPopup();
     }
-  }, [activeIndex, hoveredIndex]);
+  }, [activeIndex, hoveredIndex, producers]);
 
   return (
     <div
