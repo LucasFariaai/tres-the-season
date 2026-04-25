@@ -326,6 +326,7 @@ export function AdminWinesPanel({ editor }: Props) {
                     </button>
                   </div>
                 </div>
+                </div>
               ) : null}
             </div>
           );

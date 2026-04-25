@@ -107,7 +107,7 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     logoAlt: "Tres",
   },
   greenStar: {
-    eyebrow: "Recognised",
+    eyebrow: "",
     title: "The Green Star.",
     award: "Michelin Guide Netherlands, 2025",
     body:

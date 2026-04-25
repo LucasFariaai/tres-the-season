@@ -31,18 +31,20 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-12 mb-16">
           <div style={{ maxWidth: "720px" }}>
-            <p
-              style={{
-                fontFamily: "'Source Sans 3', sans-serif",
-                fontSize: "12px",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "hsl(var(--wine-accent))",
-                marginBottom: "24px",
-              }}
-            >
-              {sectionContent.eyebrow}
-            </p>
+            {sectionContent.eyebrow ? (
+              <p
+                style={{
+                  fontFamily: "'Source Sans 3', sans-serif",
+                  fontSize: "12px",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "hsl(var(--wine-accent))",
+                  marginBottom: "24px",
+                }}
+              >
+                {sectionContent.eyebrow}
+              </p>
+            ) : null}
 
             <h2
               style={{
