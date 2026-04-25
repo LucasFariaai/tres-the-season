@@ -70,9 +70,9 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 
         gsap.fromTo(
           mediaEl,
-          { xPercent: -6 },
+          { xPercent: -4 },
           {
-            xPercent: 6,
+            xPercent: 4,
             ease: "none",
             scrollTrigger: {
               trigger: itemEl,
@@ -149,7 +149,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
         <MobileGallery items={galleryItems} prefersReducedMotion={!!prefersReducedMotion} />
       ) : (
         <div ref={pinWrapRef} className="relative" style={{ height: "85vh", minHeight: "520px" }}>
-          <div className="relative h-full overflow-hidden" style={{ backgroundColor: "#F5EFE6" }}>
+          <div className="relative h-full overflow-hidden" style={{ backgroundColor: "#191310" }}>
             <div ref={trackRef} className="flex h-full will-change-transform">
               {galleryItems.map((item, index) => (
                 <article
@@ -158,7 +158,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                     itemRefs.current[index] = el;
                   }}
                   className="relative h-full shrink-0 overflow-hidden"
-                  style={{ width: widthMap[item.width], backgroundColor: "#F5EFE6" }}
+                  style={{ width: widthMap[item.width], marginRight: -1 }}
                 >
                   <div className="absolute inset-0 overflow-hidden">
                     <img
@@ -167,7 +167,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                       }}
                       src={item.mediaSrc}
                       alt={item.alt}
-                      className="absolute left-1/2 top-1/2 h-[125%] w-[125%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
+                      className="absolute left-1/2 top-1/2 h-[140%] w-[140%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
                     />
                   </div>
 
