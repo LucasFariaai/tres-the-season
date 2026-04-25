@@ -32,10 +32,10 @@ export default function SectionTransition({
     offset: ["start end", "end start"],
   });
 
-  // Background holds `from` for most of the scroll, then snaps to `to` after
-  // the text has fully exited so the title never visually merges with the
-  // destination color.
-  const bgColor = useTransform(scrollYProgress, [0.78, 0.95], [from, to]);
+  // Background gradually morphs from `from` to `to` across most of the scroll
+  // range. The text is rendered in `to` color, so as the bg catches up it
+  // visually dissolves into the destination — no opacity fade needed.
+  const bgColor = useTransform(scrollYProgress, [0.2, 0.85], [from, to]);
 
   // Logo marker: enters, holds, fades — lifetime offset so it only appears
   // during the cross-fade phase.
@@ -50,18 +50,18 @@ export default function SectionTransition({
     [0.94, 1, 1, 1.04],
   );
 
-  // Text: slides in as soon as the section enters the viewport, locks in the
-  // middle (no movement), and exits completely before the background begins
-  // changing.
+  // Text: slides in as soon as the section enters the viewport, then stays
+  // put. It already shares the destination colour, so the bg morph above
+  // makes it merge into the cream by the end of the scroll.
   const textOpacity = useTransform(
     scrollYProgress,
-    [0.0, 0.15, 0.6, 0.76],
-    [0, 1, 1, 0],
+    [0.0, 0.12],
+    [0, 1],
   );
   const textY = useTransform(
     scrollYProgress,
-    [0.0, 0.15, 0.6, 0.76],
-    [40, 0, 0, -40],
+    [0.0, 0.12],
+    [40, 0],
   );
 
   if (reducedMotion) {
