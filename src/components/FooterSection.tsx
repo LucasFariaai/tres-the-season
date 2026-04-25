@@ -15,7 +15,7 @@ const FooterSection = forwardRef<HTMLElement, FooterSectionProps>(({ content }, 
   const footerContent = content ?? defaultHomeCmsContent.footer;
 
   return (
-    <footer ref={ref} className="py-24" style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
+    <footer ref={ref} data-footer="tres" className="py-24" style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
       <div className="mx-auto max-w-md px-6 text-center">
         <p className="mb-10 font-accent text-lg italic text-white/55 sm:text-xl">{footerContent.quote}</p>
         <div className="mb-10 flex justify-center">

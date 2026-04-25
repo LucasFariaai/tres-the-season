@@ -49,6 +49,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 
     const ctx = gsap.context(() => {
       const getMaxX = () => Math.max(track.scrollWidth - window.innerWidth, 0);
+      const getEndDistance = () => Math.max(getMaxX() * 1.2, window.innerHeight);
 
       gsap.to(track, {
         x: () => -getMaxX(),
@@ -56,13 +57,59 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
         scrollTrigger: {
           trigger: pinWrap,
           start: "top top",
-          end: () => `+=${Math.max(getMaxX() * 1.2, window.innerHeight)}`,
+          end: () => `+=${getEndDistance()}`,
           pin: true,
-          pinSpacing: false,
           scrub: 1,
           invalidateOnRefresh: true,
         },
       });
+
+      // Reveal the footer at the bottom of the viewport while the gallery is
+      // pinned. The footer is `fixed` to viewport bottom and slides up from
+      // mostly-hidden (yPercent 78) to fully shown (yPercent 0) as the user
+      // progresses through the horizontal scroll.
+      const footerEl = document.querySelector<HTMLElement>('[data-footer="tres"]');
+      if (footerEl) {
+        gsap.set(footerEl, {
+          position: "fixed",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1,
+          yPercent: 78,
+        });
+
+        gsap.to(footerEl, {
+          yPercent: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: pinWrap,
+            start: "top top",
+            end: () => `+=${getEndDistance()}`,
+            scrub: 1,
+            invalidateOnRefresh: true,
+            onLeave: () => {
+              gsap.set(footerEl, {
+                position: "",
+                left: "",
+                right: "",
+                bottom: "",
+                zIndex: "",
+                yPercent: 0,
+              });
+            },
+            onEnterBack: () => {
+              gsap.set(footerEl, {
+                position: "fixed",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 1,
+              });
+            },
+          },
+        });
+      }
     }, section);
 
     return () => ctx.revert();
