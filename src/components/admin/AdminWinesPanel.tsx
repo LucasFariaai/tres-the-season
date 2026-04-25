@@ -41,8 +41,30 @@ export function AdminWinesPanel({ editor }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const countryOptions = useMemo(() => {
-    const set = new Set(wines.map((w) => w.country));
+    const set = new Set(wines.map((w) => w.country).filter(Boolean));
     return ["all", ...Array.from(set).sort()];
+  }, [wines]);
+
+  const regionOptions = useMemo(() => {
+    const set = new Set(wines.map((w) => w.region).filter(Boolean));
+    return Array.from(set).sort();
+  }, [wines]);
+
+  const subregionOptions = useMemo(() => {
+    const set = new Set(wines.map((w) => w.subregion).filter(Boolean) as string[]);
+    return Array.from(set).sort();
+  }, [wines]);
+
+  const grapeOptions = useMemo(() => {
+    const set = new Set<string>();
+    wines.forEach((wine) => {
+      wine.grapes
+        .split(",")
+        .map((grape) => grape.trim())
+        .filter(Boolean)
+        .forEach((grape) => set.add(grape));
+    });
+    return Array.from(set).sort();
   }, [wines]);
 
   const filtered = useMemo(() => {
@@ -109,6 +131,21 @@ export function AdminWinesPanel({ editor }: Props) {
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
+      <datalist id="wine-country-options">
+        {countryOptions.filter((country) => country !== "all").map((country) => (
+          <option key={country} value={country} />
+        ))}
+      </datalist>
+      <datalist id="wine-region-options">
+        {regionOptions.map((region) => <option key={region} value={region} />)}
+      </datalist>
+      <datalist id="wine-subregion-options">
+        {subregionOptions.map((subregion) => <option key={subregion} value={subregion} />)}
+      </datalist>
+      <datalist id="wine-grape-options">
+        {grapeOptions.map((grape) => <option key={grape} value={grape} />)}
+      </datalist>
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <h2 style={sectionHeaderStyle}>{wines.length} wines</h2>
         <button type="button" onClick={addWine} style={{ ...buttonBase, padding: "6px 12px", color: uiPalette.controlText }}>
@@ -169,11 +206,6 @@ export function AdminWinesPanel({ editor }: Props) {
               ✕
             </button>
           ) : null}
-          <datalist id="wine-country-options">
-            {countryOptions.filter((country) => country !== "all").map((country) => (
-              <option key={country} value={country} />
-            ))}
-          </datalist>
         </div>
 
         <div style={{ marginLeft: "auto", fontFamily: '"Abel", sans-serif', fontSize: 11, color: uiPalette.controlMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
@@ -232,12 +264,12 @@ export function AdminWinesPanel({ editor }: Props) {
                   <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(3, 1fr)" }}>
                     <AdminFieldInput label="Name" value={wine.name} onChange={(value) => updateWine(wine.id, "name", value)} />
                     <AdminFieldInput label="Producer" value={wine.producer} onChange={(value) => updateWine(wine.id, "producer", value)} />
-                    <AdminFieldInput label="Grapes" value={wine.grapes} onChange={(value) => updateWine(wine.id, "grapes", value)} />
+                    <AdminFieldInput label="Grapes (comma-separated)" value={wine.grapes} list="wine-grape-options" placeholder="Type or pick a grape — new ones are added on save" onChange={(value) => updateWine(wine.id, "grapes", value)} />
                   </div>
                   <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(3, 1fr)" }}>
-                    <AdminFieldInput label="Country" value={wine.country} onChange={(value) => updateWine(wine.id, "country", value)} />
-                    <AdminFieldInput label="Region" value={wine.region} onChange={(value) => updateWine(wine.id, "region", value)} />
-                    <AdminFieldInput label="Subregion" value={wine.subregion ?? ""} onChange={(value) => updateWine(wine.id, "subregion", value)} />
+                    <AdminFieldInput label="Country" value={wine.country} list="wine-country-options" placeholder="Pick a country or type a new one" onChange={(value) => updateWine(wine.id, "country", value)} />
+                    <AdminFieldInput label="Region" value={wine.region} list="wine-region-options" placeholder="Pick a region or type a new one" onChange={(value) => updateWine(wine.id, "region", value)} />
+                    <AdminFieldInput label="Subregion" value={wine.subregion ?? ""} list="wine-subregion-options" placeholder="Optional" onChange={(value) => updateWine(wine.id, "subregion", value)} />
                   </div>
                   <div style={{ display: "grid", gap: 8, gridTemplateColumns: "120px 120px 1fr auto" }}>
                     <AdminFieldInput label="Vintage" value={wine.vintage ?? ""} onChange={(value) => updateWine(wine.id, "vintage", value)} />
