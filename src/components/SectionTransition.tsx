@@ -32,10 +32,10 @@ export default function SectionTransition({
     offset: ["start end", "end start"],
   });
 
-  // Background gradually morphs from `from` to `to` across most of the scroll
-  // range. The text is rendered in `to` color, so as the bg catches up it
-  // visually dissolves into the destination — no opacity fade needed.
-  const bgColor = useTransform(scrollYProgress, [0.2, 0.85], [from, to]);
+  // Background holds `from` while the title is locked in centre. The colour
+  // morph only kicks in once the title starts leaving the frame, which is
+  // also where the dissolve is intended to happen.
+  const bgColor = useTransform(scrollYProgress, [0.55, 0.95], [from, to]);
 
   // Logo marker: enters, holds, fades — lifetime offset so it only appears
   // during the cross-fade phase.
@@ -50,9 +50,11 @@ export default function SectionTransition({
     [0.94, 1, 1, 1.04],
   );
 
-  // Text: slides in as soon as the section enters the viewport, then stays
-  // put. It already shares the destination colour, so the bg morph above
-  // makes it merge into the cream by the end of the scroll.
+  // Text: slides in fast (0→0.12), then sits centred and untouched through
+  // the hold (0.12→0.55), then slides up out of frame at the same time the
+  // background starts catching up to the text colour (0.55→0.95). No
+  // opacity fade — the dissolve comes from the cream bg meeting the cream
+  // text while it exits.
   const textOpacity = useTransform(
     scrollYProgress,
     [0.0, 0.12],
@@ -60,8 +62,8 @@ export default function SectionTransition({
   );
   const textY = useTransform(
     scrollYProgress,
-    [0.0, 0.12],
-    [40, 0],
+    [0.0, 0.12, 0.55, 0.95],
+    [40, 0, 0, -120],
   );
 
   if (reducedMotion) {
@@ -140,7 +142,7 @@ export default function SectionTransition({
         {isText ? (
           <motion.div
             className="absolute inset-0 flex items-center justify-center px-6 sm:px-10 lg:px-12 pointer-events-none"
-            style={{ opacity: textOpacity, y: textY, color: to }}
+            style={{ opacity: textOpacity, y: textY, color: "#f4eee5" }}
           >
             <div className="max-w-[820px] text-center">
               {content.eyebrow ? (
