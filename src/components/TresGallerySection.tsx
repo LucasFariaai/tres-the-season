@@ -27,7 +27,6 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
   const pinWrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
-  const mediaRefs = useRef<(HTMLImageElement | HTMLVideoElement | null)[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const isMobile = useIsMobile();
   const prefersReducedMotion = useReducedMotion();
@@ -51,7 +50,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
     const ctx = gsap.context(() => {
       const getMaxX = () => Math.max(track.scrollWidth - window.innerWidth, 0);
 
-      const horizontalTween = gsap.to(track, {
+      gsap.to(track, {
         x: () => -getMaxX(),
         ease: "none",
         scrollTrigger: {
@@ -62,27 +61,6 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
           scrub: 1,
           invalidateOnRefresh: true,
         },
-      });
-
-      mediaRefs.current.forEach((mediaEl, index) => {
-        const itemEl = itemRefs.current[index];
-        if (!mediaEl || !itemEl) return;
-
-        gsap.fromTo(
-          mediaEl,
-          { xPercent: -4 },
-          {
-            xPercent: 4,
-            ease: "none",
-            scrollTrigger: {
-              trigger: itemEl,
-              containerAnimation: horizontalTween,
-              start: "left right",
-              end: "right left",
-              scrub: true,
-            },
-          },
-        );
       });
     }, section);
 
@@ -157,22 +135,15 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                   ref={(el) => {
                     itemRefs.current[index] = el;
                   }}
-                  className="relative h-full shrink-0 overflow-hidden"
-                  style={{
-                    width: widthMap[item.width],
-                    marginRight: index === galleryItems.length - 1 ? 0 : -2,
-                  }}
+                  className="relative h-full shrink-0"
+                  style={{ width: widthMap[item.width] }}
                 >
-                  <div className="absolute inset-0 overflow-hidden">
-                    <img
-                      ref={(el) => {
-                        mediaRefs.current[index] = el;
-                      }}
-                      src={item.mediaSrc}
-                      alt={item.alt}
-                      className="absolute left-1/2 top-1/2 h-[140%] w-[140%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
-                    />
-                  </div>
+                  <img
+                    src={item.mediaSrc}
+                    alt={item.alt}
+                    className="block h-full w-full object-cover"
+                    draggable={false}
+                  />
                 </article>
               ))}
             </div>
