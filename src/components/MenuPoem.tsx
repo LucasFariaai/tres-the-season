@@ -183,10 +183,10 @@ export default function MenuPoem({
             </div>
           ) : null}
 
-          <div className="grid flex-1 items-center gap-10 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16 lg:py-10">
-            <div className="flex flex-col justify-center">
+          <div className="flex flex-col flex-1 gap-6 py-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-[1fr_auto] lg:items-stretch lg:gap-x-16 lg:gap-y-0 lg:py-10">
+            <div className="order-1 flex flex-col lg:col-start-1 lg:row-start-1 lg:justify-center">
               {showHeader ? (
-                <div className="mb-10">
+                <div className="mb-6 lg:mb-10">
                   <p
                     className="text-[11px] uppercase tracking-[0.34em] text-[#c9b89e]"
                     style={{ fontFamily: "'Source Sans 3', sans-serif" }}
@@ -208,7 +208,7 @@ export default function MenuPoem({
                 </div>
               ) : null}
 
-              <div className="relative min-h-[320px] lg:min-h-[380px] xl:min-h-[420px]">
+              <div className="relative min-h-[150px] lg:min-h-[380px] xl:min-h-[420px]">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={`text-${season}-${activeIndex}`}
@@ -219,13 +219,13 @@ export default function MenuPoem({
                     className="absolute inset-0"
                   >
                     <h2
-                      className="max-w-[520px] text-[36px] leading-[1.08] text-[#332925] xl:text-[44px]"
+                      className="max-w-[520px] text-[32px] leading-[1.08] text-[#332925] sm:text-[36px] xl:text-[44px]"
                       style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
                     >
                       {activeDish?.name}
                     </h2>
                     <p
-                      className="mt-4 max-w-[520px] text-[17px] italic text-[#c9b89e] xl:text-[19px]"
+                      className="mt-3 max-w-[520px] text-[15px] italic text-[#c9b89e] sm:text-[17px] xl:text-[19px]"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
                       {activeDish?.description}
@@ -233,36 +233,36 @@ export default function MenuPoem({
                   </motion.div>
                 </AnimatePresence>
               </div>
-
-              <div className="mt-10 space-y-4">
-                <div className="flex items-center gap-2">
-                  {dishes.map((_, dot) => {
-                    const isActive = dot === activeIndex;
-                    return (
-                      <span
-                        key={dot}
-                        aria-hidden="true"
-                        className="transition-all duration-500"
-                        style={{
-                          width: isActive ? "22px" : "6px",
-                          height: "6px",
-                          borderRadius: "999px",
-                          backgroundColor: isActive ? "hsl(var(--season-dark))" : "#E4D7C5",
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-                <p
-                  className="text-[12px] text-[#B1A291]"
-                  style={{ fontFamily: "'Source Sans 3', sans-serif" }}
-                >
-                  {menuMeta.servings} · {menuMeta.tastingPrice} · {menuMeta.pairingPrice}
-                </p>
-              </div>
             </div>
 
-            <div className="relative flex items-center justify-center">
+            <div className="order-3 space-y-3 lg:order-none lg:col-start-1 lg:row-start-2 lg:mt-10 lg:space-y-4">
+              <div className="flex items-center gap-2">
+                {dishes.map((_, dot) => {
+                  const isActive = dot === activeIndex;
+                  return (
+                    <span
+                      key={dot}
+                      aria-hidden="true"
+                      className="transition-all duration-500"
+                      style={{
+                        width: isActive ? "22px" : "6px",
+                        height: "6px",
+                        borderRadius: "999px",
+                        backgroundColor: isActive ? "hsl(var(--season-dark))" : "#E4D7C5",
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <p
+                className="text-[12px] text-[#B1A291]"
+                style={{ fontFamily: "'Source Sans 3', sans-serif" }}
+              >
+                {menuMeta.servings} · {menuMeta.tastingPrice} · {menuMeta.pairingPrice}
+              </p>
+            </div>
+
+            <div className="order-2 relative flex items-center justify-center lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1">
               <div
                 className="relative mx-auto h-[58vh] w-full max-w-[560px] overflow-hidden rounded-[32px] bg-[#c6b8a5]/20 sm:h-[62vh] lg:h-[68vh] xl:h-[72vh]"
                 style={{ boxShadow: "0 40px 80px rgba(0,0,0,0.14)" }}
