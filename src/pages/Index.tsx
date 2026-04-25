@@ -15,7 +15,7 @@ import FooterSection from "@/components/FooterSection";
 import IntroOverlay from "@/components/IntroOverlay";
 import { usePublishedHome } from "@/hooks/usePublishedHome";
 
-const DARK = "#1b1310";
+const DARK = "#191310";
 const CREAM = "#F5EFE6";
 
 const Index = () => {

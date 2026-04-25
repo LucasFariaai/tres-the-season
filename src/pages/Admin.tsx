@@ -14,7 +14,7 @@ import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
 import TresGallerySection from "@/components/TresGallerySection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 
-const DARK = "#1b1310";
+const DARK = "#191310";
 const CREAM = "#F5EFE6";
 import { AdminEditPanel } from "@/components/admin/AdminEditPanel";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";

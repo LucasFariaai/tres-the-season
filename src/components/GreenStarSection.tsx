@@ -16,7 +16,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ backgroundColor: "hsl(var(--wine-bg))" }}
+      style={{ backgroundColor: "hsl(24 24% 8%)" }}
     >
       {/* Noise texture */}
       <div
@@ -41,7 +41,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
                 onMouseEnter={() => setHoveredPillar(pillar.id)}
                 onMouseLeave={() => setHoveredPillar(null)}
                 style={{
-                  backgroundColor: "hsl(var(--wine-bg))",
+                  backgroundColor: "hsl(24 24% 8%)",
                   padding: "40px 32px",
                   transition: "background-color 300ms cubic-bezier(0.45, 0, 0.15, 1)",
                 }}
