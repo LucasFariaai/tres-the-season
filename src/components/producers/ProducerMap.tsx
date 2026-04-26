@@ -32,7 +32,7 @@ export default function ProducerMap({ producers, activeIndex, hoveredIndex, onPi
     const map = L.map(containerRef.current, {
       zoomControl: false,
       attributionControl: false,
-    }).setView([TRES_LOCATION.lat, TRES_LOCATION.lng], 11);
+    }).setView([TRES_LOCATION.lat, TRES_LOCATION.lng], 9);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
@@ -152,7 +152,7 @@ export default function ProducerMap({ producers, activeIndex, hoveredIndex, onPi
       markersRef.current[activeIndex]?.openPopup();
     } else {
       try {
-        map.flyTo([TRES_LOCATION.lat, TRES_LOCATION.lng], 11, { duration: 0.6 });
+        map.flyTo([TRES_LOCATION.lat, TRES_LOCATION.lng], 9, { duration: 0.6 });
       } catch (_) { /* map not ready */ }
       markersRef.current.forEach((marker) => marker.closePopup());
     }
