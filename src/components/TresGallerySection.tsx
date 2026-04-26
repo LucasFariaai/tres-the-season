@@ -64,51 +64,46 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
         },
       });
 
-      // Reveal the footer at the bottom of the viewport while the gallery is
-      // pinned. The footer is `fixed` to viewport bottom and slides up from
-      // mostly-hidden (yPercent 78) to fully shown (yPercent 0) as the user
-      // progresses through the horizontal scroll.
+      // Reveal the footer at the bottom of the viewport ONLY while the gallery
+      // is pinned. Outside that scroll range the footer stays in its natural
+      // place in document flow.
       const footerEl = document.querySelector<HTMLElement>('[data-footer="tres"]');
       if (footerEl) {
-        gsap.set(footerEl, {
-          position: "fixed",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 1,
-          yPercent: 78,
-        });
+        const fix = () => {
+          gsap.set(footerEl, {
+            position: "fixed",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+          });
+        };
+        const release = () => {
+          gsap.set(footerEl, {
+            clearProps: "position,left,right,bottom,zIndex,transform,yPercent",
+          });
+        };
 
-        gsap.to(footerEl, {
-          yPercent: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: pinWrap,
-            start: "top top",
-            end: () => `+=${getEndDistance()}`,
-            scrub: 1,
-            invalidateOnRefresh: true,
-            onLeave: () => {
-              gsap.set(footerEl, {
-                position: "",
-                left: "",
-                right: "",
-                bottom: "",
-                zIndex: "",
-                yPercent: 0,
-              });
-            },
-            onEnterBack: () => {
-              gsap.set(footerEl, {
-                position: "fixed",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 1,
-              });
+        gsap.fromTo(
+          footerEl,
+          { yPercent: 78 },
+          {
+            yPercent: 0,
+            immediateRender: false,
+            ease: "none",
+            scrollTrigger: {
+              trigger: pinWrap,
+              start: "top top",
+              end: () => `+=${getEndDistance()}`,
+              scrub: 1,
+              invalidateOnRefresh: true,
+              onEnter: fix,
+              onEnterBack: fix,
+              onLeave: release,
+              onLeaveBack: release,
             },
           },
-        });
+        );
       }
     }, section);
 
