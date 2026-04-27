@@ -1,21 +1,24 @@
 import type { CSSProperties } from "react";
 
+// Cream / dark-text palette — matches the home page (Concept / Reserve / Producers
+// sections) instead of the dark Wine list aesthetic. Edit tokens here to
+// retune the whole admin UI.
 export const uiPalette = {
-  panel: "hsl(24 24% 8%)",
-  panelOverlay: "hsl(0 0% 0% / 0.3)",
-  panelBorder: "hsl(35 43% 93% / 0.08)",
-  controlBorder: "hsl(35 43% 93% / 0.1)",
-  controlMuted: "hsl(37 29% 69% / 0.4)",
-  controlSoft: "hsl(37 29% 69% / 0.3)",
-  controlText: "hsl(35 43% 93%)",
-  accent: "hsl(28 52% 50%)",
-  accentText: "hsl(24 24% 8%)",
-  accentOutline: "hsl(28 52% 50% / 0.3)",
-  outlineLabel: "hsl(28 52% 50% / 0.9)",
-  ghostBorder: "hsl(35 43% 93% / 0.15)",
-  ghostText: "hsl(37 29% 69% / 0.5)",
-  toolbarBadge: "hsl(37 29% 69% / 0.35)",
-  inputBg: "transparent",
+  panel: "#F5EFE6", // cream — same as home page background
+  panelOverlay: "rgba(26,20,16,0.18)",
+  panelBorder: "rgba(26,20,16,0.10)",
+  controlBorder: "rgba(26,20,16,0.18)",
+  controlMuted: "rgba(26,20,16,0.45)",
+  controlSoft: "rgba(26,20,16,0.55)",
+  controlText: "#1A1410",
+  accent: "#1A1410", // primary action — solid dark
+  accentText: "#F5EFE6",
+  accentOutline: "rgba(26,20,16,0.45)",
+  outlineLabel: "rgba(26,20,16,0.85)",
+  ghostBorder: "rgba(26,20,16,0.22)",
+  ghostText: "rgba(26,20,16,0.7)",
+  toolbarBadge: "rgba(26,20,16,0.5)",
+  inputBg: "rgba(255,255,255,0.55)",
 };
 
 export const toolbarHeight = 56;
@@ -27,7 +30,7 @@ export const buttonBase: CSSProperties = {
   background: "transparent",
   color: uiPalette.ghostText,
   padding: "8px 16px",
-  fontFamily: '"Abel", sans-serif',
+  fontFamily: "'Source Sans 3', sans-serif",
   fontSize: 12,
   lineHeight: 1,
   letterSpacing: "0.18em",
@@ -37,7 +40,7 @@ export const buttonBase: CSSProperties = {
 };
 
 export const fieldLabelStyle: CSSProperties = {
-  fontFamily: '"Abel", sans-serif',
+  fontFamily: "'Source Sans 3', sans-serif",
   fontSize: 11,
   letterSpacing: "0.18em",
   textTransform: "uppercase",
@@ -51,7 +54,7 @@ export const fieldStyle: CSSProperties = {
   background: uiPalette.inputBg,
   color: uiPalette.controlText,
   padding: "10px 14px",
-  fontFamily: '"Abel", sans-serif',
+  fontFamily: "'Source Sans 3', sans-serif",
   fontSize: 14,
   lineHeight: 1.55,
   outline: "none",
@@ -60,9 +63,9 @@ export const fieldStyle: CSSProperties = {
 
 export const sectionHeaderStyle: CSSProperties = {
   margin: 0,
-  fontFamily: '"Fraunces", serif',
+  fontFamily: "'Playfair Display', serif",
   fontStyle: "italic",
-  fontSize: 20,
+  fontSize: 22,
   lineHeight: 1.1,
   color: uiPalette.controlText,
   fontWeight: 400,

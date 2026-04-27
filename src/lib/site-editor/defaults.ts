@@ -35,6 +35,9 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     tagline: "Complex without being complicated.",
     location: "Kop van Zuid-Entrepot · Rotterdam",
     reserveLabel: "Reserve",
+    videoDesktop: "/videos/hero-desktop.mp4",
+    videoMobile: "/videos/hero-mobile.mp4",
+    reservationUrl: "https://www.exploretock.com/tresrotterdam",
   },
   bands: {
     heroToZoom:
@@ -102,7 +105,7 @@ export const defaultHomeCmsContent: HomeCmsContent = {
   },
   footer: {
     quote: '"Complex without being complicated."',
-    instagramUrl: "#",
+    instagramUrl: "https://www.instagram.com/tresrotterdam/",
     facebookUrl: "#",
     logoAlt: "Tres",
   },

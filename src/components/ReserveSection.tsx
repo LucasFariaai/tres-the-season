@@ -5,6 +5,7 @@ import OrganicReserveButton from "@/components/OrganicReserveButton";
 import { defaultHomeCmsContent, defaultSiteTheme } from "@/lib/site-editor/defaults";
 import type { ReserveContent, SiteThemeTokens } from "@/lib/site-editor/types";
 import { supabase } from "@/integrations/supabase/client";
+import { usePublishedHome } from "@/hooks/usePublishedHome";
 
 const emailSchema = z
   .string()
@@ -146,6 +147,8 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
   const reserveContent = content ?? defaultHomeCmsContent.reserve;
   const reserveTheme = theme ?? defaultSiteTheme;
   const tastingSeason = seasonLabels[season] || "Spring";
+  const { content: published } = usePublishedHome();
+  const reservationUrl = published.hero.reservationUrl || defaultHomeCmsContent.hero.reservationUrl;
 
   return (
     <section ref={ref} id="reserve" className="py-24 sm:py-32" style={{ backgroundColor: reserveTheme.reserveBackground }}>
@@ -278,7 +281,7 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
               <div className="mt-12 flex w-full justify-center md:max-w-[340px] md:justify-center">
                 <OrganicReserveButton
                   label="RESERVE"
-                  href="https://www.exploretock.com/tresrotterdam"
+                  href={reservationUrl}
                   strokeColor="#1A1410"
                   textColor="#1A1410"
                 />

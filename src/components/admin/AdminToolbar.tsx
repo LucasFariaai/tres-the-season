@@ -27,7 +27,7 @@ export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscrib
         right: 0,
         height: toolbarHeight,
         zIndex: 50,
-        background: "hsl(24 24% 8% / 0.95)",
+        background: "rgba(245,239,230,0.95)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         borderBottom: `1px solid ${uiPalette.panelBorder}`,
@@ -45,7 +45,7 @@ export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscrib
         }}
       >
         <a href="/" target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", minWidth: 88 }}>
-          <img src={logoTres} alt="Tres" style={{ height: 20, width: "auto", filter: "brightness(0) invert(1)" }} />
+          <img src={logoTres} alt="Tres" style={{ height: 20, width: "auto" }} />
         </a>
 
         <div
@@ -53,7 +53,7 @@ export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscrib
             flex: 1,
             minWidth: 120,
             textAlign: "center",
-            fontFamily: '"Abel", sans-serif',
+            fontFamily: "'Source Sans 3', sans-serif",
             fontSize: 11,
             letterSpacing: "0.18em",
             textTransform: "uppercase",

@@ -71,13 +71,17 @@ function FloatingParticles() {
   return <canvas ref={canvasRef} className="absolute inset-0 z-[2] h-full w-full pointer-events-none" />;
 }
 
-const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, content: _content, theme }, ref) => {
+const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, content, theme }, ref) => {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
   const [muted, setMuted] = useState(true);
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroTheme = theme ?? defaultSiteTheme;
+  const heroContent = content ?? defaultHomeCmsContent.hero;
+  const videoSrc = isMobile
+    ? heroContent.videoMobile || defaultHomeCmsContent.hero.videoMobile
+    : heroContent.videoDesktop || defaultHomeCmsContent.hero.videoDesktop;
 
   const toggleMute = () => {
     const video = videoRef.current;
@@ -182,12 +186,12 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
       <div className="absolute inset-0">
         <video
           ref={videoRef}
-          key={isMobile ? "mobile" : "desktop"}
+          key={`${isMobile ? "mobile" : "desktop"}-${videoSrc}`}
           muted
           loop
           playsInline
           className="h-full w-full object-cover"
-          src={isMobile ? "/videos/hero-mobile.mp4" : "/videos/hero-desktop.mp4"}
+          src={videoSrc}
         />
       </div>
 

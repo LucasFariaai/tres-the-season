@@ -140,7 +140,7 @@ export function AdminMenusPanel({ editor }: Props) {
           return (
             <div key={`${activeSeason}-${index}`} style={{ display: "grid", gap: 14, border: `1px solid ${uiPalette.controlBorder}`, padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                <span style={{ fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
+                <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
                   {String(index + 1).padStart(2, "0")} · {dish.name || "Untitled"}
                 </span>
                 <div style={{ display: "flex", gap: 6 }}>
@@ -164,7 +164,7 @@ export function AdminMenusPanel({ editor }: Props) {
 
               <div style={{ display: "grid", gap: 14, gridTemplateColumns: previewUrl ? "120px 1fr" : "1fr", alignItems: "start" }}>
                 {previewUrl ? (
-                  <div style={{ width: 120, height: 150, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "hsl(24 18% 10%)" }}>
+                  <div style={{ width: 120, height: 150, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)" }}>
                     <img src={previewUrl} alt={dish.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
                   </div>
                 ) : null}

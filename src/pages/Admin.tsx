@@ -48,7 +48,7 @@ function EditableSection({ label, isSelected, onSelect, children }: { label: str
           padding: "2px 8px",
           background: isSelected ? uiPalette.outlineLabel : "transparent",
           color: isSelected ? uiPalette.accentText : "transparent",
-          fontFamily: '"Abel", sans-serif',
+          fontFamily: '"Source Sans 3", sans-serif',
           fontSize: 10,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
@@ -118,10 +118,10 @@ function AdminSignIn({ onSignedIn }: { onSignedIn: (session: Session) => void })
         }}
       >
         <div style={{ display: "grid", gap: 8 }}>
-          <p style={{ margin: 0, fontFamily: '"Abel", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
+          <p style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
             Visual admin
           </p>
-          <h1 style={{ margin: 0, fontFamily: '"Abel", sans-serif', fontSize: 28, lineHeight: 1.1, color: uiPalette.controlText, fontWeight: 400 }}>Open editor</h1>
+          <h1 style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 28, lineHeight: 1.1, color: uiPalette.controlText, fontWeight: 400 }}>Open editor</h1>
         </div>
         <AdminFieldInput label="Email" value={email} onChange={setEmail} type="email" />
         <AdminFieldInput label="Password" value={password} onChange={setPassword} type="password" />
@@ -178,7 +178,7 @@ export default function Admin() {
 
   if (editor.loading) {
     return (
-      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, color: uiPalette.controlText, fontFamily: '"Abel", sans-serif' }}>
+      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif' }}>
         Loading editor...
       </main>
     );
@@ -191,7 +191,7 @@ export default function Admin() {
   if (!editor.isAdmin) {
     return (
       <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, padding: 24 }}>
-        <div style={{ maxWidth: 420, border: `1px solid ${uiPalette.panelBorder}`, padding: 24, color: uiPalette.controlText, fontFamily: '"Abel", sans-serif', display: "grid", gap: 16 }}>
+        <div style={{ maxWidth: 420, border: `1px solid ${uiPalette.panelBorder}`, padding: 24, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif', display: "grid", gap: 16 }}>
           <p style={{ margin: 0, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>Access</p>
           <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6 }}>This route requires an admin role in Supabase.</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

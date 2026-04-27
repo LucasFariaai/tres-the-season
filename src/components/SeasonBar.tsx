@@ -2,14 +2,15 @@ import { forwardRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import logoTres from "@/assets/logo-tres-nav.svg";
-
-const RESERVATION_URL = "https://www.exploretock.com/tresrotterdam";
+import { usePublishedHome } from "@/hooks/usePublishedHome";
 
 const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const { content } = usePublishedHome();
+  const reservationUrl = content.hero.reservationUrl || "https://www.exploretock.com/tresrotterdam";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -97,7 +98,7 @@ const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => 
 
           {/* CTA */}
           <a
-            href={RESERVATION_URL}
+            href={reservationUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white text-black rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-1.5 shrink-0"
@@ -123,7 +124,7 @@ const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => 
           </button>
 
           <a
-            href={RESERVATION_URL}
+            href={reservationUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white text-black rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-1.5"

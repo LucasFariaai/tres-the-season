@@ -114,8 +114,8 @@ export function AdminHistoryPanel({ editor }: AdminHistoryPanelProps) {
             historyEntries.map((entry) => (
               <div key={entry.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 14px", borderBottom: `1px solid ${uiPalette.controlBorder}` }}>
                 <div style={{ display: "grid", gap: 4 }}>
-                  <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 13, color: uiPalette.controlText }}>{entry.name || entry.kind}</span>
-                  <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 11, color: uiPalette.controlSoft }}>{formatRelativeTime(entry.created_at)}</span>
+                  <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, color: uiPalette.controlText }}>{entry.name || entry.kind}</span>
+                  <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, color: uiPalette.controlSoft }}>{formatRelativeTime(entry.created_at)}</span>
                 </div>
                 <button type="button" onClick={() => void handleRestore(entry.id)} style={{ ...buttonBase, padding: "6px 10px", color: uiPalette.controlText, borderColor: uiPalette.controlBorder }}>
                   Restore
@@ -123,7 +123,7 @@ export function AdminHistoryPanel({ editor }: AdminHistoryPanelProps) {
               </div>
             ))
           ) : (
-            <div style={{ padding: 14, fontFamily: '"Abel", sans-serif', fontSize: 13, color: uiPalette.controlMuted }}>No history yet.</div>
+            <div style={{ padding: 14, fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, color: uiPalette.controlMuted }}>No history yet.</div>
           )}
         </div>
       </div>
@@ -134,12 +134,12 @@ export function AdminHistoryPanel({ editor }: AdminHistoryPanelProps) {
           {recentActions.length ? (
             recentActions.map((entry) => (
               <div key={entry.id} style={{ display: "grid", gap: 4, padding: "12px 14px", borderBottom: `1px solid ${uiPalette.controlBorder}` }}>
-                <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 13, color: uiPalette.controlText }}>{entry.action}</span>
-                <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 11, color: uiPalette.controlSoft }}>{formatRelativeTime(entry.created_at)}</span>
+                <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, color: uiPalette.controlText }}>{entry.action}</span>
+                <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, color: uiPalette.controlSoft }}>{formatRelativeTime(entry.created_at)}</span>
               </div>
             ))
           ) : (
-            <div style={{ padding: 14, fontFamily: '"Abel", sans-serif', fontSize: 13, color: uiPalette.controlMuted }}>No recent actions.</div>
+            <div style={{ padding: 14, fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, color: uiPalette.controlMuted }}>No recent actions.</div>
           )}
         </div>
       </div>

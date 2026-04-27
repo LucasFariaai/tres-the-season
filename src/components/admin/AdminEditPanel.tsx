@@ -5,6 +5,7 @@ import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminHistoryPanel } from "@/components/admin/AdminHistoryPanel";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
+import { AdminVideoField } from "@/components/admin/AdminVideoField";
 import { AdminWinesPanel } from "@/components/admin/AdminWinesPanel";
 import { buttonBase, fieldLabelStyle, sectionHeaderStyle, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
 import type { Selection, VisualEditor } from "@/components/admin/types";
@@ -251,7 +252,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
   };
 
   const renderUnavailable = () => (
-    <p style={{ margin: 0, fontFamily: '"Abel", sans-serif', fontSize: 14, lineHeight: 1.6, color: uiPalette.controlMuted }}>{unavailableMessage}</p>
+    <p style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 14, lineHeight: 1.6, color: uiPalette.controlMuted }}>{unavailableMessage}</p>
   );
 
   const renderZoom = () => (
@@ -326,11 +327,11 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
             <div key={item.id} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <div style={{ width: 60, height: 60, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "hsl(24 18% 10%)" }}>
+                  <div style={{ width: 60, height: 60, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)" }}>
                     {imageUrl ? <img src={imageUrl} alt={item.alt} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                   </div>
                   <div style={{ display: "grid", gap: 4 }}>
-                    <span style={{ fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>Gallery item {index + 1}</span>
+                    <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>Gallery item {index + 1}</span>
                     <label
                       htmlFor={`gallery-upload-${index}`}
                       style={{
@@ -421,6 +422,21 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
             <AdminFieldTextarea label="Tagline" value={editor.content.hero.tagline} onChange={(value) => setHero("tagline", value)} />
             <AdminFieldTextarea label="Location" value={editor.content.hero.location} minRows={1} onChange={(value) => setHero("location", value)} />
             <AdminFieldTextarea label="Reserve button label" value={editor.content.hero.reserveLabel} minRows={1} onChange={(value) => setHero("reserveLabel", value)} />
+            <AdminFieldInput label="Reservation URL (Tock, etc.)" value={editor.content.hero.reservationUrl} onChange={(value) => setHero("reservationUrl", value)} type="url" />
+            <AdminVideoField
+              title="Hero video · Desktop"
+              value={editor.content.hero.videoDesktop}
+              uploadTags={["hero", "video", "desktop"]}
+              onChangeUrl={(value) => setHero("videoDesktop", value)}
+              onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setHero("videoDesktop", filePath))}
+            />
+            <AdminVideoField
+              title="Hero video · Mobile"
+              value={editor.content.hero.videoMobile}
+              uploadTags={["hero", "video", "mobile"]}
+              onChangeUrl={(value) => setHero("videoMobile", value)}
+              onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setHero("videoMobile", filePath))}
+            />
           </div>
         );
       case "concept":
@@ -498,7 +514,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
             <AdminFieldTextarea label="Second paragraph" value={editor.content.greenStar.body2} minRows={3} onChange={(value) => setGreenStar("body2", value)} />
             {editor.content.greenStar.pillars.map((pillar, index) => (
               <div key={pillar.id} style={{ display: "grid", gap: 12, padding: 12, border: `1px solid ${uiPalette.panelBorder}` }}>
-                <p style={{ margin: 0, fontFamily: '"Abel", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
+                <p style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
                   Pillar {index + 1}
                 </p>
                 <AdminFieldInput label="Number" value={pillar.number} onChange={(value) => setGreenStarPillar(index, "number", value)} />
@@ -579,10 +595,10 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
                   <div key={`${activeMenuSeason}-${index}`} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                       <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "hsl(24 18% 10%)", flexShrink: 0 }}>
+                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)", flexShrink: 0 }}>
                           {previewUrl ? <img src={previewUrl} alt={dish.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                         </div>
-                        <span style={{ fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText }}>
+                        <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText }}>
                           {String(index + 1).padStart(2, "0")} · {dish.name || "Untitled"}
                         </span>
                       </div>
@@ -647,10 +663,10 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
                   <div key={`${producer.name}-${index}`} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                       <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "hsl(24 18% 10%)", flexShrink: 0 }}>
+                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)", flexShrink: 0 }}>
                           {previewUrl ? <img src={previewUrl} alt={producer.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                         </div>
-                        <span style={{ fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
                           {producer.name || `Point ${index + 1}`}
                         </span>
                       </div>

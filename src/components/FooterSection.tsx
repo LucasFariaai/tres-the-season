@@ -9,10 +9,9 @@ interface FooterSectionProps {
   theme?: SiteThemeTokens;
 }
 
-const INSTAGRAM_URL = "https://www.instagram.com/tresrotterdam/";
-
 const FooterSection = forwardRef<HTMLElement, FooterSectionProps>(({ content }, ref) => {
   const footerContent = content ?? defaultHomeCmsContent.footer;
+  const instagramUrl = footerContent.instagramUrl && footerContent.instagramUrl !== "#" ? footerContent.instagramUrl : "https://www.instagram.com/tresrotterdam/";
 
   return (
     <footer ref={ref} data-footer="tres" className="py-24" style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
@@ -20,7 +19,7 @@ const FooterSection = forwardRef<HTMLElement, FooterSectionProps>(({ content }, 
         <p className="mb-10 font-accent text-lg italic text-white/55 sm:text-xl">{footerContent.quote}</p>
         <div className="mb-10 flex justify-center">
           <a
-            href={INSTAGRAM_URL}
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"

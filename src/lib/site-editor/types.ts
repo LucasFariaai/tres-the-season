@@ -27,6 +27,9 @@ export interface HeroContent {
   tagline: string;
   location: string;
   reserveLabel: string;
+  videoDesktop: string;
+  videoMobile: string;
+  reservationUrl: string;
 }
 
 export interface BandContent {

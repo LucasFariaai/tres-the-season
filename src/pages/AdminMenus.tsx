@@ -10,7 +10,7 @@ export default function AdminMenus() {
 
   if (editor.loading) {
     return (
-      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, color: uiPalette.controlText, fontFamily: '"Abel", sans-serif' }}>
+      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif' }}>
         Loading editor...
       </main>
     );

@@ -76,7 +76,7 @@ export function AdminSubscribersPanel({ open, onClose }: Props) {
         display: "flex",
         flexDirection: "column",
         color: uiPalette.controlText,
-        fontFamily: '"Abel", sans-serif',
+        fontFamily: '"Source Sans 3", sans-serif',
       }}
     >
       <div style={{ padding: 20, borderBottom: `1px solid ${uiPalette.panelBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>

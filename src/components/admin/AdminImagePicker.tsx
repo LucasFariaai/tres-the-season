@@ -65,7 +65,7 @@ export function AdminImagePicker({
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <div style={{ display: "grid", gap: 8 }}>
-        <h3 style={{ margin: 0, fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 16, fontWeight: 400, color: uiPalette.controlText }}>
+        <h3 style={{ margin: 0, fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 16, fontWeight: 400, color: uiPalette.controlText }}>
           {title}
         </h3>
         <div
@@ -73,7 +73,7 @@ export function AdminImagePicker({
             width: previewWidth,
             height: previewHeight,
             border: `1px solid ${uiPalette.controlBorder}`,
-            background: "hsl(24 18% 10%)",
+            background: "rgba(26,20,16,0.08)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

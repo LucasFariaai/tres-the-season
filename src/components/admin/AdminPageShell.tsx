@@ -38,7 +38,7 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
           right: 0,
           height: toolbarHeight,
           zIndex: 50,
-          background: "hsl(24 24% 8% / 0.95)",
+          background: "rgba(245,239,230,0.95)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: `1px solid ${uiPalette.panelBorder}`,
@@ -46,8 +46,8 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
       >
         <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "8px 20px" }}>
           <Link to="/admin" style={{ display: "inline-flex", alignItems: "center", gap: 12, textDecoration: "none", color: uiPalette.controlText }}>
-            <img src={logoTres} alt="Tres" style={{ height: 18, width: "auto", filter: "brightness(0) invert(1)" }} />
-            <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
+            <img src={logoTres} alt="Tres" style={{ height: 18, width: "auto" }} />
+            <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
               ← Admin
             </span>
           </Link>
@@ -77,7 +77,7 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
 
           <div
             style={{
-              fontFamily: '"Abel", sans-serif',
+              fontFamily: '"Source Sans 3", sans-serif',
               fontSize: 11,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
@@ -111,11 +111,11 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
       {/* Page header */}
       <div style={{ paddingTop: toolbarHeight }}>
         <header style={{ padding: "32px 32px 12px", borderBottom: `1px solid ${uiPalette.panelBorder}` }}>
-          <h1 style={{ margin: 0, fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 36, fontWeight: 400, color: uiPalette.controlText }}>
+          <h1 style={{ margin: 0, fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 36, fontWeight: 400, color: uiPalette.controlText }}>
             {title}
           </h1>
           {subtitle ? (
-            <p style={{ margin: "8px 0 0", fontFamily: '"Abel", sans-serif', fontSize: 13, color: uiPalette.controlMuted }}>
+            <p style={{ margin: "8px 0 0", fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, color: uiPalette.controlMuted }}>
               {subtitle}
             </p>
           ) : null}

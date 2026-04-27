@@ -208,7 +208,7 @@ export function AdminWinesPanel({ editor }: Props) {
           ) : null}
         </div>
 
-        <div style={{ marginLeft: "auto", fontFamily: '"Abel", sans-serif', fontSize: 11, color: uiPalette.controlMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+        <div style={{ marginLeft: "auto", fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, color: uiPalette.controlMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
           Showing {filtered.length} of {wines.length}
         </div>
       </div>
@@ -243,18 +243,18 @@ export function AdminWinesPanel({ editor }: Props) {
               >
                 <div style={{ display: "grid", gap: 2, minWidth: 0, flex: 1 }}>
                   <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
-                    <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 11, color: uiPalette.controlMuted, minWidth: 36 }}>
+                    <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, color: uiPalette.controlMuted, minWidth: 36 }}>
                       {wine.vintage ?? "NV"}
                     </span>
-                    <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {wine.name || "Untitled"}
                     </span>
                   </div>
-                  <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 11, color: uiPalette.controlMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, color: uiPalette.controlMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {wine.producer} · {wine.region}
                   </span>
                 </div>
-                <span style={{ fontFamily: '"Abel", sans-serif', fontSize: 13, color: "#C8B89A", flexShrink: 0 }}>
+                <span style={{ fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, color: "#C8B89A", flexShrink: 0 }}>
                   €{wine.price}
                 </span>
               </button>
@@ -307,7 +307,7 @@ export function AdminWinesPanel({ editor }: Props) {
                       </div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end", justifyContent: "flex-end" }}>
-                      <label style={{ display: "flex", alignItems: "center", gap: 6, color: uiPalette.controlText, fontFamily: '"Abel", sans-serif', fontSize: 11, whiteSpace: "nowrap" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: 6, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, whiteSpace: "nowrap" }}>
                         <input
                           type="checkbox"
                           checked={wine.featured ?? false}
@@ -333,7 +333,7 @@ export function AdminWinesPanel({ editor }: Props) {
         })}
 
         {filtered.length === 0 ? (
-          <div style={{ padding: "24px 12px", textAlign: "center", color: uiPalette.controlMuted, fontFamily: '"Abel", sans-serif', fontSize: 13 }}>
+          <div style={{ padding: "24px 12px", textAlign: "center", color: uiPalette.controlMuted, fontFamily: '"Source Sans 3", sans-serif', fontSize: 13 }}>
             No wines match the current filter.
           </div>
         ) : null}

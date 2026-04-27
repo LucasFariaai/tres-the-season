@@ -108,10 +108,10 @@ export function AdminProducersPanel({ editor }: Props) {
             <div key={`${producer.name}-${index}`} style={{ display: "grid", gap: 14, border: `1px solid ${uiPalette.controlBorder}`, padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                  <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "hsl(24 18% 10%)", flexShrink: 0 }}>
+                  <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)", flexShrink: 0 }}>
                     {previewUrl ? <img src={previewUrl} alt={producer.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                   </div>
-                  <span style={{ fontFamily: '"Fraunces", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
+                  <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
                     {producer.name || `Point ${index + 1}`}
                   </span>
                 </div>
