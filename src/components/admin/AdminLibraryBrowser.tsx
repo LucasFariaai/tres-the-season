@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AdminMediaThumb } from "@/components/admin/AdminMediaThumb";
 import { buttonBase, fieldLabelStyle, fieldStyle, navPillStyle, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
-import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import type { SiteMediaItem } from "@/lib/site-editor/types";
 
 type Props = {
@@ -264,7 +264,6 @@ export function AdminLibraryBrowser({
               }}
             >
               {filtered.map((item, index) => {
-                const thumbUrl = resolveMediaUrl(item.file_path, 320, 78) ?? item.file_path;
                 return (
                   <button
                     key={item.id ?? `${item.file_path}-${index}`}
@@ -291,13 +290,8 @@ export function AdminLibraryBrowser({
                       e.currentTarget.style.boxShadow = "none";
                     }}
                   >
-                    <div style={{ aspectRatio: "1 / 1", background: "rgba(26,20,16,0.04)", overflow: "hidden" }}>
-                      <img
-                        src={thumbUrl}
-                        alt={item.alt_text ?? item.title ?? ""}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        loading="lazy"
-                      />
+                    <div style={{ aspectRatio: "1 / 1", overflow: "hidden" }}>
+                      <AdminMediaThumb src={item.file_path} alt={item.alt_text ?? item.title ?? ""} width={320} quality={76} />
                     </div>
                     <div style={{ padding: "8px 10px", display: "grid", gap: 4 }}>
                       <span

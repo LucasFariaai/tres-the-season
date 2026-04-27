@@ -1,8 +1,8 @@
 import { useId, useMemo, useState, type ChangeEvent } from "react";
-import { buttonBase, fieldLabelStyle, uiPalette } from "@/components/admin/adminStyles";
 import { AdminLibraryBrowser } from "@/components/admin/AdminLibraryBrowser";
+import { AdminMediaThumb } from "@/components/admin/AdminMediaThumb";
+import { buttonBase, fieldLabelStyle, uiPalette } from "@/components/admin/adminStyles";
 import type { SiteMediaItem } from "@/lib/site-editor/types";
-import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 
 type AdminImagePickerProps = {
   title: string;
@@ -46,7 +46,6 @@ export function AdminImagePicker({
   const [uploading, setUploading] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const inputId = useId();
-  const previewUrl = resolveMediaUrl(value, 1200, 82) ?? value;
   const quickPicks = useMemo(() => {
     if (!quickPickLimit) return [];
     return getQuickPicks(mediaLibrary, quickPickTags ?? uploadTags, quickPickLimit);
@@ -76,18 +75,10 @@ export function AdminImagePicker({
             height: previewHeight,
             borderRadius: 12,
             border: "1px solid rgba(26,20,16,0.06)",
-            background: "rgba(26,20,16,0.04)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             overflow: "hidden",
           }}
         >
-          {previewUrl ? (
-            <img src={previewUrl} alt={title} style={{ width: "100%", height: "100%", objectFit: previewFit, display: "block" }} loading="lazy" />
-          ) : (
-            <span style={{ ...fieldLabelStyle, color: uiPalette.controlMuted }}>No image</span>
-          )}
+          <AdminMediaThumb src={value} alt={title} width={1200} quality={82} fit={previewFit} />
         </div>
       </div>
 
@@ -125,27 +116,24 @@ export function AdminImagePicker({
         <div style={{ display: "grid", gap: 8 }}>
           <span style={fieldLabelStyle}>Quick picks</span>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${quickPicks.length}, minmax(0, 1fr))`, gap: 8 }}>
-            {quickPicks.map((item, index) => {
-              const thumbUrl = resolveMediaUrl(item.file_path, 240, 76) ?? item.file_path;
-              return (
-                <button
-                  key={item.id ?? `${item.file_path}-${index}`}
-                  type="button"
-                  onClick={() => onApply(item.file_path)}
-                  style={{
-                    borderRadius: 10,
-                    border: "1px solid rgba(26,20,16,0.06)",
-                    background: "transparent",
-                    padding: 0,
-                    cursor: "pointer",
-                    aspectRatio: "1 / 1",
-                    overflow: "hidden",
-                  }}
-                >
-                  <img src={thumbUrl} alt={item.alt_text ?? item.title ?? title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
-                </button>
-              );
-            })}
+            {quickPicks.map((item, index) => (
+              <button
+                key={item.id ?? `${item.file_path}-${index}`}
+                type="button"
+                onClick={() => onApply(item.file_path)}
+                style={{
+                  borderRadius: 10,
+                  border: "1px solid rgba(26,20,16,0.06)",
+                  background: "transparent",
+                  padding: 0,
+                  cursor: "pointer",
+                  aspectRatio: "1 / 1",
+                  overflow: "hidden",
+                }}
+              >
+                <AdminMediaThumb src={item.file_path} alt={item.alt_text ?? item.title ?? title} width={240} quality={76} />
+              </button>
+            ))}
           </div>
         </div>
       ) : null}
