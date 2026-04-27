@@ -198,32 +198,10 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 }
 
 function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent["items"]; prefersReducedMotion: boolean }) {
-  // Mobile composition:
-  //  1) first item (fixed)
-  //  2) carousel containing the second item + all middle items (autoplay + swipe)
-  //  3) last item (fixed)
-  const safe = items ?? [];
-  const top = safe[0];
-  const last = safe.length >= 3 ? safe[safe.length - 1] : undefined;
-  const carouselItems = last ? safe.slice(1, -1) : safe.slice(1);
-
-  const renderFixed = (item: GalleryContent["items"][number]) => (
-    <article
-      key={item.id}
-      className="relative overflow-hidden"
-      style={{ height: "320px", backgroundColor: "#191310" }}
-    >
-      <img src={item.mediaSrc} alt={item.alt} className="block h-full w-full object-cover" loading="lazy" />
-    </article>
-  );
-
+  if (!items || items.length === 0) return null;
   return (
-    <div className="flex flex-col" style={{ backgroundColor: "#F5EFE6" }}>
-      {top && renderFixed(top)}
-      {carouselItems.length > 0 && (
-        <MobileCarousel items={carouselItems} prefersReducedMotion={prefersReducedMotion} />
-      )}
-      {last && renderFixed(last)}
+    <div style={{ backgroundColor: "#F5EFE6" }}>
+      <MobileCarousel items={items} prefersReducedMotion={prefersReducedMotion} />
     </div>
   );
 }
