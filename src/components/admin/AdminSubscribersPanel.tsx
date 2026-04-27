@@ -63,20 +63,27 @@ export function AdminSubscribersPanel({ open, onClose }: Props) {
 
   return (
     <div
+      data-lenis-prevent
       style={{
         position: "fixed",
-        top: toolbarHeight,
-        right: 0,
-        bottom: 0,
+        top: toolbarHeight + 24,
+        right: 16,
+        bottom: 16,
         width: 480,
-        maxWidth: "100vw",
-        background: uiPalette.panel,
-        borderLeft: `1px solid ${uiPalette.panelBorder}`,
+        maxWidth: "calc(100vw - 32px)",
+        maxHeight: "calc(100vh - 96px)",
+        background: "rgba(245,239,230,0.96)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        border: "1px solid rgba(26,20,16,0.06)",
+        borderRadius: 18,
+        boxShadow: "0 12px 40px rgba(26,20,16,0.10)",
         zIndex: 49,
         display: "flex",
         flexDirection: "column",
         color: uiPalette.controlText,
         fontFamily: '"Source Sans 3", sans-serif',
+        overflow: "hidden",
       }}
     >
       <div style={{ padding: 20, borderBottom: `1px solid ${uiPalette.panelBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
@@ -89,7 +96,7 @@ export function AdminSubscribersPanel({ open, onClose }: Props) {
           <button type="button" onClick={onClose} style={buttonBase}>Close</button>
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
+      <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: 12 }}>
         {loading ? (
           <p style={{ padding: 12, color: uiPalette.controlMuted }}>Loading…</p>
         ) : subs.length === 0 ? (

@@ -749,6 +749,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
         }}
       />
       <aside
+        data-lenis-prevent
         style={{
           position: "fixed",
           top: toolbarHeight + 24,
@@ -778,7 +779,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
             Close
           </button>
         </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>{renderFields()}</div>
+        <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: 20 }}>{renderFields()}</div>
       </aside>
     </>
   );
