@@ -65,14 +65,11 @@ function NewsletterField() {
           color: "rgba(26,20,16,0.6)",
         }}
       >
-        Be the first to hear about new seasonal menus, private dinners and one-off events at Tres.
+        Be the first to hear about new seasonal menus and one-off events at Tres.
       </p>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-4 flex w-full flex-col gap-2 sm:flex-row sm:items-stretch"
-      >
-        <label className="flex-1">
+      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        <label className="block">
           <span className="sr-only">Your email</span>
           <input
             type="email"
@@ -86,37 +83,41 @@ function NewsletterField() {
                 setMessage("");
               }
             }}
-            placeholder="you@example.com"
+            placeholder="your@email.com"
             disabled={isLocked}
-            className="w-full bg-white/60 px-4 text-base focus:outline-none transition-colors sm:text-sm"
+            className="w-full bg-transparent border-0 border-b py-2.5 text-sm focus:outline-none transition-colors"
             style={{
               fontFamily: "'Source Sans 3', sans-serif",
-              border: "1px solid rgba(26,20,16,0.2)",
+              borderColor: "rgba(26,20,16,0.25)",
               color: "#1A1410",
-              height: 48,
               borderRadius: 0,
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(26,20,16,0.6)")}
-            onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(26,20,16,0.2)")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(26,20,16,0.25)")}
           />
         </label>
         <button
           type="submit"
           disabled={isLocked}
-          className="text-xs uppercase tracking-[0.22em] transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 transition-opacity hover:opacity-70 disabled:opacity-40"
           style={{
             fontFamily: "'Source Sans 3', sans-serif",
-            background: "#1A1410",
-            color: "#F5EFE6",
-            border: "1px solid #1A1410",
-            padding: "0 28px",
-            height: 48,
-            borderRadius: 0,
+            fontSize: "13px",
+            letterSpacing: "0.06em",
+            color: "#c9b89e",
+            background: "transparent",
+            border: "none",
+            padding: 0,
             cursor: isLocked ? "default" : "pointer",
-            whiteSpace: "nowrap",
+            borderRadius: 0,
           }}
         >
           {status === "sending" ? "Sending…" : status === "success" ? "Joined" : "Subscribe"}
+          {status !== "sending" && status !== "success" && (
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M4 12L12 4M12 4H6M12 4V10" />
+            </svg>
+          )}
         </button>
       </form>
 
@@ -180,7 +181,16 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                     </a>
                   </p>
                 )}
-                <div className="mt-4">
+                <p
+                  className="mt-1 text-sm italic"
+                  style={{
+                    fontFamily: "'Playfair Display', serif",
+                    color: "rgba(26,20,16,0.55)",
+                  }}
+                >
+                  Contact us for private dinners.
+                </p>
+                <div className="mt-6">
                   <NewsletterField />
                 </div>
               </div>
