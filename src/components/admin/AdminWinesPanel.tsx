@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
-import { buttonBase, fieldLabelStyle, fieldStyle, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
+import { buttonBase, cardStyle, fieldLabelStyle, fieldStyle, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
 import type { VisualEditor } from "@/components/admin/types";
 import type { WineCategory, WineItem } from "@/lib/site-editor/types";
 
@@ -220,8 +220,8 @@ export function AdminWinesPanel({ editor }: Props) {
             <div
               key={wine.id}
               style={{
-                border: `1px solid ${uiPalette.controlBorder}`,
-                background: isExpanded ? "rgba(255,255,255,0.02)" : "transparent",
+                ...cardStyle,
+                background: isExpanded ? "rgba(255,255,255,0.7)" : cardStyle.background,
               }}
             >
               <button

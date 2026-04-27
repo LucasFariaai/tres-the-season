@@ -72,8 +72,9 @@ export function AdminImagePicker({
           style={{
             width: previewWidth,
             height: previewHeight,
-            border: `1px solid ${uiPalette.controlBorder}`,
-            background: "rgba(26,20,16,0.08)",
+            borderRadius: 12,
+            border: "1px solid rgba(26,20,16,0.06)",
+            background: "rgba(26,20,16,0.04)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -119,8 +120,8 @@ export function AdminImagePicker({
                   type="button"
                   onClick={() => onApply(item.file_path)}
                   style={{
-                    borderRadius: 0,
-                    border: `1px solid ${uiPalette.controlBorder}`,
+                    borderRadius: 10,
+                    border: "1px solid rgba(26,20,16,0.06)",
                     background: "transparent",
                     padding: 0,
                     cursor: "pointer",

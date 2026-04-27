@@ -7,7 +7,7 @@ import { AdminHistoryPanel } from "@/components/admin/AdminHistoryPanel";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
 import { AdminVideoField } from "@/components/admin/AdminVideoField";
 import { AdminWinesPanel } from "@/components/admin/AdminWinesPanel";
-import { buttonBase, fieldLabelStyle, sectionHeaderStyle, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
+import { buttonBase, cardStyle, fieldLabelStyle, sectionHeaderStyle, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
 import type { Selection, VisualEditor } from "@/components/admin/types";
 import { toast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -260,7 +260,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
       <h2 style={sectionHeaderStyle}>Zoom images</h2>
       <div style={{ display: "grid", gap: 16 }}>
         {editor.content.zoom.images.map((image, index) => (
-          <div key={`${image.src}-${index}`} style={{ display: "grid", gap: 12, padding: 12, border: `1px solid ${uiPalette.controlBorder}` }}>
+          <div key={`${image.src}-${index}`} style={{ ...cardStyle, display: "grid", gap: 12, padding: 12 }}>
             <AdminImagePicker
               title={`Zoom image ${index + 1}`}
               value={image.src}
@@ -324,10 +324,10 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
         {editor.content.gallery.items.map((item, index) => {
           const imageUrl = resolveMediaUrl(item.mediaSrc, 240, 80) ?? item.mediaSrc;
           return (
-            <div key={item.id} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
+            <div key={item.id} style={{ display: "grid", gap: 12, ...cardStyle, padding: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <div style={{ width: 60, height: 60, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)" }}>
+                  <div style={{ width: 60, height: 60, borderRadius: 8, border: "1px solid rgba(26,20,16,0.06)", overflow: "hidden", background: "rgba(26,20,16,0.04)" }}>
                     {imageUrl ? <img src={imageUrl} alt={item.alt} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                   </div>
                   <div style={{ display: "grid", gap: 4 }}>
@@ -505,7 +505,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
         return (
           <div style={{ display: "grid", gap: 16 }}>
             {editor.content.greenStar.pillars.map((pillar, index) => (
-              <div key={pillar.id} style={{ display: "grid", gap: 12, padding: 12, border: `1px solid ${uiPalette.panelBorder}` }}>
+              <div key={pillar.id} style={{ display: "grid", gap: 12, padding: 12, ...cardStyle }}>
                 <p style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
                   Pillar {index + 1}
                 </p>
@@ -584,10 +584,10 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
               {activeMenu.items.map((dish, index) => {
                 const previewUrl = resolveMediaUrl(dish.image, 240, 80) ?? dish.image;
                 return (
-                  <div key={`${activeMenuSeason}-${index}`} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
+                  <div key={`${activeMenuSeason}-${index}`} style={{ display: "grid", gap: 12, ...cardStyle, padding: 12 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                       <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)", flexShrink: 0 }}>
+                        <div style={{ width: 56, height: 56, borderRadius: 8, border: "1px solid rgba(26,20,16,0.06)", overflow: "hidden", background: "rgba(26,20,16,0.04)", flexShrink: 0 }}>
                           {previewUrl ? <img src={previewUrl} alt={dish.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                         </div>
                         <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText }}>
@@ -648,10 +648,10 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
               {editor.content.producers.items.map((producer, index) => {
                 const previewUrl = resolveMediaUrl(producer.image, 240, 80) ?? producer.image;
                 return (
-                  <div key={`${producer.name}-${index}`} style={{ display: "grid", gap: 12, border: `1px solid ${uiPalette.controlBorder}`, padding: 12 }}>
+                  <div key={`${producer.name}-${index}`} style={{ display: "grid", gap: 12, ...cardStyle, padding: 12 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                       <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                        <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)", flexShrink: 0 }}>
+                        <div style={{ width: 56, height: 56, borderRadius: 8, border: "1px solid rgba(26,20,16,0.06)", overflow: "hidden", background: "rgba(26,20,16,0.04)", flexShrink: 0 }}>
                           {previewUrl ? <img src={previewUrl} alt={producer.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                         </div>
                         <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 16, color: uiPalette.controlText, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -751,19 +751,24 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
       <aside
         style={{
           position: "fixed",
-          top: toolbarHeight,
-          right: 0,
-          bottom: 0,
-          width: isMobile ? "100%" : 380,
-          background: uiPalette.panel,
-          borderLeft: `1px solid ${uiPalette.panelBorder}`,
+          top: toolbarHeight + 24,
+          right: isMobile ? 0 : 16,
+          bottom: isMobile ? 0 : 16,
+          width: isMobile ? "100%" : 400,
+          maxHeight: isMobile ? "none" : "calc(100vh - 96px)",
+          background: "rgba(245,239,230,0.96)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          border: "1px solid rgba(26,20,16,0.06)",
+          borderRadius: isMobile ? 0 : 18,
+          boxShadow: "0 12px 40px rgba(26,20,16,0.10)",
           zIndex: 40,
-          transform: selection ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 200ms ease",
+          transform: selection ? "translateX(0)" : "translateX(110%)",
+          transition: "transform 220ms ease",
           pointerEvents: selection ? "auto" : "none",
           display: "flex",
           flexDirection: "column",
-          overflow: "visible",
+          overflow: "hidden",
         }}
         onClick={(event) => event.stopPropagation()}
       >

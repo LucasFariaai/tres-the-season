@@ -38,8 +38,9 @@ export function AdminVideoField({ title, value, uploadTags, onUpload, onChangeUr
         style={{
           width: "100%",
           aspectRatio: "16 / 9",
-          border: `1px solid ${uiPalette.controlBorder}`,
-          background: "rgba(26,20,16,0.08)",
+          borderRadius: 12,
+          border: "1px solid rgba(26,20,16,0.06)",
+          background: "rgba(26,20,16,0.04)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

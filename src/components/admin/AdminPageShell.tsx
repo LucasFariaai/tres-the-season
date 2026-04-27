@@ -17,6 +17,27 @@ const NAV_LINKS: { to: string; label: string }[] = [
   { to: "/admin/wines", label: "Wines" },
 ];
 
+const pillContainerStyle = {
+  borderRadius: 999,
+  border: "1px solid rgba(26,20,16,0.06)",
+  boxShadow: "0 8px 24px rgba(26,20,16,0.08)",
+  padding: "6px 8px",
+  display: "flex",
+  alignItems: "center",
+  gap: 2,
+  background: "rgba(245,239,230,0.92)",
+  backdropFilter: "blur(14px)",
+  WebkitBackdropFilter: "blur(14px)",
+  pointerEvents: "auto" as const,
+};
+
+const hoverIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.background = "rgba(26,20,16,0.06)";
+};
+const hoverOut = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.background = "transparent";
+};
+
 export function AdminPageShell({ editor, title, subtitle, onPublish, children }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,31 +51,24 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
         }
       `}</style>
 
-      {/* Floating pill toolbar — mirrors the home SeasonBar shape */}
       <div
         style={{
           position: "fixed",
           top: 16,
-          left: "50%",
-          transform: "translateX(-50%)",
+          left: 0,
+          right: 0,
           zIndex: 50,
-          maxWidth: "calc(100% - 24px)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          gap: 12,
+          padding: "0 16px",
+          flexWrap: "wrap",
+          pointerEvents: "none",
         }}
       >
-        <nav
-          style={{
-            borderRadius: 999,
-            border: "1px solid rgba(26,20,16,0.08)",
-            boxShadow: "0 8px 32px rgba(26,20,16,0.10)",
-            padding: "8px 12px",
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-            background: "rgba(245,239,230,0.92)",
-            backdropFilter: "blur(14px)",
-            WebkitBackdropFilter: "blur(14px)",
-          }}
-        >
+        {/* Left pill: back link + nav */}
+        <nav style={pillContainerStyle}>
           <Link
             to="/admin"
             aria-label="Back to admin"
@@ -107,7 +121,10 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
               );
             })}
           </div>
+        </nav>
 
+        {/* Right pill: status + Publish */}
+        <div style={pillContainerStyle}>
           <span
             style={{
               display: "inline-flex",
@@ -146,7 +163,7 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
           >
             {editor.publishing ? "Publishing…" : "Publish"}
           </button>
-        </nav>
+        </div>
       </div>
 
       {/* Page header */}
@@ -183,3 +200,7 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
     </div>
   );
 }
+
+// Used by hovering hooks elsewhere if needed.
+const _unusedHover = { hoverIn, hoverOut };
+void _unusedHover;

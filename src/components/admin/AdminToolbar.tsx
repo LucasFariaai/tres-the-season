@@ -15,6 +15,27 @@ type AdminToolbarProps = {
   onSignOut: () => Promise<void>;
 };
 
+const pillContainerStyle = {
+  borderRadius: 999,
+  border: "1px solid rgba(26,20,16,0.06)",
+  boxShadow: "0 8px 24px rgba(26,20,16,0.08)",
+  padding: "6px 8px",
+  display: "flex",
+  alignItems: "center",
+  gap: 2,
+  background: "rgba(245,239,230,0.92)",
+  backdropFilter: "blur(14px)",
+  WebkitBackdropFilter: "blur(14px)",
+  pointerEvents: "auto" as const,
+};
+
+const hoverIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.background = "rgba(26,20,16,0.06)";
+};
+const hoverOut = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.background = "transparent";
+};
+
 export function AdminToolbar({
   editor,
   onPublish,
@@ -41,28 +62,25 @@ export function AdminToolbar({
       style={{
         position: "fixed",
         top: 16,
-        left: "50%",
-        transform: "translateX(-50%)",
+        left: 0,
+        right: 0,
         zIndex: 50,
-        width: isMobile ? "calc(100% - 24px)" : "auto",
-        maxWidth: "calc(100% - 24px)",
-        pointerEvents: "auto",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        gap: 12,
+        padding: "0 16px",
+        flexWrap: "wrap",
+        pointerEvents: "none",
       }}
     >
+      {/* Left pill: logo + nav chips */}
       <nav
         style={{
-          borderRadius: 999,
-          border: "1px solid rgba(26,20,16,0.08)",
-          boxShadow: "0 8px 32px rgba(26,20,16,0.10)",
-          padding: isMobile ? "8px 10px" : "8px 12px",
-          display: "flex",
-          alignItems: "center",
-          gap: isMobile ? 6 : 4,
-          background: "rgba(245,239,230,0.92)",
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
-          flexWrap: "nowrap",
+          ...pillContainerStyle,
+          maxWidth: "100%",
           overflowX: isMobile ? "auto" : "visible",
+          flexWrap: "nowrap",
         }}
       >
         <a
@@ -107,53 +125,54 @@ export function AdminToolbar({
               key={item.label}
               type="button"
               onClick={item.onClick}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,20,16,0.06)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              onMouseEnter={hoverIn}
+              onMouseLeave={hoverOut}
               style={{ ...navPillStyle, color: uiPalette.controlText, whiteSpace: "nowrap" }}
             >
               {item.label}
             </button>
           ))}
         </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginLeft: 4 }}>
-          <button
-            type="button"
-            onClick={() => void onReset()}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,20,16,0.06)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-            style={{ ...navPillStyle, color: uiPalette.controlMuted, whiteSpace: "nowrap" }}
-          >
-            Reset
-          </button>
-          <button
-            type="button"
-            onClick={() => void onSignOut()}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,20,16,0.06)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-            style={{ ...navPillStyle, color: uiPalette.controlMuted, whiteSpace: "nowrap" }}
-          >
-            Sign out
-          </button>
-          <button
-            type="button"
-            onClick={() => void onPublish()}
-            disabled={editor.publishing}
-            style={{
-              ...buttonBase,
-              background: uiPalette.accent,
-              color: uiPalette.accentText,
-              borderColor: uiPalette.accent,
-              padding: "8px 18px",
-              fontWeight: 500,
-              opacity: editor.publishing ? 0.7 : 1,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {editor.publishing ? "Publishing…" : "Publish"}
-          </button>
-        </div>
       </nav>
+
+      {/* Right pill: actions + Publish (always visible) */}
+      <div style={pillContainerStyle}>
+        <button
+          type="button"
+          onClick={() => void onReset()}
+          onMouseEnter={hoverIn}
+          onMouseLeave={hoverOut}
+          style={{ ...navPillStyle, color: uiPalette.controlMuted, whiteSpace: "nowrap" }}
+        >
+          Reset
+        </button>
+        <button
+          type="button"
+          onClick={() => void onSignOut()}
+          onMouseEnter={hoverIn}
+          onMouseLeave={hoverOut}
+          style={{ ...navPillStyle, color: uiPalette.controlMuted, whiteSpace: "nowrap" }}
+        >
+          Sign out
+        </button>
+        <button
+          type="button"
+          onClick={() => void onPublish()}
+          disabled={editor.publishing}
+          style={{
+            ...buttonBase,
+            background: uiPalette.accent,
+            color: uiPalette.accentText,
+            borderColor: uiPalette.accent,
+            padding: "8px 18px",
+            fontWeight: 500,
+            opacity: editor.publishing ? 0.7 : 1,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {editor.publishing ? "Publishing…" : "Publish"}
+        </button>
+      </div>
     </div>
   );
 }

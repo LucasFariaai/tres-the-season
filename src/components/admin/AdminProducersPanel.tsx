@@ -1,7 +1,7 @@
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
-import { buttonBase, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
+import { buttonBase, cardStyle, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
 import type { VisualEditor } from "@/components/admin/types";
 import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import { toast } from "@/components/ui/use-toast";
@@ -101,10 +101,10 @@ export function AdminProducersPanel({ editor }: Props) {
         {editor.content.producers.items.map((producer, index) => {
           const previewUrl = resolveMediaUrl(producer.image, 280, 80) ?? producer.image;
           return (
-            <div key={`${producer.name}-${index}`} style={{ display: "grid", gap: 14, border: `1px solid ${uiPalette.controlBorder}`, padding: 16 }}>
+            <div key={`${producer.name}-${index}`} style={{ ...cardStyle, display: "grid", gap: 14, padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                  <div style={{ width: 56, height: 56, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)", flexShrink: 0 }}>
+                  <div style={{ width: 56, height: 56, borderRadius: 8, border: "1px solid rgba(26,20,16,0.06)", overflow: "hidden", background: "rgba(26,20,16,0.04)", flexShrink: 0 }}>
                     {previewUrl ? <img src={previewUrl} alt={producer.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" /> : null}
                   </div>
                   <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>

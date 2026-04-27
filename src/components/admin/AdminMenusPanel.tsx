@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
-import { buttonBase, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
+import { buttonBase, cardStyle, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
 import type { VisualEditor } from "@/components/admin/types";
 import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import type { Season } from "@/lib/site-editor/types";
@@ -138,7 +138,7 @@ export function AdminMenusPanel({ editor }: Props) {
         {activeMenu.items.map((dish, index) => {
           const previewUrl = resolveMediaUrl(dish.image, 320, 80) ?? dish.image;
           return (
-            <div key={`${activeSeason}-${index}`} style={{ display: "grid", gap: 14, border: `1px solid ${uiPalette.controlBorder}`, padding: 16 }}>
+            <div key={`${activeSeason}-${index}`} style={{ ...cardStyle, display: "grid", gap: 14, padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                 <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
                   {String(index + 1).padStart(2, "0")} · {dish.name || "Untitled"}
@@ -164,7 +164,7 @@ export function AdminMenusPanel({ editor }: Props) {
 
               <div style={{ display: "grid", gap: 14, gridTemplateColumns: previewUrl ? "120px 1fr" : "1fr", alignItems: "start" }}>
                 {previewUrl ? (
-                  <div style={{ width: 120, height: 150, border: `1px solid ${uiPalette.controlBorder}`, overflow: "hidden", background: "rgba(26,20,16,0.08)" }}>
+                  <div style={{ width: 120, height: 150, borderRadius: 10, border: "1px solid rgba(26,20,16,0.06)", overflow: "hidden", background: "rgba(26,20,16,0.04)" }}>
                     <img src={previewUrl} alt={dish.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
                   </div>
                 ) : null}

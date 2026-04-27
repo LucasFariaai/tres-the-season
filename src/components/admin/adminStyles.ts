@@ -89,3 +89,13 @@ export const sectionHeaderStyle: CSSProperties = {
   color: uiPalette.controlText,
   fontWeight: 400,
 };
+
+// Soft card surface used for the editable cards in panels (dishes,
+// producers, wines, gallery items, etc.). Subtle border + light shadow
+// instead of the previous hard edge.
+export const cardStyle: CSSProperties = {
+  border: "1px solid rgba(26,20,16,0.06)",
+  borderRadius: 14,
+  background: "rgba(255,255,255,0.45)",
+  boxShadow: "0 1px 3px rgba(26,20,16,0.04)",
+};
