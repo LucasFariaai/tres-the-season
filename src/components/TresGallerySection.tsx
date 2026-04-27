@@ -64,9 +64,16 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
         },
       });
 
-      // Reveal the footer at the bottom of the viewport ONLY while the gallery
-      // is pinned. Outside that scroll range the footer stays in its natural
-      // place in document flow.
+      // Footer treatment while the gallery is pinned:
+      //   - During the entire pin, the footer is fixed at top: 78vh (its top
+      //     edge sits exactly at the bottom of the gallery viewport, so the
+      //     bottom 22vh of the viewport is filled by the top of the footer).
+      //   - It does NOT grow as the user scrolls horizontally — it stays put.
+      //   - When the pin releases, the spacer GSAP injected lines up the
+      //     footer's natural document position with viewport y = 78vh, so the
+      //     transition from "fixed peek" to "natural flow" is seamless. From
+      //     there, normal scroll naturally brings the rest of the footer up
+      //     into view ("sobe um pouquinho mais").
       const footerEl = document.querySelector<HTMLElement>('[data-footer="tres"]');
       if (footerEl) {
         const fix = () => {
@@ -74,36 +81,27 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
             position: "fixed",
             left: 0,
             right: 0,
-            bottom: 0,
+            top: "78vh",
+            bottom: "auto",
             zIndex: 1,
           });
         };
         const release = () => {
           gsap.set(footerEl, {
-            clearProps: "position,left,right,bottom,zIndex,transform,yPercent",
+            clearProps: "position,left,right,top,bottom,zIndex,transform,yPercent",
           });
         };
 
-        gsap.fromTo(
-          footerEl,
-          { yPercent: 78 },
-          {
-            yPercent: 0,
-            immediateRender: false,
-            ease: "none",
-            scrollTrigger: {
-              trigger: pinWrap,
-              start: "top top",
-              end: () => `+=${getEndDistance()}`,
-              scrub: 1,
-              invalidateOnRefresh: true,
-              onEnter: fix,
-              onEnterBack: fix,
-              onLeave: release,
-              onLeaveBack: release,
-            },
-          },
-        );
+        ScrollTrigger.create({
+          trigger: pinWrap,
+          start: "top top",
+          end: () => `+=${getEndDistance()}`,
+          invalidateOnRefresh: true,
+          onEnter: fix,
+          onEnterBack: fix,
+          onLeave: release,
+          onLeaveBack: release,
+        });
       }
     }, section);
 
