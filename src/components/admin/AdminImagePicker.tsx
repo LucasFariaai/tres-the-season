@@ -1,5 +1,6 @@
 import { useId, useMemo, useState, type ChangeEvent } from "react";
 import { buttonBase, fieldLabelStyle, uiPalette } from "@/components/admin/adminStyles";
+import { AdminLibraryBrowser } from "@/components/admin/AdminLibraryBrowser";
 import type { SiteMediaItem } from "@/lib/site-editor/types";
 import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 
@@ -32,10 +33,10 @@ export function AdminImagePicker({
   title,
   value,
   mediaLibrary,
-  uploadLabel = "Upload new image",
+  uploadLabel = "Upload new",
   uploadTags,
   quickPickTags,
-  quickPickLimit = 0,
+  quickPickLimit = 4,
   previewHeight = 120,
   previewWidth = "100%",
   previewFit = "cover",
@@ -43,6 +44,7 @@ export function AdminImagePicker({
   onApply,
 }: AdminImagePickerProps) {
   const [uploading, setUploading] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const inputId = useId();
   const previewUrl = resolveMediaUrl(value, 1200, 82) ?? value;
   const quickPicks = useMemo(() => {
@@ -97,20 +99,31 @@ export function AdminImagePicker({
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "8px 12px",
+            padding: "8px 14px",
             color: uiPalette.controlText,
-            borderColor: uiPalette.controlBorder,
-            fontSize: 11,
+            fontSize: 12,
           }}
         >
-          {uploading ? "Uploading..." : uploadLabel}
+          {uploading ? "Uploading…" : uploadLabel}
         </label>
         <input id={inputId} type="file" accept="image/*" onChange={handleChange} style={{ display: "none" }} />
+        <button
+          type="button"
+          onClick={() => setLibraryOpen(true)}
+          style={{
+            ...buttonBase,
+            padding: "8px 14px",
+            color: uiPalette.controlText,
+            fontSize: 12,
+          }}
+        >
+          Browse library ({mediaLibrary.length})
+        </button>
       </div>
 
       {quickPicks.length > 0 ? (
         <div style={{ display: "grid", gap: 8 }}>
-          <span style={fieldLabelStyle}>Library options</span>
+          <span style={fieldLabelStyle}>Quick picks</span>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${quickPicks.length}, minmax(0, 1fr))`, gap: 8 }}>
             {quickPicks.map((item, index) => {
               const thumbUrl = resolveMediaUrl(item.file_path, 240, 76) ?? item.file_path;
@@ -136,6 +149,23 @@ export function AdminImagePicker({
           </div>
         </div>
       ) : null}
+
+      <AdminLibraryBrowser
+        open={libraryOpen}
+        title={`${title} · Library`}
+        mediaLibrary={mediaLibrary}
+        initialTags={quickPickTags ?? uploadTags}
+        uploadTags={uploadTags}
+        uploading={uploading}
+        onUpload={async (file, tags) => {
+          await onUpload(file, tags);
+        }}
+        onSelect={(filePath) => {
+          onApply(filePath);
+          setLibraryOpen(false);
+        }}
+        onClose={() => setLibraryOpen(false)}
+      />
     </div>
   );
 }
