@@ -690,11 +690,11 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
 
                     <AdminFieldInput label="Name" value={producer.name} onChange={(value) => setProducer(index, "name", value)} />
                     <AdminFieldInput label="Specialty" value={producer.specialty} onChange={(value) => setProducer(index, "specialty", value)} />
-                    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
+                    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))" }}>
                       <AdminFieldInput label="Region" value={producer.region} onChange={(value) => setProducer(index, "region", value)} />
                       <AdminFieldInput label="Distance" value={producer.distance} onChange={(value) => setProducer(index, "distance", value)} />
                     </div>
-                    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
+                    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))" }}>
                       <AdminFieldInput
                         label="Latitude"
                         value={String(producer.lat)}

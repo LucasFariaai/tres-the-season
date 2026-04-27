@@ -168,13 +168,13 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
 
       {/* Page header */}
       <div style={{ paddingTop: toolbarHeight + 24 }}>
-        <header style={{ padding: "24px 32px 16px", borderBottom: `1px solid ${uiPalette.panelBorder}` }}>
+        <header className="admin-shell-header" style={{ padding: "24px clamp(16px, 5vw, 32px) 16px", borderBottom: `1px solid ${uiPalette.panelBorder}` }}>
           <h1
             style={{
               margin: 0,
               fontFamily: "'Playfair Display', serif",
               fontStyle: "italic",
-              fontSize: 36,
+              fontSize: "clamp(28px, 5vw, 36px)",
               fontWeight: 400,
               color: uiPalette.controlText,
             }}
@@ -195,7 +195,7 @@ export function AdminPageShell({ editor, title, subtitle, onPublish, children }:
           ) : null}
         </header>
 
-        <main style={{ padding: 32, maxWidth: 1480, margin: "0 auto" }}>{children}</main>
+        <main style={{ padding: "24px clamp(16px, 5vw, 32px)", maxWidth: 1480, margin: "0 auto" }}>{children}</main>
       </div>
     </div>
   );

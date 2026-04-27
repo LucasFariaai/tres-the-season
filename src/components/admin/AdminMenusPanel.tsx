@@ -134,7 +134,7 @@ export function AdminMenusPanel({ editor }: Props) {
         </button>
       </div>
 
-      <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(420px, 1fr))" }}>
+      <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(min(420px, 100%), 1fr))" }}>
         {activeMenu.items.map((dish, index) => {
           const previewUrl = resolveMediaUrl(dish.image, 320, 80) ?? dish.image;
           return (
@@ -162,13 +162,13 @@ export function AdminMenusPanel({ editor }: Props) {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gap: 14, gridTemplateColumns: previewUrl ? "120px 1fr" : "1fr", alignItems: "start" }}>
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "stretch" }}>
                 {previewUrl ? (
                   <div style={{ width: 120, height: 150, borderRadius: 10, border: "1px solid rgba(26,20,16,0.06)", overflow: "hidden", background: "rgba(26,20,16,0.04)" }}>
                     <img src={previewUrl} alt={dish.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
                   </div>
                 ) : null}
-                <div style={{ display: "grid", gap: 10 }}>
+                <div style={{ display: "grid", gap: 10, flex: "1 1 200px", minWidth: 0 }}>
                   <AdminFieldInput label="Name" value={dish.name} onChange={(value) => setDish(index, "name", value)} />
                   <AdminFieldTextarea label="Description" value={dish.description} minRows={2} onChange={(value) => setDish(index, "description", value)} />
                 </div>

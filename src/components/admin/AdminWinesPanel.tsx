@@ -260,18 +260,18 @@ export function AdminWinesPanel({ editor }: Props) {
               </button>
 
               {isExpanded ? (
-                <div style={{ display: "grid", gap: 8, padding: "0 10px 10px" }}>
-                  <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(3, 1fr)" }}>
+                <div style={{ display: "grid", gap: 10, padding: "0 12px 12px" }}>
+                  <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))" }}>
                     <AdminFieldInput label="Name" value={wine.name} onChange={(value) => updateWine(wine.id, "name", value)} />
                     <AdminFieldInput label="Producer" value={wine.producer} onChange={(value) => updateWine(wine.id, "producer", value)} />
                     <AdminFieldInput label="Grapes (comma-separated)" value={wine.grapes} list="wine-grape-options" placeholder="Type or pick a grape — new ones are added on save" onChange={(value) => updateWine(wine.id, "grapes", value)} />
                   </div>
-                  <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(3, 1fr)" }}>
+                  <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))" }}>
                     <AdminFieldInput label="Country" value={wine.country} list="wine-country-options" placeholder="Pick a country or type a new one" onChange={(value) => updateWine(wine.id, "country", value)} />
                     <AdminFieldInput label="Region" value={wine.region} list="wine-region-options" placeholder="Pick a region or type a new one" onChange={(value) => updateWine(wine.id, "region", value)} />
                     <AdminFieldInput label="Subregion" value={wine.subregion ?? ""} list="wine-subregion-options" placeholder="Optional" onChange={(value) => updateWine(wine.id, "subregion", value)} />
                   </div>
-                  <div style={{ display: "grid", gap: 8, gridTemplateColumns: "120px 120px 1fr auto" }}>
+                  <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(min(140px, 100%), 1fr))" }}>
                     <AdminFieldInput label="Vintage" value={wine.vintage ?? ""} onChange={(value) => updateWine(wine.id, "vintage", value)} />
                     <AdminFieldInput
                       label="Price (€)"
@@ -281,51 +281,51 @@ export function AdminWinesPanel({ editor }: Props) {
                         if (!Number.isNaN(parsed)) updateWine(wine.id, "price", parsed);
                       }}
                     />
-                    <div style={{ display: "grid", gap: 4 }}>
-                      <span style={fieldLabelStyle}>Category</span>
-                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                        {(["sparkling", "white", "red", "dessert"] as WineCategory[]).map((category) => {
-                          const isActive = wine.category === category;
-                          return (
-                            <button
-                              key={category}
-                              type="button"
-                              onClick={() => updateWine(wine.id, "category", category)}
-                              style={{
-                                ...buttonBase,
-                                padding: "5px 9px",
-                                fontSize: 10,
-                                background: isActive ? uiPalette.accent : "transparent",
-                                borderColor: isActive ? uiPalette.accent : uiPalette.ghostBorder,
-                                color: isActive ? uiPalette.accentText : uiPalette.controlText,
-                              }}
-                            >
-                              {category}
-                            </button>
-                          );
-                        })}
-                      </div>
+                  </div>
+                  <div style={{ display: "grid", gap: 6 }}>
+                    <span style={fieldLabelStyle}>Category</span>
+                    <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                      {(["sparkling", "white", "red", "dessert"] as WineCategory[]).map((category) => {
+                        const isActive = wine.category === category;
+                        return (
+                          <button
+                            key={category}
+                            type="button"
+                            onClick={() => updateWine(wine.id, "category", category)}
+                            style={{
+                              ...buttonBase,
+                              padding: "6px 12px",
+                              fontSize: 11,
+                              background: isActive ? uiPalette.accent : "transparent",
+                              borderColor: isActive ? uiPalette.accent : uiPalette.ghostBorder,
+                              color: isActive ? uiPalette.accentText : uiPalette.controlText,
+                            }}
+                          >
+                            {category}
+                          </button>
+                        );
+                      })}
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end", justifyContent: "flex-end" }}>
-                      <label style={{ display: "flex", alignItems: "center", gap: 6, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, whiteSpace: "nowrap" }}>
-                        <input
-                          type="checkbox"
-                          checked={wine.featured ?? false}
-                          onChange={(event) => updateWine(wine.id, "featured", event.target.checked)}
-                        />
-                        Highlight
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (window.confirm(`Remove "${wine.name || `wine ${wine.id}`}"?`)) removeWine(wine.id);
-                        }}
-                        style={{ ...buttonBase, padding: "5px 10px", color: "#c0533b", borderColor: "rgba(192,83,59,0.4)", fontSize: 10 }}
-                      >
+                  </div>
+                  <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: 8, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif', fontSize: 13, whiteSpace: "nowrap" }}>
+                      <input
+                        type="checkbox"
+                        checked={wine.featured ?? false}
+                        onChange={(event) => updateWine(wine.id, "featured", event.target.checked)}
+                      />
+                      Sommelier highlight
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(`Remove "${wine.name || `wine ${wine.id}`}"?`)) removeWine(wine.id);
+                      }}
+                      style={{ ...buttonBase, padding: "6px 14px", color: "#c0533b", borderColor: "rgba(192,83,59,0.4)", fontSize: 11 }}
+                    >
                       Remove
                     </button>
                   </div>
-                </div>
                 </div>
               ) : null}
             </div>
