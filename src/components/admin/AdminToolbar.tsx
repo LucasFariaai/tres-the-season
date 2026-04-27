@@ -1,6 +1,6 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoTres from "@/assets/logo-tres-nav.svg";
-import { buttonBase, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
+import { buttonBase, navPillStyle, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
 import type { VisualEditor } from "@/components/admin/types";
 
 type AdminToolbarProps = {
@@ -15,56 +15,126 @@ type AdminToolbarProps = {
   onSignOut: () => Promise<void>;
 };
 
-export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscribers, onWines, onMenus, onProducers, onSignOut }: AdminToolbarProps) {
+export function AdminToolbar({
+  editor,
+  onPublish,
+  onReset,
+  onHistory,
+  onSubscribers,
+  onWines,
+  onMenus,
+  onProducers,
+  onSignOut,
+}: AdminToolbarProps) {
   const isMobile = useIsMobile();
+
+  const navItems: { label: string; onClick: () => void }[] = [
+    { label: "Menus", onClick: onMenus },
+    { label: "Producers", onClick: onProducers },
+    { label: "Wines", onClick: onWines },
+    { label: "History", onClick: onHistory },
+    { label: "Subscribers", onClick: onSubscribers },
+  ];
 
   return (
     <div
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        height: toolbarHeight,
+        top: 16,
+        left: "50%",
+        transform: "translateX(-50%)",
         zIndex: 50,
-        background: "rgba(245,239,230,0.95)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderBottom: `1px solid ${uiPalette.panelBorder}`,
+        width: isMobile ? "calc(100% - 24px)" : "auto",
+        maxWidth: "calc(100% - 24px)",
+        pointerEvents: "auto",
       }}
     >
-      <div
+      <nav
         style={{
-          height: "100%",
+          borderRadius: 999,
+          border: "1px solid rgba(26,20,16,0.08)",
+          boxShadow: "0 8px 32px rgba(26,20,16,0.10)",
+          padding: isMobile ? "8px 10px" : "8px 12px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          gap: 16,
-          padding: isMobile ? "8px 12px" : "8px 20px",
-          flexWrap: isMobile ? "wrap" : "nowrap",
+          gap: isMobile ? 6 : 4,
+          background: "rgba(245,239,230,0.92)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          flexWrap: "nowrap",
+          overflowX: isMobile ? "auto" : "visible",
         }}
       >
-        <a href="/" target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", minWidth: 88 }}>
-          <img src={logoTres} alt="Tres" style={{ height: 20, width: "auto" }} />
+        <a
+          href="/"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            paddingLeft: 8,
+            paddingRight: 8,
+            flexShrink: 0,
+          }}
+          aria-label="Open the live site"
+        >
+          <img src={logoTres} alt="Tres" style={{ height: 18, width: "auto" }} />
         </a>
 
-        <div
+        <span
           style={{
-            flex: 1,
-            minWidth: 120,
-            textAlign: "center",
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "4px 10px",
+            borderRadius: 999,
+            background: editor.saving ? "rgba(26,20,16,0.06)" : "transparent",
             fontFamily: "'Source Sans 3', sans-serif",
             fontSize: 11,
-            letterSpacing: "0.18em",
+            letterSpacing: "0.16em",
             textTransform: "uppercase",
             color: uiPalette.toolbarBadge,
             animation: editor.saving ? "adminPulse 1.6s ease-in-out infinite" : "none",
+            flexShrink: 0,
+            whiteSpace: "nowrap",
           }}
         >
-          {editor.saving ? "Saving..." : "Editing draft"}
+          {editor.saving ? "Saving" : "Draft"}
+        </span>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+          {navItems.map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={item.onClick}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,20,16,0.06)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              style={{ ...navPillStyle, color: uiPalette.controlText, whiteSpace: "nowrap" }}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
 
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginLeft: 4 }}>
+          <button
+            type="button"
+            onClick={() => void onReset()}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,20,16,0.06)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            style={{ ...navPillStyle, color: uiPalette.controlMuted, whiteSpace: "nowrap" }}
+          >
+            Reset
+          </button>
+          <button
+            type="button"
+            onClick={() => void onSignOut()}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,20,16,0.06)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            style={{ ...navPillStyle, color: uiPalette.controlMuted, whiteSpace: "nowrap" }}
+          >
+            Sign out
+          </button>
           <button
             type="button"
             onClick={() => void onPublish()}
@@ -74,35 +144,19 @@ export function AdminToolbar({ editor, onPublish, onReset, onHistory, onSubscrib
               background: uiPalette.accent,
               color: uiPalette.accentText,
               borderColor: uiPalette.accent,
-              padding: "8px 20px",
+              padding: "8px 18px",
+              fontWeight: 500,
               opacity: editor.publishing ? 0.7 : 1,
+              whiteSpace: "nowrap",
             }}
           >
-            {editor.publishing ? "Publishing..." : "Publish"}
-          </button>
-          <button type="button" onClick={() => void onReset()} style={{ ...buttonBase, color: uiPalette.controlText }}>
-            Reset
-          </button>
-          <button type="button" onClick={onMenus} style={{ ...buttonBase, color: uiPalette.controlText }}>
-            Menus
-          </button>
-          <button type="button" onClick={onProducers} style={{ ...buttonBase, color: uiPalette.controlText }}>
-            Producers
-          </button>
-          <button type="button" onClick={onWines} style={{ ...buttonBase, color: uiPalette.controlText }}>
-            Wines
-          </button>
-          <button type="button" onClick={onHistory} style={{ ...buttonBase, color: uiPalette.controlText }}>
-            History
-          </button>
-          <button type="button" onClick={onSubscribers} style={{ ...buttonBase, color: uiPalette.controlText }}>
-            Subscribers
-          </button>
-          <button type="button" onClick={() => void onSignOut()} style={{ ...buttonBase, color: uiPalette.controlText }}>
-            Sign out
+            {editor.publishing ? "Publishing…" : "Publish"}
           </button>
         </div>
-      </div>
+      </nav>
     </div>
   );
 }
+
+// Reserved for layout offset alignment with floating toolbar.
+export const ADMIN_TOOLBAR_OFFSET = toolbarHeight + 16;

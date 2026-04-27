@@ -23,18 +23,37 @@ export const uiPalette = {
 
 export const toolbarHeight = 56;
 
+// Pill-shaped buttons + softer field corners — matches the SeasonBar's
+// rounded-full chips and the home page's general radius vocabulary.
 export const buttonBase: CSSProperties = {
   appearance: "none",
-  borderRadius: 0,
+  borderRadius: 999,
   border: `1px solid ${uiPalette.ghostBorder}`,
   background: "transparent",
-  color: uiPalette.ghostText,
-  padding: "8px 16px",
+  color: uiPalette.controlText,
+  padding: "8px 14px",
   fontFamily: "'Source Sans 3', sans-serif",
-  fontSize: 12,
+  fontSize: 13,
   lineHeight: 1,
-  letterSpacing: "0.18em",
-  textTransform: "uppercase",
+  letterSpacing: "0.02em",
+  textTransform: "none",
+  cursor: "pointer",
+  transition: "all 200ms ease",
+};
+
+// Subtle in-toolbar nav chip (no border, hover bg only).
+export const navPillStyle: CSSProperties = {
+  appearance: "none",
+  borderRadius: 999,
+  border: "1px solid transparent",
+  background: "transparent",
+  color: uiPalette.controlText,
+  padding: "6px 12px",
+  fontFamily: "'Source Sans 3', sans-serif",
+  fontSize: 13,
+  lineHeight: 1,
+  letterSpacing: "0.02em",
+  textTransform: "none",
   cursor: "pointer",
   transition: "all 200ms ease",
 };
@@ -49,7 +68,7 @@ export const fieldLabelStyle: CSSProperties = {
 
 export const fieldStyle: CSSProperties = {
   width: "100%",
-  borderRadius: 0,
+  borderRadius: 10,
   border: `1px solid ${uiPalette.controlBorder}`,
   background: uiPalette.inputBg,
   color: uiPalette.controlText,

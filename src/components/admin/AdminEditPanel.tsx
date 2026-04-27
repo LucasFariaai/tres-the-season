@@ -419,9 +419,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
       case "hero":
         return (
           <div style={{ display: "grid", gap: 16 }}>
-            <AdminFieldTextarea label="Tagline" value={editor.content.hero.tagline} onChange={(value) => setHero("tagline", value)} />
-            <AdminFieldTextarea label="Location" value={editor.content.hero.location} minRows={1} onChange={(value) => setHero("location", value)} />
-            <AdminFieldTextarea label="Reserve button label" value={editor.content.hero.reserveLabel} minRows={1} onChange={(value) => setHero("reserveLabel", value)} />
+            <AdminFieldTextarea label="Tagline (shown bottom-right of hero)" value={editor.content.hero.tagline} onChange={(value) => setHero("tagline", value)} />
             <AdminFieldInput label="Reservation URL (Tock, etc.)" value={editor.content.hero.reservationUrl} onChange={(value) => setHero("reservationUrl", value)} type="url" />
             <AdminVideoField
               title="Hero video · Desktop"
@@ -501,17 +499,11 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
           <div style={{ display: "grid", gap: 16 }}>
             <AdminFieldTextarea label="Quote" value={editor.content.footer.quote} minRows={3} onChange={(value) => setFooter("quote", value)} />
             <AdminFieldInput label="Instagram URL" value={editor.content.footer.instagramUrl} onChange={(value) => setFooter("instagramUrl", value)} type="url" />
-            <AdminFieldInput label="Facebook URL" value={editor.content.footer.facebookUrl} onChange={(value) => setFooter("facebookUrl", value)} type="url" />
           </div>
         );
       case "greenStar":
         return (
           <div style={{ display: "grid", gap: 16 }}>
-            <AdminFieldTextarea label="Eyebrow" value={editor.content.greenStar.eyebrow} minRows={1} onChange={(value) => setGreenStar("eyebrow", value)} />
-            <AdminFieldTextarea label="Title" value={editor.content.greenStar.title} minRows={2} onChange={(value) => setGreenStar("title", value)} />
-            <AdminFieldTextarea label="Award" value={editor.content.greenStar.award} minRows={1} onChange={(value) => setGreenStar("award", value)} />
-            <AdminFieldTextarea label="First paragraph" value={editor.content.greenStar.body} minRows={5} onChange={(value) => setGreenStar("body", value)} />
-            <AdminFieldTextarea label="Second paragraph" value={editor.content.greenStar.body2} minRows={3} onChange={(value) => setGreenStar("body2", value)} />
             {editor.content.greenStar.pillars.map((pillar, index) => (
               <div key={pillar.id} style={{ display: "grid", gap: 12, padding: 12, border: `1px solid ${uiPalette.panelBorder}` }}>
                 <p style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
@@ -643,11 +635,7 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
       case "producers":
         return (
           <div style={{ display: "grid", gap: 16 }}>
-            <AdminFieldTextarea label="Eyebrow" value={editor.content.producers.eyebrow} minRows={1} onChange={(value) => setProducers("eyebrow", value)} />
-            <AdminFieldTextarea label="Title" value={editor.content.producers.title} minRows={1} onChange={(value) => setProducers("title", value)} />
-            <AdminFieldTextarea label="Body" value={editor.content.producers.body} minRows={2} onChange={(value) => setProducers("body", value)} />
-            <AdminFieldTextarea label="Helper" value={editor.content.producers.helper} minRows={1} onChange={(value) => setProducers("helper", value)} />
-            <AdminFieldTextarea label="Closing quote" value={editor.content.producers.closingQuote} minRows={2} onChange={(value) => setProducers("closingQuote", value)} />
+            <AdminFieldTextarea label="Closing quote (shown below the map cards)" value={editor.content.producers.closingQuote} minRows={2} onChange={(value) => setProducers("closingQuote", value)} />
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
               <h2 style={sectionHeaderStyle}>Map points ({editor.content.producers.items.length})</h2>

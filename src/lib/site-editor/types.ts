@@ -25,8 +25,6 @@ export interface SiteMediaItem {
 
 export interface HeroContent {
   tagline: string;
-  location: string;
-  reserveLabel: string;
   videoDesktop: string;
   videoMobile: string;
   reservationUrl: string;
@@ -68,10 +66,6 @@ export interface GalleryContent {
 }
 
 export interface ProducersContent {
-  eyebrow: string;
-  title: string;
-  body: string;
-  helper: string;
   closingQuote: string;
   items: Producer[];
 }
@@ -97,7 +91,6 @@ export interface ReserveContent {
 export interface FooterContent {
   quote: string;
   instagramUrl: string;
-  facebookUrl: string;
   logoAlt: string;
 }
 
@@ -110,11 +103,6 @@ export interface GreenStarPillar {
 }
 
 export interface GreenStarContent {
-  eyebrow: string;
-  title: string;
-  award: string;
-  body: string;
-  body2: string;
   pillars: GreenStarPillar[];
   ctaLabel: string;
 }

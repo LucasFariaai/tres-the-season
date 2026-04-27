@@ -86,12 +86,8 @@ export function AdminProducersPanel({ editor }: Props) {
   return (
     <div style={{ display: "grid", gap: 24 }}>
       <div style={{ display: "grid", gap: 14, maxWidth: 720 }}>
-        <h2 style={sectionHeaderStyle}>Section copy</h2>
-        <AdminFieldInput label="Eyebrow" value={editor.content.producers.eyebrow} onChange={(value) => setProducers("eyebrow", value)} />
-        <AdminFieldInput label="Title" value={editor.content.producers.title} onChange={(value) => setProducers("title", value)} />
-        <AdminFieldTextarea label="Body" value={editor.content.producers.body} minRows={2} onChange={(value) => setProducers("body", value)} />
-        <AdminFieldTextarea label="Helper text" value={editor.content.producers.helper} minRows={1} onChange={(value) => setProducers("helper", value)} />
-        <AdminFieldTextarea label="Closing quote" value={editor.content.producers.closingQuote} minRows={2} onChange={(value) => setProducers("closingQuote", value)} />
+        <h2 style={sectionHeaderStyle}>Closing quote</h2>
+        <AdminFieldTextarea label="Shown below the map cards" value={editor.content.producers.closingQuote} minRows={2} onChange={(value) => setProducers("closingQuote", value)} />
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

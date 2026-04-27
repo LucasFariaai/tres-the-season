@@ -32,9 +32,7 @@ const defaultMenus: MenusContent = seasonOrder.reduce((accumulator, season) => {
 
 export const defaultHomeCmsContent: HomeCmsContent = {
   hero: {
-    tagline: "Complex without being complicated.",
-    location: "Kop van Zuid-Entrepot · Rotterdam",
-    reserveLabel: "Reserve",
+    tagline: "Complex without being complicated",
     videoDesktop: "/videos/hero-desktop.mp4",
     videoMobile: "/videos/hero-mobile.mp4",
     reservationUrl: "https://www.exploretock.com/tresrotterdam",
@@ -79,10 +77,6 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     items: tresGalleryItems,
   },
   producers: {
-    eyebrow: "Our Producers",
-    title: "The Circle",
-    body: "Every name here has shaped what you'll taste tonight.",
-    helper: "Explore our network of local producers",
     closingQuote: "Complex without being complicated.",
     items: producers,
   },
@@ -106,17 +100,9 @@ export const defaultHomeCmsContent: HomeCmsContent = {
   footer: {
     quote: '"Complex without being complicated."',
     instagramUrl: "https://www.instagram.com/tresrotterdam/",
-    facebookUrl: "#",
     logoAlt: "Tres",
   },
   greenStar: {
-    eyebrow: "",
-    title: "The Green Star.",
-    award: "Michelin Guide Netherlands, 2025",
-    body:
-      "In 2025, Tres was awarded the Green Michelin Star, a distinction that recognises restaurants committed to a more sustainable vision of gastronomy. For us, this was not a new direction. It was a recognition of how we have always worked.",
-    body2:
-      'The inspectors described us as "raw and pure, vintage and warm." We take that as the highest compliment.',
     pillars: [
       {
         id: "local",

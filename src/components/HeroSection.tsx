@@ -212,7 +212,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
           className="max-w-[60%] text-right text-[13px] italic text-white/80 sm:text-[14px]"
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400 }}
         >
-          Complex without being complicated
+          {heroContent.tagline}
         </span>
       </div>
 
