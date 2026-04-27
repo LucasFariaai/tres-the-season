@@ -48,10 +48,31 @@ function NewsletterField() {
     setEmail("");
   };
 
+  const isLocked = status === "sending" || status === "success";
+
   return (
-    <div className="max-w-sm">
-      <form onSubmit={handleSubmit} className="flex flex-col items-start gap-3">
-        <label className="block">
+    <div className="w-full max-w-md">
+      <p
+        className="font-display text-base sm:text-lg"
+        style={{ color: "#1A1410", fontStyle: "italic", fontWeight: 400 }}
+      >
+        Join our list
+      </p>
+      <p
+        className="mt-1.5 text-[13px] leading-[1.5]"
+        style={{
+          fontFamily: "'Source Sans 3', sans-serif",
+          color: "rgba(26,20,16,0.6)",
+        }}
+      >
+        Be the first to hear about new seasonal menus, private dinners and one-off events at Tres.
+      </p>
+
+      <form
+        onSubmit={handleSubmit}
+        className="mt-4 flex w-full flex-col gap-2 sm:flex-row sm:items-stretch"
+      >
+        <label className="flex-1">
           <span className="sr-only">Your email</span>
           <input
             type="email"
@@ -65,14 +86,15 @@ function NewsletterField() {
                 setMessage("");
               }
             }}
-            placeholder="Your email"
-            size={Math.max(10, email.length || 10)}
-            disabled={status === "sending" || status === "success"}
-            className="bg-transparent border-0 border-b pb-1.5 text-sm focus:outline-none transition-colors"
+            placeholder="you@example.com"
+            disabled={isLocked}
+            className="w-full bg-white/60 px-4 text-base focus:outline-none transition-colors sm:text-sm"
             style={{
               fontFamily: "'Source Sans 3', sans-serif",
-              borderColor: "rgba(26,20,16,0.2)",
+              border: "1px solid rgba(26,20,16,0.2)",
               color: "#1A1410",
+              height: 48,
+              borderRadius: 0,
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(26,20,16,0.6)")}
             onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(26,20,16,0.2)")}
@@ -80,25 +102,30 @@ function NewsletterField() {
         </label>
         <button
           type="submit"
-          disabled={status === "sending" || status === "success"}
-          className="text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-60 disabled:opacity-40"
+          disabled={isLocked}
+          className="text-xs uppercase tracking-[0.22em] transition-opacity hover:opacity-90 disabled:opacity-50"
           style={{
             fontFamily: "'Source Sans 3', sans-serif",
-            color: "#1A1410",
-            background: "transparent",
-            border: "none",
-            padding: 0,
+            background: "#1A1410",
+            color: "#F5EFE6",
+            border: "1px solid #1A1410",
+            padding: "0 28px",
+            height: 48,
+            borderRadius: 0,
+            cursor: isLocked ? "default" : "pointer",
+            whiteSpace: "nowrap",
           }}
         >
           {status === "sending" ? "Sending…" : status === "success" ? "Joined" : "Subscribe"}
         </button>
       </form>
+
       {message && (
         <p
-          className="mt-2 text-xs italic"
+          className="mt-3 text-xs italic"
           style={{
             fontFamily: "'Playfair Display', serif",
-            color: status === "error" ? "rgba(140,30,30,0.8)" : "rgba(26,20,16,0.5)",
+            color: status === "error" ? "rgba(140,30,30,0.8)" : "rgba(26,20,16,0.55)",
           }}
         >
           {message}
