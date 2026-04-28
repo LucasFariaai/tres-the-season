@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { forwardRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import logoTres from "@/assets/logo-tres-nav.svg";
+import { usePublishedHome } from "@/hooks/usePublishedHome";
 
-export default function SeasonBar() {
+const SeasonBar = forwardRef<HTMLDivElement, Record<string, never>>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const { content } = usePublishedHome();
+  const reservationUrl = content.hero.reservationUrl || "https://www.exploretock.com/tresrotterdam";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -37,7 +40,7 @@ export default function SeasonBar() {
   const bgClass = scrolled ? "bg-black/50 backdrop-blur-xl" : "bg-black/40 backdrop-blur-lg";
 
   return (
-    <>
+    <div ref={ref}>
       {/* Desktop floating island — compact, expands on hover */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden lg:block">
         <nav
@@ -94,13 +97,15 @@ export default function SeasonBar() {
           </div>
 
           {/* CTA */}
-          <button
-            onClick={() => goToSection("reserve")}
+          <a
+            href={reservationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-white text-black rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-1.5 shrink-0"
           >
             Reserve
             <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          </a>
         </nav>
       </div>
 
@@ -118,15 +123,21 @@ export default function SeasonBar() {
             />
           </button>
 
-          <button
-            onClick={() => goToSection("reserve")}
+          <a
+            href={reservationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-white text-black rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/90 transition-all duration-300 flex items-center gap-1.5"
           >
             Reserve
             <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          </a>
         </div>
       </div>
-    </>
+    </div>
   );
-}
+});
+
+SeasonBar.displayName = "SeasonBar";
+
+export default SeasonBar;

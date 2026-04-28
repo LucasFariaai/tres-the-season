@@ -247,8 +247,8 @@ export const seasonPageContent: Record<Season, SeasonPageContent> = {
     },
   },
   autumn: {
-    accent: "hsl(30 55% 50%)",
-    accentSoft: "hsl(24 30% 22%)",
+    accent: "hsl(22 38% 32%)",
+    accentSoft: "hsl(20 28% 18%)",
     ink: "hsl(36 43% 93%)",
     muted: "hsl(30 28% 68%)",
     paper: "hsl(36 33% 95%)",

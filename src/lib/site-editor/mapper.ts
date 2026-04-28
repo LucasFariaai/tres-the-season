@@ -76,10 +76,69 @@ export function safeJsonParse<T>(value: string | null | undefined): T | null {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Stale Vite asset healing
+//
+// Vite-imported assets (the defaults baked into the bundle) get URLs that
+// change between sessions: `/src/assets/foo.jpg` in dev, `/assets/foo-{hash}.jpg`
+// after prod build, and the hash rotates each rebuild. Once we serialise the
+// resolved URL into a Supabase draft snapshot, any subsequent reload that's
+// running a different bundle hash sees a stale path → 404 → broken image.
+//
+// We work around it by snapshotting every default Vite-imported URL on module
+// load, indexed by a normalised base name (filename without trailing -hash).
+// resolveMediaUrl uses that index to upgrade incoming paths whose base name
+// matches a current default but whose URL is stale.
+// ---------------------------------------------------------------------------
+
+function viteBaseName(url: string): string | null {
+  // Looks like a Vite asset path: /src/assets/... (dev) or /assets/... (prod build).
+  if (!/^\/(?:src\/)?assets\//.test(url)) return null;
+  const last = url.split("?")[0].split("/").pop();
+  if (!last) return null;
+  // Strip a trailing -{hash} or .{hash} fingerprint before the extension.
+  return last.replace(/[-.][0-9a-f]{6,}(?=\.[a-z0-9]+$)/i, "");
+}
+
+const defaultAssetByBaseName = (() => {
+  const map = new Map<string, string>();
+  const visit = (value: unknown) => {
+    if (!value) return;
+    if (typeof value === "string") {
+      const base = viteBaseName(value);
+      if (base && !map.has(base)) map.set(base, value);
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+    if (typeof value === "object") {
+      Object.values(value as Record<string, unknown>).forEach(visit);
+    }
+  };
+  visit(defaultHomeCmsContent);
+  defaultMediaLibrary.forEach((item) => visit(item.file_path));
+  return map;
+})();
+
+function healVitePath(path: string): string {
+  const base = viteBaseName(path);
+  if (!base) return path;
+  const fresh = defaultAssetByBaseName.get(base);
+  if (!fresh || fresh === path) return path;
+  return fresh;
+}
+
 export function resolveMediaUrl(path: string | null | undefined, width = 1600, quality = 82) {
   if (!path) return null;
-  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("/") || path.startsWith("data:")) {
+  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("data:")) {
     return path;
+  }
+  if (path.startsWith("/")) {
+    // Stale Vite asset paths get rewritten to the current build's URL when
+    // their base name still matches one of the bundled defaults.
+    return healVitePath(path);
   }
   return getImageUrl(path, width, quality) ?? path;
 }

@@ -1,15 +1,15 @@
-import chefImg from "@/assets/chef-kitchen.jpg";
-import foundersImg from "@/assets/founders-cellar.jpg";
-import foodTableSpread from "@/assets/food-table-spread.jpg";
-import foodTableSpreadTwo from "@/assets/food-table-spread-2.jpg";
-import foodDryage from "@/assets/food-dryage.jpg";
-import foodCotton from "@/assets/food-cotton.jpg";
-import foodMeatPlate from "@/assets/food-meat-plate.jpg";
-import foodSouffle from "@/assets/food-souffle.jpg";
-import foodDessert from "@/assets/food-dessert.jpg";
-import foodGlazed from "@/assets/food-glazed.jpg";
-import detailFlowerWood from "@/assets/detail-flower-wood.jpg";
-import detailFlowerLinen from "@/assets/detail-flower-linen.jpg";
+import galleryRoom from "@/assets/photos-2026/gallery-room.jpg";
+import galleryKitchenHands from "@/assets/photos-2026/gallery-kitchen-hands.jpg";
+import galleryLarder from "@/assets/photos-2026/gallery-larder.jpg";
+import galleryProduct from "@/assets/photos-2026/gallery-product.jpg";
+import galleryFlowerPlate from "@/assets/photos-2026/gallery-flower-plate.jpg";
+import galleryFlowerDetail from "@/assets/photos-2026/gallery-flower-detail.jpg";
+import galleryMeat from "@/assets/photos-2026/gallery-meat.jpg";
+import gallerySouffle from "@/assets/photos-2026/gallery-souffle.jpg";
+import galleryDessert from "@/assets/photos-2026/gallery-dessert.jpg";
+import galleryAtmospheric from "@/assets/photos-2026/gallery-atmospheric.jpg";
+import galleryGlazed from "@/assets/photos-2026/gallery-glazed.jpg";
+import gallerySpread from "@/assets/photos-2026/gallery-spread.jpg";
 
 export type TresGalleryMediaType = "image" | "video";
 export type TresGalleryWidth = "narrow" | "medium" | "wide";
@@ -28,8 +28,8 @@ export const tresGalleryItems: TresGalleryItem[] = [
   {
     id: "cellar-table",
     type: "image",
-    mediaSrc: foodTableSpread,
-    alt: "A candlelit tasting table inside Tres",
+    mediaSrc: galleryRoom,
+    alt: "A quiet corner of the dining room at Tres",
     width: "medium",
     label: "The room",
     caption: "A table set for the long rhythm of the evening.",
@@ -37,15 +37,15 @@ export const tresGalleryItems: TresGalleryItem[] = [
   {
     id: "kitchen-hands",
     type: "image",
-    mediaSrc: chefImg,
-    alt: "Chef preparing a dish in the kitchen",
+    mediaSrc: galleryKitchenHands,
+    alt: "Chef's hands preparing a course in the kitchen",
     width: "narrow",
   },
   {
     id: "dry-age",
     type: "image",
-    mediaSrc: foodDryage,
-    alt: "Dry ageing cabinet with heritage meats",
+    mediaSrc: galleryLarder,
+    alt: "Cured meats hanging in the larder",
     width: "wide",
     label: "The larder",
     caption: "Time is part of the ingredient.",
@@ -53,15 +53,15 @@ export const tresGalleryItems: TresGalleryItem[] = [
   {
     id: "founders",
     type: "image",
-    mediaSrc: foundersImg,
-    alt: "The founders inside the cellar",
+    mediaSrc: galleryProduct,
+    alt: "A whole lobster prepared for service",
     width: "medium",
   },
   {
     id: "cotton-dish",
     type: "image",
-    mediaSrc: foodCotton,
-    alt: "A plated course with cotton flower garnish",
+    mediaSrc: galleryFlowerPlate,
+    alt: "A single edible flower on a black pedestal",
     width: "wide",
     label: "The plate",
     caption: "Softness, smoke and structure in a single gesture.",
@@ -69,22 +69,22 @@ export const tresGalleryItems: TresGalleryItem[] = [
   {
     id: "flower-detail",
     type: "image",
-    mediaSrc: detailFlowerWood,
-    alt: "Edible flowers arranged on a wooden surface",
+    mediaSrc: galleryFlowerDetail,
+    alt: "A delicate crisp basket on weathered wood",
     width: "narrow",
   },
   {
     id: "meat-course",
     type: "image",
-    mediaSrc: foodMeatPlate,
-    alt: "Dry aged meat course served with bread",
+    mediaSrc: galleryMeat,
+    alt: "A meat course finished tableside with sourdough",
     width: "medium",
   },
   {
     id: "souffle-course",
     type: "image",
-    mediaSrc: foodSouffle,
-    alt: "A golden herb crusted soufflé",
+    mediaSrc: gallerySouffle,
+    alt: "A pristine white dessert in a shell-shaped bowl",
     width: "narrow",
     label: "The kitchen",
     caption: "Precision without spectacle.",
@@ -92,15 +92,15 @@ export const tresGalleryItems: TresGalleryItem[] = [
   {
     id: "dessert-course",
     type: "image",
-    mediaSrc: foodDessert,
-    alt: "Dessert plated on a pink linen tablecloth",
+    mediaSrc: galleryDessert,
+    alt: "A smoked dessert pillar resting on stone",
     width: "wide",
   },
   {
     id: "linen-flowers",
     type: "image",
-    mediaSrc: detailFlowerLinen,
-    alt: "Floral detail styled on linen",
+    mediaSrc: galleryAtmospheric,
+    alt: "An atmospheric still life of pine and ember",
     width: "medium",
     label: "The details",
     caption: "Every surface carries the same quiet intensity.",
@@ -108,15 +108,15 @@ export const tresGalleryItems: TresGalleryItem[] = [
   {
     id: "glazed-bite",
     type: "image",
-    mediaSrc: foodGlazed,
-    alt: "A glazed bite on a charred serving board",
+    mediaSrc: galleryGlazed,
+    alt: "A glazed fish bite served in a porcelain bowl",
     width: "narrow",
   },
   {
     id: "room-spread",
     type: "image",
-    mediaSrc: foodTableSpreadTwo,
-    alt: "Another view of the tasting spread at Tres",
+    mediaSrc: gallerySpread,
+    alt: "An overhead view of a broth course at Tres",
     width: "wide",
     label: "The world of Tres",
     caption: "Light, texture and season held in one continuous frame.",

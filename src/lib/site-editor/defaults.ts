@@ -1,21 +1,41 @@
-import chefImg from "@/assets/chef-kitchen.jpg";
-import foundersImg from "@/assets/founders-cellar.jpg";
-import foodTableSpread from "@/assets/food-table-spread.jpg";
-import foodDryage from "@/assets/food-dryage.jpg";
-import foodCotton from "@/assets/food-cotton.jpg";
-import foodMeatPlate from "@/assets/food-meat-plate.jpg";
-import foodSouffle from "@/assets/food-souffle.jpg";
-import foodDessert from "@/assets/food-dessert.jpg";
-import foodGlazed from "@/assets/food-glazed.jpg";
+import chefImg from "@/assets/photos-2026/concept-chef.jpg";
+import foundersImg from "@/assets/photos-2026/concept-founders.jpg";
+import zoom1 from "@/assets/photos-2026/zoom-1.jpg";
+import zoom2 from "@/assets/photos-2026/zoom-2.jpg";
+import zoom3 from "@/assets/photos-2026/zoom-3.jpg";
+import zoom4 from "@/assets/photos-2026/zoom-4.jpg";
+import zoom5 from "@/assets/photos-2026/zoom-5.jpg";
+import zoom6 from "@/assets/photos-2026/zoom-6.jpg";
+import zoom7 from "@/assets/photos-2026/zoom-7.jpg";
 import { producers } from "@/components/producers/data";
 import { tresGalleryItems } from "@/data/tresGalleryItems";
-import type { HomeCmsContent, SiteMediaItem, SiteThemeTokens } from "@/lib/site-editor/types";
+import { legacyDishImages, legacySeasonDescriptions } from "@/data/legacySeasonMenu";
+import { seasonMenus } from "@/lib/seasonContext";
+import { wines as defaultWineItems } from "@/data/tres-wine-data";
+import type { HomeCmsContent, MenusContent, Season, SiteMediaItem, SiteThemeTokens } from "@/lib/site-editor/types";
+
+const seasonOrder: Season[] = ["spring", "summer", "autumn", "winter"];
+
+const defaultMenus: MenusContent = seasonOrder.reduce((accumulator, season) => {
+  const sourceMenu = seasonMenus[season];
+  const sourceDescriptions = legacySeasonDescriptions[season];
+  accumulator[season] = {
+    subtitle: sourceMenu.subtitle,
+    items: sourceMenu.items.map((name, index) => ({
+      name,
+      description: sourceDescriptions[index] ?? "",
+      image: legacyDishImages[index % legacyDishImages.length],
+    })),
+  };
+  return accumulator;
+}, {} as MenusContent);
 
 export const defaultHomeCmsContent: HomeCmsContent = {
   hero: {
-    tagline: "Complex without being complicated.",
-    location: "Kop van Zuid-Entrepot · Rotterdam",
-    reserveLabel: "Reserve",
+    tagline: "Complex without being complicated",
+    videoDesktop: "/videos/hero-desktop.mp4",
+    videoMobile: "/videos/hero-mobile.mp4",
+    reservationUrl: "https://www.exploretock.com/tresrotterdam",
   },
   bands: {
     heroToZoom:
@@ -25,13 +45,13 @@ export const defaultHomeCmsContent: HomeCmsContent = {
   },
   zoom: {
     images: [
-      { src: foodTableSpread, alt: "Tasting menu spread at Tres Rotterdam" },
-      { src: foodDryage, alt: "Dry-aging cabinet with heritage meats" },
-      { src: foodCotton, alt: "Cotton flower dish on moss" },
-      { src: foodMeatPlate, alt: "Dry-aged meat with sourdough bread" },
-      { src: foodSouffle, alt: "Herb-crusted soufflé" },
-      { src: foodDessert, alt: "Quenelle dessert on pink linen" },
-      { src: foodGlazed, alt: "Glazed bite on charred board" },
+      { src: zoom1, alt: "An overhead spread of small plates at Tres" },
+      { src: zoom2, alt: "Mise en place of small bowls and tools" },
+      { src: zoom3, alt: "A caramelised block of dry-aged meat on a dark plate" },
+      { src: zoom4, alt: "A risotto course with glazed fish at Tres" },
+      { src: zoom5, alt: "A signature chicken-foot course finished with sauce" },
+      { src: zoom6, alt: "A crisp flower presented on a stone pedestal" },
+      { src: zoom7, alt: "A scallop served in its own shell" },
     ],
   },
   concept: {
@@ -57,10 +77,6 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     items: tresGalleryItems,
   },
   producers: {
-    eyebrow: "Our Producers",
-    title: "The Circle",
-    body: "Every name here has shaped what you'll taste tonight.",
-    helper: "Explore our network of local producers",
     closingQuote: "Complex without being complicated.",
     items: producers,
   },
@@ -73,24 +89,65 @@ export const defaultHomeCmsContent: HomeCmsContent = {
     locationLines: ["Walhalla, Veerhaven 1", "3011 BK Rotterdam", "The Netherlands"],
     travelTitle: "Getting here",
     travelLines: ["Take the watertaxi from Rotterdam harbour.", "A seven-minute crossing across the Maas."],
+    contactTitle: "Contact us",
+    contactPhone: "+31 6 18 02 73 16",
+    alcoholicPairingPrice: "€110",
+    nonAlcoholicPairingPrice: "€100",
     price: "€185",
     reserveButton: "Reserve",
     note: "Reservations recommended 2–3 weeks ahead",
   },
   footer: {
     quote: '"Complex without being complicated."',
-    instagramUrl: "#",
-    facebookUrl: "#",
+    instagramUrl: "https://www.instagram.com/tresrotterdam/",
     logoAlt: "Tres",
   },
+  greenStar: {
+    pillars: [
+      {
+        id: "local",
+        number: "30km",
+        label: "radius",
+        title: "Radically local",
+        body: "Every ingredient is sourced within 30 kilometres of Rotterdam. The fields, the coast, the forests nearby are our entire pantry.",
+      },
+      {
+        id: "waste",
+        number: "0",
+        label: "waste",
+        title: "Root to leaf, nose to tail",
+        body: "Nothing is discarded. What others see as scraps, our fermentation lab transforms into garums, misos and vinegars aged for months.",
+      },
+      {
+        id: "salt",
+        number: "0g",
+        label: "salt",
+        title: "No salt. Ever.",
+        body: "Flavour comes from fermentation, pickling, dehydration and koji. Seaweed crystals and misos aged nine months replace what salt once did.",
+      },
+    ],
+    ctaLabel: "Meet the people behind this",
+  },
+  livingMenuTransition: {
+    eyebrow: "What follows",
+    title: "The Living Menu",
+    subtitle: "Eighteen movements, each a trace of a season already behind us.",
+  },
+  circleTransition: {
+    eyebrow: "Our producers",
+    title: "The Circle",
+    subtitle: "Every name here has a shape — the shape of what you will taste.",
+  },
+  menus: defaultMenus,
+  wines: { items: defaultWineItems },
 };
 
 export const defaultSiteTheme: SiteThemeTokens = {
   heroOverlay: "radial-gradient(ellipse at center, rgba(26,20,16,0.15) 0%, rgba(26,20,16,0.55) 60%, rgba(26,20,16,0.85) 100%)",
   conceptBackground: "hsl(24 24% 8%)",
-  zoomBackground: "hsl(36 33% 95%)",
-  producersBackground: "hsl(var(--background))",
-  reserveBackground: "hsl(var(--background))",
+  zoomBackground: "#F5EFE6",
+  producersBackground: "#F5EFE6",
+  reserveBackground: "#F5EFE6",
   footerBackground: "hsl(var(--season-darkest))",
   bandHeroToZoom:
     "linear-gradient(to bottom, hsl(24 24% 8%) 0%, hsl(24 24% 8%) 12%, hsl(48 13% 9%) 22%, hsl(33 25% 13%) 34%, hsl(24 29% 18%) 46%, hsl(26 21% 29%) 58%, hsl(38 13% 48%) 70%, hsl(36 20% 67%) 81%, hsl(38 25% 80%) 90%, hsl(36 33% 95%) 100%)",
@@ -134,4 +191,13 @@ export const defaultMediaLibrary: SiteMediaItem[] = [
     tags: ["producers"],
     metadata: {},
   })),
+  ...seasonOrder.flatMap((season) =>
+    defaultHomeCmsContent.menus[season].items.map((dish, index) => ({
+      file_path: dish.image,
+      title: `${season} dish ${index + 1}: ${dish.name}`,
+      alt_text: dish.name,
+      tags: ["menus", season],
+      metadata: {},
+    })),
+  ),
 ];

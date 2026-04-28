@@ -3,11 +3,11 @@ import SeasonBar from "@/components/SeasonBar";
 import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
-import MenuSecretSection from "@/components/MenuSecretSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
 import ConceptSection from "@/components/ConceptSection";
 import GreenStarSection from "@/components/GreenStarSection";
-import DarkToCreamTransition from "@/components/DarkToCreamTransition";
+import SectionTransition from "@/components/SectionTransition";
+import LivingMenuIntro from "@/components/LivingMenuIntro";
 import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
@@ -15,45 +15,37 @@ import FooterSection from "@/components/FooterSection";
 import IntroOverlay from "@/components/IntroOverlay";
 import { usePublishedHome } from "@/hooks/usePublishedHome";
 
+const DARK = "#191310";
+const CREAM = "#F5EFE6";
+
 const Index = () => {
   const [introDone, setIntroDone] = useState(false);
   const { content, theme } = usePublishedHome();
 
   return (
     <div className="min-h-screen">
-      {!introDone && <IntroOverlay onComplete={() => setIntroDone(true)} />}
-      <SeasonBar />
-      <HeroSection shouldPlay={introDone} content={content.hero} theme={theme} />
-      <div
-        aria-hidden="true"
-        className="hero-cream-transition w-full"
-        style={{
-          height: "500px",
-          background:
-            "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, rgba(26,20,16,0.95) 100%), linear-gradient(to bottom, #1A1410 0%, #1A1410 8%, #2B1A14 18%, #3A2820 30%, #5A4A3A 44%, #8A7D6A 58%, #B8AE9C 72%, #D8CFBE 84%, #EDE5D4 93%, #F5EFE6 100%)",
-        }}
-      />
-      <ZoomParallaxSection content={content.zoom} theme={theme} />
-      <SeasonsArchiveSection />
-      <MenuSecretSection />
-      <MenuPoemSection showCta={false} />
-      <ConceptSection content={content.concept} theme={theme} />
-      <GreenStarSection />
-      <div aria-hidden="true" className="w-full" style={{ height: "400px", background: content.bands.zoomToProducers || theme.bandZoomToProducers }} />
-      <ProducersSection content={content.producers} theme={theme} />
-      <ReserveSection content={content.reserve} theme={theme} />
-      <DarkToCreamTransition />
-      <TresGallerySection content={content.gallery} theme={theme} />
-      <FooterSection content={content.footer} theme={theme} />
-
-      <style>{`
-        @media (max-width: 767px) {
-          .hero-cream-transition {
-            height: 340px !important;
-            background: radial-gradient(ellipse 80% 55% at 50% 40%, transparent 0%, rgba(26,20,16,0.95) 100%), linear-gradient(to bottom, #1A1410 0%, #1A1410 8%, #2B1A14 18%, #3A2820 30%, #5A4A3A 44%, #8A7D6A 58%, #B8AE9C 72%, #D8CFBE 84%, #EDE5D4 93%, #F5EFE6 100%);
-          }
-        }
-      `}</style>
+      {!introDone && <div><IntroOverlay onComplete={() => setIntroDone(true)} /></div>}
+      <div><SeasonBar /></div>
+      <div><HeroSection shouldPlay={introDone} content={content.hero} theme={theme} /></div>
+      <div><SectionTransition from={DARK} to={CREAM} /></div>
+      <div><ZoomParallaxSection content={content.zoom} theme={theme} /></div>
+      <div><LivingMenuIntro content={content.livingMenuTransition} /></div>
+      <div><SeasonsArchiveSection /></div>
+      <div><MenuPoemSection showCta={false} menus={content.menus} /></div>
+      <div><ConceptSection content={content.concept} theme={theme} /></div>
+      <div><GreenStarSection content={content.greenStar} /></div>
+      <div>
+        <SectionTransition
+          from={DARK}
+          to={CREAM}
+          height="200vh"
+          content={content.circleTransition}
+        />
+      </div>
+      <div><ProducersSection content={content.producers} theme={theme} /></div>
+      <div><ReserveSection content={content.reserve} theme={theme} /></div>
+      <div><TresGallerySection content={content.gallery} theme={theme} /></div>
+      <div><FooterSection content={content.footer} theme={theme} /></div>
     </div>
   );
 };

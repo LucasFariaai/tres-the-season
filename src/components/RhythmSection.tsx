@@ -26,19 +26,19 @@ export default function RhythmSection() {
           <div>
             <p
               className="text-[12px] uppercase tracking-[0.18em]"
-              style={{ fontFamily: "Abel, sans-serif", color: content.accentSoft }}
+              style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.accentSoft }}
             >
               The rhythm
             </p>
             <h2
               className="mt-3 text-[40px] leading-none sm:text-[56px]"
-              style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontWeight: 400, color: "hsl(var(--wine-bg))" }}
+              style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 400, color: "hsl(var(--wine-bg))" }}
             >
               Visit Tres this {season}
             </h2>
             <p
               className="mt-5 max-w-[34rem] text-[17px] leading-[1.7]"
-              style={{ fontFamily: "Abel, sans-serif", color: "hsl(24 16% 28%)" }}
+              style={{ fontFamily: "'Source Sans 3', sans-serif", color: "hsl(24 16% 28%)" }}
             >
               {content.rhythm.note}
             </p>
@@ -50,7 +50,7 @@ export default function RhythmSection() {
               />
               <span
                 className="text-[11px] uppercase tracking-[0.18em]"
-                style={{ fontFamily: "Abel, sans-serif", color: "hsl(24 16% 28%)" }}
+                style={{ fontFamily: "'Source Sans 3', sans-serif", color: "hsl(24 16% 28%)" }}
               >
                 {isOpen ? "Open now" : "Currently closed"}
               </span>
@@ -59,32 +59,32 @@ export default function RhythmSection() {
 
           <div className="grid gap-[3px] lg:grid-cols-[0.88fr_1.12fr]">
             <div className="border p-6 sm:p-8" style={{ borderColor: "hsl(24 12% 78%)", backgroundColor: "transparent" }}>
-              <p className="text-[11px] uppercase tracking-[0.18em]" style={{ fontFamily: "Abel, sans-serif", color: content.accentSoft }}>
+              <p className="text-[11px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.accentSoft }}>
                 Hours
               </p>
               <div className="mt-4 space-y-2">
                 {content.rhythm.hours.map((line) => (
-                  <p key={line} style={{ fontFamily: "Abel, sans-serif", color: "hsl(24 16% 28%)", fontSize: "16px" }}>
+                  <p key={line} style={{ fontFamily: "'Source Sans 3', sans-serif", color: "hsl(24 16% 28%)", fontSize: "16px" }}>
                     {line}
                   </p>
                 ))}
               </div>
 
-              <p className="mt-8 text-[11px] uppercase tracking-[0.18em]" style={{ fontFamily: "Abel, sans-serif", color: content.accentSoft }}>
+              <p className="mt-8 text-[11px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.accentSoft }}>
                 Address
               </p>
               <div className="mt-4 space-y-2">
                 {content.rhythm.address.map((line) => (
-                  <p key={line} style={{ fontFamily: "Abel, sans-serif", color: "hsl(24 16% 28%)", fontSize: "16px" }}>
+                  <p key={line} style={{ fontFamily: "'Source Sans 3', sans-serif", color: "hsl(24 16% 28%)", fontSize: "16px" }}>
                     {line}
                   </p>
                 ))}
               </div>
 
-              <p className="mt-8 text-[11px] uppercase tracking-[0.18em]" style={{ fontFamily: "Abel, sans-serif", color: content.accentSoft }}>
+              <p className="mt-8 text-[11px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.accentSoft }}>
                 Arrival
               </p>
-              <p className="mt-4 text-[16px] leading-[1.7]" style={{ fontFamily: "Abel, sans-serif", color: "hsl(24 16% 28%)" }}>
+              <p className="mt-4 text-[16px] leading-[1.7]" style={{ fontFamily: "'Source Sans 3', sans-serif", color: "hsl(24 16% 28%)" }}>
                 {content.rhythm.travel}
               </p>
             </div>
@@ -100,14 +100,14 @@ export default function RhythmSection() {
               <div className="border-t p-6 sm:p-8" style={{ borderColor: "hsl(24 12% 78%)" }}>
                 <p
                   className="text-[28px] leading-[1.12] sm:text-[34px]"
-                  style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontWeight: 400, color: "hsl(24 18% 16%)" }}
+                  style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 400, color: "hsl(24 18% 16%)" }}
                 >
                   {seasonQuotes[season]}
                 </p>
                 <a
                   href="/reserve"
                   className="mt-6 inline-flex text-[11px] uppercase tracking-[0.18em]"
-                  style={{ fontFamily: "Abel, sans-serif", color: content.accentSoft }}
+                  style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.accentSoft }}
                 >
                   Open reservation flow
                 </a>

@@ -1,13 +1,13 @@
 import type { Season } from "@/lib/seasonContext";
 
-import dish01 from "@/assets/dishes/dish-01.jpg";
-import dish02 from "@/assets/dishes/dish-02.jpg";
-import dish03 from "@/assets/dishes/dish-03.jpg";
-import dish04 from "@/assets/dishes/dish-04.jpg";
-import dish05 from "@/assets/dishes/dish-05.jpg";
-import dish06 from "@/assets/dishes/dish-06.jpg";
-import dish07 from "@/assets/dishes/dish-07.jpg";
-import dish08 from "@/assets/dishes/dish-08.jpg";
+import dish01 from "@/assets/dishes/dish-01.webp";
+import dish02 from "@/assets/dishes/dish-02.webp";
+import dish03 from "@/assets/dishes/dish-03.webp";
+import dish04 from "@/assets/dishes/dish-04.webp";
+import dish05 from "@/assets/dishes/dish-05.webp";
+import dish06 from "@/assets/dishes/dish-06.webp";
+import dish07 from "@/assets/dishes/dish-07.webp";
+import dish08 from "@/assets/dishes/dish-08.webp";
 
 export const legacyDishImages = [dish01, dish02, dish03, dish04, dish05, dish06, dish07, dish08];
 

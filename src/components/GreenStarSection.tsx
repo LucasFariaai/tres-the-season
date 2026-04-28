@@ -1,36 +1,22 @@
 import { useState } from "react";
+import { defaultHomeCmsContent } from "@/lib/site-editor/defaults";
+import type { GreenStarContent } from "@/lib/site-editor/types";
+import michelinGreenStar from "@/assets/michelin-green-star.png";
+import knifeCircle from "@/assets/knife-circle.png";
+import gaultMillau from "@/assets/gault-millau.png";
 
-const pillars = [
-  {
-    id: "local",
-    number: "30km",
-    label: "radius",
-    title: "Radically local",
-    body: "Every ingredient is sourced within 30 kilometres of Rotterdam. The fields, the coast, the forests nearby are our entire pantry.",
-  },
-  {
-    id: "waste",
-    number: "0",
-    label: "waste",
-    title: "Root to leaf, nose to tail",
-    body: "Nothing is discarded. What others see as scraps, our fermentation lab transforms into garums, misos and vinegars aged for months.",
-  },
-  {
-    id: "salt",
-    number: "0g",
-    label: "salt",
-    title: "No salt. Ever.",
-    body: "Flavour comes from fermentation, pickling, dehydration and koji. Seaweed crystals and misos aged nine months replace what salt once did.",
-  },
-];
+interface GreenStarSectionProps {
+  content?: GreenStarContent;
+}
 
-export default function GreenStarSection() {
+export default function GreenStarSection({ content }: GreenStarSectionProps) {
+  const sectionContent = content ?? defaultHomeCmsContent.greenStar;
   const [hoveredPillar, setHoveredPillar] = useState<string | null>(null);
 
   return (
     <section
       className="relative overflow-hidden"
-      style={{ backgroundColor: "hsl(var(--wine-bg))" }}
+      style={{ backgroundColor: "hsl(24 24% 8%)" }}
     >
       {/* Noise texture */}
       <div
@@ -42,100 +28,12 @@ export default function GreenStarSection() {
       />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32 lg:px-12">
-        {/* Header */}
-        <div className="flex justify-between items-start flex-wrap gap-8 mb-16">
-          <div style={{ maxWidth: "600px" }}>
-            <p
-              style={{
-                fontFamily: "Abel, sans-serif",
-                fontSize: "12px",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "hsl(var(--wine-accent))",
-                marginBottom: "24px",
-              }}
-            >
-              Recognised
-            </p>
-
-            <h2
-              style={{
-                fontFamily: "'Fraunces', serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: "clamp(36px, 6vw, 64px)",
-                lineHeight: 1.05,
-                color: "hsl(var(--wine-text))",
-                marginBottom: "12px",
-              }}
-            >
-              The Green Star.
-            </h2>
-
-            <p
-              style={{
-                fontFamily: "'Fraunces', serif",
-                fontStyle: "italic",
-                fontWeight: 300,
-                fontSize: "18px",
-                color: "hsl(var(--wine-muted) / 0.6)",
-                marginBottom: "28px",
-              }}
-            >
-              Michelin Guide Netherlands, 2025
-            </p>
-
-            <p
-              style={{
-                fontFamily: "Abel, sans-serif",
-                fontSize: "17px",
-                lineHeight: 1.7,
-                color: "hsl(var(--wine-muted))",
-                marginBottom: "16px",
-              }}
-            >
-              In 2025, Tres was awarded the Green Michelin Star, a distinction
-              that recognises restaurants committed to a more sustainable vision
-              of gastronomy. For us, this was not a new direction. It was a
-              recognition of how we have always worked.
-            </p>
-            <p
-              style={{
-                fontFamily: "Abel, sans-serif",
-                fontSize: "17px",
-                lineHeight: 1.7,
-                color: "hsl(var(--wine-muted))",
-              }}
-            >
-              The inspectors described us as "raw and pure, vintage and warm." We
-              take that as the highest compliment.
-            </p>
-          </div>
-
-          {/* Green star watermark */}
-          <div
-            className="hidden sm:block"
-            style={{
-              fontSize: "80px",
-              lineHeight: 1,
-              opacity: 0.08,
-              color: "hsl(var(--wine-accent))",
-              flexShrink: 0,
-              userSelect: "none",
-              marginTop: "20px",
-            }}
-            aria-hidden="true"
-          >
-            🍀
-          </div>
-        </div>
-
         {/* Three pillars */}
         <div
           className="grid gap-px sm:grid-cols-3"
           style={{ backgroundColor: "hsl(var(--wine-text) / 0.06)" }}
         >
-          {pillars.map((pillar) => {
+          {sectionContent.pillars.map((pillar) => {
             const isHovered = hoveredPillar === pillar.id;
             return (
               <div
@@ -143,7 +41,7 @@ export default function GreenStarSection() {
                 onMouseEnter={() => setHoveredPillar(pillar.id)}
                 onMouseLeave={() => setHoveredPillar(null)}
                 style={{
-                  backgroundColor: "hsl(var(--wine-bg))",
+                  backgroundColor: "hsl(24 24% 8%)",
                   padding: "40px 32px",
                   transition: "background-color 300ms cubic-bezier(0.45, 0, 0.15, 1)",
                 }}
@@ -151,7 +49,7 @@ export default function GreenStarSection() {
                 <div style={{ marginBottom: "24px" }}>
                   <span
                     style={{
-                      fontFamily: "'Fraunces', serif",
+                      fontFamily: "'Playfair Display', serif",
                       fontStyle: "italic",
                       fontWeight: 400,
                       fontSize: "48px",
@@ -165,7 +63,7 @@ export default function GreenStarSection() {
                   </span>
                   <span
                     style={{
-                      fontFamily: "Abel, sans-serif",
+                      fontFamily: "'Source Sans 3', sans-serif",
                       fontSize: "11px",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
@@ -179,7 +77,7 @@ export default function GreenStarSection() {
 
                 <h3
                   style={{
-                    fontFamily: "'Fraunces', serif",
+                    fontFamily: "'Playfair Display', serif",
                     fontStyle: "italic",
                     fontWeight: 400,
                     fontSize: "22px",
@@ -193,7 +91,7 @@ export default function GreenStarSection() {
 
                 <p
                   style={{
-                    fontFamily: "Abel, sans-serif",
+                    fontFamily: "'Source Sans 3', sans-serif",
                     fontSize: "15px",
                     lineHeight: 1.65,
                     color: "hsl(var(--wine-muted) / 0.65)",
@@ -204,6 +102,128 @@ export default function GreenStarSection() {
               </div>
             );
           })}
+        </div>
+
+        {/* Recognition emblems: Green Star + Michelin knife + Gault&Millau */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "clamp(32px, 4vw, 64px)",
+            flexShrink: 0,
+            flexWrap: "wrap",
+            width: "100%",
+            marginTop: "64px",
+          }}
+        >
+          {/* 1. Green Star (trevo) — white, transparent */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "clamp(170px, 21vw, 290px)",
+              width: "clamp(170px, 21vw, 290px)",
+            }}
+          >
+            <img
+              src={michelinGreenStar}
+              alt="Michelin Green Star"
+              style={{
+                height: "62%",
+                width: "auto",
+                objectFit: "contain",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.95,
+              }}
+            />
+          </div>
+
+          {/* 2. Michelin knife emblem */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "clamp(170px, 21vw, 290px)",
+            }}
+          >
+            <img
+              src={knifeCircle}
+              alt="Chef's knife emblem"
+              style={{
+                height: "62%",
+                width: "auto",
+                objectFit: "contain",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.9,
+              }}
+            />
+          </div>
+
+          {/* 3. Gault&Millau logo + native rating (16,5/20 + 3 chef hats) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "clamp(10px, 1.2vw, 16px)",
+              height: "clamp(170px, 21vw, 290px)",
+            }}
+          >
+            <img
+              src={gaultMillau}
+              alt="Gault&Millau"
+              style={{
+                height: "42%",
+                width: "auto",
+                objectFit: "contain",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.9,
+              }}
+            />
+            <div
+              aria-label="Gault&Millau rating: 16,5 out of 20"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "10px",
+                color: "hsl(var(--wine-text))",
+                opacity: 0.92,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  fontSize: "clamp(15px, 1.4vw, 19px)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <span>16,5</span>
+                <span style={{ opacity: 0.55, margin: "0 4px" }}>/</span>
+                <span>20</span>
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                {[0, 1, 2].map((i) => (
+                  <svg
+                    key={i}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2c-2.5 0-4.5 1.8-4.85 4.13A4 4 0 0 0 4 10c0 1.86 1.27 3.43 3 3.87V20a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-6.13c1.73-.44 3-2.01 3-3.87a4 4 0 0 0-3.15-3.87C16.5 3.8 14.5 2 12 2Zm-3 16v-3h2v3H9Zm4 0v-3h2v3h-2Z" />
+                  </svg>
+                ))}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Transition to producers */}
@@ -233,14 +253,14 @@ export default function GreenStarSection() {
           >
             <span
               style={{
-                fontFamily: "Abel, sans-serif",
+                fontFamily: "'Source Sans 3', sans-serif",
                 fontSize: "12px",
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 color: "hsl(var(--wine-accent) / 0.4)",
               }}
             >
-              Meet the people behind this
+              {sectionContent.ctaLabel}
             </span>
           </button>
           <svg

@@ -1,7 +1,10 @@
 import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import ConceptSection from "@/components/ConceptSection";
-import DarkToCreamTransition from "@/components/DarkToCreamTransition";
+import GreenStarSection from "@/components/GreenStarSection";
+import SectionTransition from "@/components/SectionTransition";
+import LivingMenuIntro from "@/components/LivingMenuIntro";
 import FooterSection from "@/components/FooterSection";
 import HeroSection from "@/components/HeroSection";
 import MenuPoemSection from "@/components/MenuPoemSection";
@@ -10,8 +13,12 @@ import ReserveSection from "@/components/ReserveSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
 import TresGallerySection from "@/components/TresGallerySection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
+
+const DARK = "#191310";
+const CREAM = "#F5EFE6";
 import { AdminEditPanel } from "@/components/admin/AdminEditPanel";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
+import { AdminSubscribersPanel } from "@/components/admin/AdminSubscribersPanel";
 import { AdminToolbar } from "@/components/admin/AdminToolbar";
 import { buttonBase, toolbarHeight, uiPalette } from "@/components/admin/adminStyles";
 import type { Selection } from "@/components/admin/types";
@@ -41,7 +48,7 @@ function EditableSection({ label, isSelected, onSelect, children }: { label: str
           padding: "2px 8px",
           background: isSelected ? uiPalette.outlineLabel : "transparent",
           color: isSelected ? uiPalette.accentText : "transparent",
-          fontFamily: '"Abel", sans-serif',
+          fontFamily: '"Source Sans 3", sans-serif',
           fontSize: 10,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
@@ -111,10 +118,10 @@ function AdminSignIn({ onSignedIn }: { onSignedIn: (session: Session) => void })
         }}
       >
         <div style={{ display: "grid", gap: 8 }}>
-          <p style={{ margin: 0, fontFamily: '"Abel", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
+          <p style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>
             Visual admin
           </p>
-          <h1 style={{ margin: 0, fontFamily: '"Abel", sans-serif', fontSize: 28, lineHeight: 1.1, color: uiPalette.controlText, fontWeight: 400 }}>Open editor</h1>
+          <h1 style={{ margin: 0, fontFamily: '"Source Sans 3", sans-serif', fontSize: 28, lineHeight: 1.1, color: uiPalette.controlText, fontWeight: 400 }}>Open editor</h1>
         </div>
         <AdminFieldInput label="Email" value={email} onChange={setEmail} type="email" />
         <AdminFieldInput label="Password" value={password} onChange={setPassword} type="password" />
@@ -141,7 +148,9 @@ function AdminSignIn({ onSignedIn }: { onSignedIn: (session: Session) => void })
 export default function Admin() {
   const editor = useVisualSiteEditor();
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [subscribersOpen, setSubscribersOpen] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const handlePublish = async () => {
     const result = await editor.publish();
@@ -169,7 +178,7 @@ export default function Admin() {
 
   if (editor.loading) {
     return (
-      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, color: uiPalette.controlText, fontFamily: '"Abel", sans-serif' }}>
+      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif' }}>
         Loading editor...
       </main>
     );
@@ -182,7 +191,7 @@ export default function Admin() {
   if (!editor.isAdmin) {
     return (
       <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: uiPalette.panel, padding: 24 }}>
-        <div style={{ maxWidth: 420, border: `1px solid ${uiPalette.panelBorder}`, padding: 24, color: uiPalette.controlText, fontFamily: '"Abel", sans-serif', display: "grid", gap: 16 }}>
+        <div style={{ maxWidth: 420, border: `1px solid ${uiPalette.panelBorder}`, padding: 24, color: uiPalette.controlText, fontFamily: '"Source Sans 3", sans-serif', display: "grid", gap: 16 }}>
           <p style={{ margin: 0, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: uiPalette.controlMuted }}>Access</p>
           <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6 }}>This route requires an admin role in Supabase.</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -211,55 +220,62 @@ export default function Admin() {
         onPublish={handlePublish}
         onReset={handleReset}
         onHistory={() => setSelection({ id: "history", label: "Version history" })}
+        onSubscribers={() => setSubscribersOpen(true)}
+        onWines={() => navigate("/admin/wines")}
+        onMenus={() => navigate("/admin/menus")}
+        onProducers={() => navigate("/admin/producers")}
         onSignOut={handleSignOut}
       />
       <AdminEditPanel editor={editor} selection={selection} onClose={() => setSelection(null)} />
+      <AdminSubscribersPanel open={subscribersOpen} onClose={() => setSubscribersOpen(false)} />
       <div style={{ paddingTop: toolbarHeight, marginRight: selection && !isMobile ? 380 : 0, transition: "margin-right 200ms ease" }}>
         <EditableSection label="Hero" isSelected={selection?.id === "hero"} onSelect={() => setSelection({ id: "hero", label: "Hero" })}>
           <HeroSection shouldPlay={false} content={editor.content.hero} theme={editor.theme} />
         </EditableSection>
 
-        <EditableSection label="Hero to zoom" isSelected={selection?.id === "heroBand"} onSelect={() => setSelection({ id: "heroBand", label: "Hero to zoom" })}>
-          <div
-            aria-hidden="true"
-            style={{
-              height: isMobile ? 340 : 500,
-              background:
-                "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, hsl(24 24% 8% / 0.95) 100%), linear-gradient(to bottom, hsl(24 24% 8%) 0%, hsl(24 24% 8%) 8%, hsl(20 37% 12%) 18%, hsl(20 29% 18%) 30%, hsl(24 21% 29%) 44%, hsl(39 13% 48%) 58%, hsl(40 21% 67%) 72%, hsl(40 24% 80%) 84%, hsl(43 31% 88%) 93%, hsl(36 38% 93%) 100%)",
-            }}
-          />
+        <EditableSection label="Transition · Hero to Zoom" isSelected={selection?.id === "heroToZoomTransition"} onSelect={() => setSelection({ id: "heroToZoomTransition", label: "Transition · Hero to Zoom" })}>
+          <SectionTransition from={DARK} to={CREAM} />
         </EditableSection>
 
         <EditableSection label="Zoom" isSelected={selection?.id === "zoom"} onSelect={() => setSelection({ id: "zoom", label: "Zoom" })}>
           <ZoomParallaxSection content={editor.content.zoom} theme={editor.theme} />
         </EditableSection>
 
+        <EditableSection label="Transition · The Living Menu" isSelected={selection?.id === "livingMenuTransition"} onSelect={() => setSelection({ id: "livingMenuTransition", label: "Transition · The Living Menu" })}>
+          <LivingMenuIntro content={editor.content.livingMenuTransition} />
+        </EditableSection>
+
         <EditableSection label="Seasons archive" isSelected={selection?.id === "seasonsReadonly"} onSelect={() => setSelection({ id: "seasonsReadonly", label: "Seasons archive" })}>
           <SeasonsArchiveSection />
         </EditableSection>
 
-        <EditableSection label="Menu Poem" isSelected={selection?.id === "menuReadonly"} onSelect={() => setSelection({ id: "menuReadonly", label: "Menu Poem" })}>
-          <MenuPoemSection showCta={false} />
+        <EditableSection label="Tasting Menu · Open editor →" isSelected={false} onSelect={() => navigate("/admin/menus")}>
+          <MenuPoemSection showCta={false} menus={editor.content.menus} />
         </EditableSection>
 
         <EditableSection label="Concept" isSelected={selection?.id === "concept"} onSelect={() => setSelection({ id: "concept", label: "Concept" })}>
           <ConceptSection content={editor.content.concept} theme={editor.theme} />
         </EditableSection>
 
-        <EditableSection label="Zoom to producers" isSelected={selection?.id === "zoomBand"} onSelect={() => setSelection({ id: "zoomBand", label: "Zoom to producers" })}>
-          <div aria-hidden="true" style={{ width: "100%", height: 400, background: editor.content.bands.zoomToProducers || editor.theme.bandZoomToProducers }} />
+        <EditableSection label="Green Star" isSelected={selection?.id === "greenStar"} onSelect={() => setSelection({ id: "greenStar", label: "Green Star" })}>
+          <GreenStarSection content={editor.content.greenStar} />
         </EditableSection>
 
-        <EditableSection label="Producers" isSelected={selection?.id === "producersReadonly"} onSelect={() => setSelection({ id: "producersReadonly", label: "Producers" })}>
+        <EditableSection label="Transition · The Circle" isSelected={selection?.id === "circleTransition"} onSelect={() => setSelection({ id: "circleTransition", label: "Transition · The Circle" })}>
+          <SectionTransition
+            from={DARK}
+            to={CREAM}
+            height="200vh"
+            content={editor.content.circleTransition}
+          />
+        </EditableSection>
+
+        <EditableSection label="Producers · Open editor →" isSelected={false} onSelect={() => navigate("/admin/producers")}>
           <ProducersSection content={editor.content.producers} theme={editor.theme} />
         </EditableSection>
 
         <EditableSection label="Reserve" isSelected={selection?.id === "reserve"} onSelect={() => setSelection({ id: "reserve", label: "Reserve" })}>
           <ReserveSection content={editor.content.reserve} theme={editor.theme} />
-        </EditableSection>
-
-        <EditableSection label="Dark to cream transition" isSelected={selection?.id === "darkTransition"} onSelect={() => setSelection({ id: "darkTransition", label: "Dark to cream transition" })}>
-          <DarkToCreamTransition />
         </EditableSection>
 
         <EditableSection label="Gallery" isSelected={selection?.id === "gallery"} onSelect={() => setSelection({ id: "gallery", label: "Gallery" })}>

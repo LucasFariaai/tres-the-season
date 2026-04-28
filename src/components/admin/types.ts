@@ -4,9 +4,12 @@ import type { HomeSectionId } from "@/lib/site-editor/types";
 export type EditableSectionKey =
   | HomeSectionId
   | "history"
-  | "heroBand"
-  | "zoomBand"
-  | "darkTransition"
+  | "heroToZoomTransition"
+  | "livingMenuTransition"
+  | "circleTransition"
+  | "greenStar"
+  | "menus"
+  | "wines"
   | "seasonsReadonly"
   | "menuReadonly"
   | "producersReadonly";

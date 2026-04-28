@@ -12,13 +12,13 @@ export default function ProcessGrid() {
         <div className="max-w-2xl">
           <p
             className="text-[12px] uppercase tracking-[0.18em]"
-            style={{ fontFamily: "Abel, sans-serif", color: content.accent }}
+            style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.accent }}
           >
             The process
           </p>
           <h2
             className="mt-3 text-[40px] leading-none sm:text-[56px]"
-            style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontWeight: 400, color: content.ink }}
+            style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 400, color: content.ink }}
           >
             How the season is handled
           </h2>
@@ -40,13 +40,13 @@ export default function ProcessGrid() {
               <div className="border-t px-0 py-5" style={{ borderColor: content.line }}>
                 <p
                   className="text-[11px] uppercase tracking-[0.18em]"
-                  style={{ fontFamily: "Abel, sans-serif", color: content.accent }}
+                  style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.accent }}
                 >
                   {item.title}
                 </p>
                 <p
                   className="mt-3 max-w-[22rem] text-[16px] leading-[1.7]"
-                  style={{ fontFamily: "Abel, sans-serif", color: content.muted }}
+                  style={{ fontFamily: "'Source Sans 3', sans-serif", color: content.muted }}
                 >
                   {item.caption}
                 </p>

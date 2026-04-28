@@ -37,13 +37,14 @@ export function usePublishedHome(): PublishedHomeState {
 
     void load();
 
+    const uid = Math.random().toString(36).slice(2);
     const contentChannel = supabase
-      .channel("published-home-content")
+      .channel(`published-home-content-${uid}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "site_content", filter: "key=eq.payload" }, () => void load())
       .subscribe();
 
     const themeChannel = supabase
-      .channel("published-home-theme")
+      .channel(`published-home-theme-${uid}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "site_theme_tokens", filter: "environment=eq.published" },

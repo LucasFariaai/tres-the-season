@@ -9,7 +9,10 @@ export type HomeSectionId =
   | "gallery"
   | "producers"
   | "reserve"
-  | "footer";
+  | "footer"
+  | "greenStar"
+  | "livingMenuTransition"
+  | "circleTransition";
 
 export interface SiteMediaItem {
   id?: string;
@@ -22,8 +25,9 @@ export interface SiteMediaItem {
 
 export interface HeroContent {
   tagline: string;
-  location: string;
-  reserveLabel: string;
+  videoDesktop: string;
+  videoMobile: string;
+  reservationUrl: string;
 }
 
 export interface BandContent {
@@ -62,10 +66,6 @@ export interface GalleryContent {
 }
 
 export interface ProducersContent {
-  eyebrow: string;
-  title: string;
-  body: string;
-  helper: string;
   closingQuote: string;
   items: Producer[];
 }
@@ -79,6 +79,10 @@ export interface ReserveContent {
   locationLines: string[];
   travelTitle: string;
   travelLines: string[];
+  contactTitle: string;
+  contactPhone: string;
+  alcoholicPairingPrice: string;
+  nonAlcoholicPairingPrice: string;
   price: string;
   reserveButton: string;
   note: string;
@@ -87,8 +91,61 @@ export interface ReserveContent {
 export interface FooterContent {
   quote: string;
   instagramUrl: string;
-  facebookUrl: string;
   logoAlt: string;
+}
+
+export interface GreenStarPillar {
+  id: string;
+  number: string;
+  label: string;
+  title: string;
+  body: string;
+}
+
+export interface GreenStarContent {
+  pillars: GreenStarPillar[];
+  ctaLabel: string;
+}
+
+export interface TransitionContent {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+}
+
+export interface MenuDish {
+  name: string;
+  description: string;
+  image: string;
+}
+
+export interface SeasonMenu {
+  subtitle: string;
+  items: MenuDish[];
+}
+
+export type Season = "spring" | "summer" | "autumn" | "winter";
+
+export type MenusContent = Record<Season, SeasonMenu>;
+
+export type WineCategory = "sparkling" | "white" | "red" | "dessert";
+
+export interface WineItem {
+  id: string;
+  category: WineCategory;
+  country: string;
+  region: string;
+  subregion?: string;
+  vintage?: string;
+  name: string;
+  producer: string;
+  grapes: string;
+  price: number;
+  featured?: boolean;
+}
+
+export interface WinesContent {
+  items: WineItem[];
 }
 
 export interface HomeCmsContent {
@@ -100,6 +157,11 @@ export interface HomeCmsContent {
   producers: ProducersContent;
   reserve: ReserveContent;
   footer: FooterContent;
+  greenStar: GreenStarContent;
+  livingMenuTransition: TransitionContent;
+  circleTransition: TransitionContent;
+  menus: MenusContent;
+  wines: WinesContent;
 }
 
 export interface SiteThemeTokens {

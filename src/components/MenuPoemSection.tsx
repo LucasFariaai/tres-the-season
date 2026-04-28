@@ -1,11 +1,13 @@
 import MenuPoem from "@/components/MenuPoem";
 import type { Season } from "@/lib/seasonContext";
+import type { MenusContent } from "@/lib/site-editor/types";
 
 type MenuPoemSectionProps = {
   seasonOverride?: Season;
   showHeader?: boolean;
   showCta?: boolean;
   className?: string;
+  menus?: MenusContent;
 };
 
 export default function MenuPoemSection({
@@ -13,6 +15,7 @@ export default function MenuPoemSection({
   showHeader = true,
   showCta = true,
   className,
+  menus,
 }: MenuPoemSectionProps) {
   return (
     <MenuPoem
@@ -20,6 +23,7 @@ export default function MenuPoemSection({
       showHeader={showHeader}
       showCta={showCta}
       className={className}
+      menus={menus}
     />
   );
 }
