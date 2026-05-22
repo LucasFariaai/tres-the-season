@@ -8,9 +8,11 @@ interface Image {
 
 interface ZoomParallaxProps {
   images: Image[];
+  /** Scroll distance (in vh) used to drive the zoom. Lower = fewer scrolls to traverse. */
+  scrollHeightVh?: number;
 }
 
-export function ZoomParallax({ images }: ZoomParallaxProps) {
+export function ZoomParallax({ images, scrollHeightVh = 180 }: ZoomParallaxProps) {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
@@ -43,7 +45,7 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
   ];
 
   return (
-    <div ref={container} className="relative h-[300vh]">
+    <div ref={container} className="relative" style={{ height: `${scrollHeightVh}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden">
         {images.map(({ src, alt }, index) => {
           const scale = scales[index % scales.length];
