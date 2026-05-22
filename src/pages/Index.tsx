@@ -31,7 +31,7 @@ const Index = () => {
       <div><ZoomParallaxSection content={content.zoom} theme={theme} /></div>
       
       <div><SeasonsArchiveSection /></div>
-      <div><MenuPoemSection showCta={false} menus={content.menus} /></div>
+      
       <div><ConceptSection content={content.concept} theme={theme} /></div>
       <div><GreenStarSection content={content.greenStar} /></div>
       <div>
