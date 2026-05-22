@@ -27,7 +27,7 @@ export default function ConceptSection({ content, theme }: ConceptSectionProps) 
           <p className="text-[17px] leading-[1.65] text-[hsl(var(--wine-muted))]">{sectionContent.body}</p>
         </motion.div>
 
-        <div className="grid items-start gap-6 md:grid-cols-2 sm:gap-8">
+        <div className="mx-auto grid max-w-2xl items-start justify-items-center gap-6 sm:gap-8 md:max-w-none md:grid-cols-2 md:justify-items-stretch lg:max-w-none">
           <motion.div style={{ y: y1 }} className="relative">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 1, ease: "easeOut" }} className="relative overflow-hidden">
               <img src={resolveMediaUrl(sectionContent.chefImage) ?? sectionContent.chefImage} alt={sectionContent.chefAlt} className="aspect-[3/4] w-full object-cover" />
