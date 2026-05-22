@@ -123,8 +123,8 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "clamp(170px, 21vw, 290px)",
-              width: "clamp(170px, 21vw, 290px)",
+              height: "clamp(110px, 13vw, 180px)",
+              width: "clamp(110px, 13vw, 180px)",
             }}
           >
             <img
@@ -146,7 +146,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "clamp(170px, 21vw, 290px)",
+              height: "clamp(110px, 13vw, 180px)",
             }}
           >
             <img
@@ -170,7 +170,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               alignItems: "center",
               justifyContent: "center",
               gap: "clamp(10px, 1.2vw, 16px)",
-              height: "clamp(170px, 21vw, 290px)",
+              height: "clamp(110px, 13vw, 180px)",
             }}
           >
             <img
