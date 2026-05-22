@@ -3,7 +3,7 @@ import SeasonBar from "@/components/SeasonBar";
 import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
-import MenuPoemSection from "@/components/MenuPoemSection";
+
 import ConceptSection from "@/components/ConceptSection";
 import GreenStarSection from "@/components/GreenStarSection";
 import SectionTransition from "@/components/SectionTransition";
@@ -31,7 +31,7 @@ const Index = () => {
       <div><ZoomParallaxSection content={content.zoom} theme={theme} /></div>
       
       <div><SeasonsArchiveSection /></div>
-      <div><MenuPoemSection showCta={false} menus={content.menus} /></div>
+      
       <div><ConceptSection content={content.concept} theme={theme} /></div>
       <div><GreenStarSection content={content.greenStar} /></div>
       <div>
