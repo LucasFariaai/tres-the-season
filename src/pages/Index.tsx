@@ -29,7 +29,7 @@ const Index = () => {
       <div><HeroSection shouldPlay={introDone} content={content.hero} theme={theme} /></div>
       <div><SectionTransition from={DARK} to={CREAM} /></div>
       <div><ZoomParallaxSection content={content.zoom} theme={theme} /></div>
-      <div><LivingMenuIntro content={content.livingMenuTransition} /></div>
+      
       <div><SeasonsArchiveSection /></div>
       <div><MenuPoemSection showCta={false} menus={content.menus} /></div>
       <div><ConceptSection content={content.concept} theme={theme} /></div>
