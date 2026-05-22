@@ -3,7 +3,7 @@ import SeasonBar from "@/components/SeasonBar";
 import HeroSection from "@/components/HeroSection";
 import ZoomParallaxSection from "@/components/ZoomParallaxSection";
 import SeasonsArchiveSection from "@/components/SeasonsArchiveSection";
-import MenuPoemSection from "@/components/MenuPoemSection";
+
 import ConceptSection from "@/components/ConceptSection";
 import GreenStarSection from "@/components/GreenStarSection";
 import SectionTransition from "@/components/SectionTransition";
