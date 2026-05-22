@@ -203,6 +203,22 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                     Contact us for private dinners.
                   </a>
                 </p>
+                <p
+                  className="mt-1 text-sm italic"
+                  style={{
+                    fontFamily: "'Playfair Display', serif",
+                    color: "rgba(26,20,16,0.55)",
+                  }}
+                >
+                  to{" "}
+                  <a
+                    href="mailto:info@tresrotterdam.com"
+                    className="transition-opacity hover:opacity-70"
+                    style={{ color: "inherit", textDecoration: "none" }}
+                  >
+                    info@tresrotterdam.com
+                  </a>
+                </p>
                 <div className="mt-6">
                   <NewsletterField />
                 </div>
