@@ -276,7 +276,7 @@ export default function MenuPoem({
                       key={`dish-${season}-${index}`}
                       src={dish.image}
                       alt={dish.name}
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-contain"
                       decoding="async"
                       loading={isPriority ? "eager" : "lazy"}
                       // @ts-expect-error fetchpriority is a valid HTML attr
