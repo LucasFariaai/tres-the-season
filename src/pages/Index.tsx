@@ -7,7 +7,7 @@ import MenuPoemSection from "@/components/MenuPoemSection";
 import ConceptSection from "@/components/ConceptSection";
 import GreenStarSection from "@/components/GreenStarSection";
 import SectionTransition from "@/components/SectionTransition";
-import LivingMenuIntro from "@/components/LivingMenuIntro";
+
 import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
@@ -29,7 +29,7 @@ const Index = () => {
       <div><HeroSection shouldPlay={introDone} content={content.hero} theme={theme} /></div>
       <div><SectionTransition from={DARK} to={CREAM} /></div>
       <div><ZoomParallaxSection content={content.zoom} theme={theme} /></div>
-      <div><LivingMenuIntro content={content.livingMenuTransition} /></div>
+      
       <div><SeasonsArchiveSection /></div>
       <div><MenuPoemSection showCta={false} menus={content.menus} /></div>
       <div><ConceptSection content={content.concept} theme={theme} /></div>
