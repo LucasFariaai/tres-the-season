@@ -191,7 +191,17 @@ const ReserveSection = forwardRef<HTMLElement, ReserveSectionProps>(({ content, 
                     color: "rgba(26,20,16,0.55)",
                   }}
                 >
-                  Contact us for private dinners.
+                  <a
+                    href={
+                      reserveContent.contactPhone
+                        ? `tel:${reserveContent.contactPhone.replace(/[^+\d]/g, "")}`
+                        : "#reserve"
+                    }
+                    className="transition-opacity hover:opacity-70"
+                    style={{ color: "inherit", textDecoration: "none" }}
+                  >
+                    Contact us for private dinners.
+                  </a>
                 </p>
                 <div className="mt-6">
                   <NewsletterField />
