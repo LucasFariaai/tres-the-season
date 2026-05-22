@@ -39,7 +39,7 @@ export default function ConceptSection({ content, theme }: ConceptSectionProps) 
             </motion.div>
           </motion.div>
 
-          <motion.div style={{ y: y2 }} className="md:mt-32">
+          <motion.div style={{ y: y2 }} className="lg:mt-32">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 1, delay: 0.2, ease: "easeOut" }} className="relative overflow-hidden">
               <img src={resolveMediaUrl(sectionContent.foundersImage) ?? sectionContent.foundersImage} alt={sectionContent.foundersAlt} className="aspect-[3/4] w-full object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to top, hsl(24 24% 8% / 0.5), transparent 60%)" }} />
