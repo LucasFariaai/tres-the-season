@@ -146,7 +146,7 @@ export default function GreenStarSection({ content }: GreenStarSectionProps) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "clamp(170px, 21vw, 290px)",
+              height: "clamp(110px, 13vw, 180px)",
             }}
           >
             <img
