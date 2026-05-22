@@ -7,7 +7,7 @@ import MenuPoemSection from "@/components/MenuPoemSection";
 import ConceptSection from "@/components/ConceptSection";
 import GreenStarSection from "@/components/GreenStarSection";
 import SectionTransition from "@/components/SectionTransition";
-import LivingMenuIntro from "@/components/LivingMenuIntro";
+
 import TresGallerySection from "@/components/TresGallerySection";
 import ProducersSection from "@/components/ProducersSection";
 import ReserveSection from "@/components/ReserveSection";
