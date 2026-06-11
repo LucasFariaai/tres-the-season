@@ -182,6 +182,8 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
                   <img
                     src={item.mediaSrc}
                     alt={item.alt}
+                    loading="lazy"
+                    decoding="async"
                     className="block h-full w-full object-cover"
                     draggable={false}
                   />
@@ -252,6 +254,7 @@ function MobileCarousel({
                   alt={item.alt}
                   className="block h-full w-full object-cover"
                   loading="lazy"
+                  decoding="async"
                   draggable={false}
                 />
               </div>

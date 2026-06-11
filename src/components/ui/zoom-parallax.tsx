@@ -57,6 +57,8 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
                 <img
                   src={src}
                   alt={alt || ''}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </div>

@@ -190,6 +190,8 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
           muted
           loop
           playsInline
+          preload="metadata"
+          poster={isMobile ? "/videos/hero-poster-mobile.jpg" : "/videos/hero-poster.jpg"}
           className="h-full w-full object-cover"
           src={videoSrc}
         />
