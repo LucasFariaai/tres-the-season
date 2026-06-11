@@ -254,6 +254,7 @@ function MobileCarousel({
                   alt={item.alt}
                   className="block h-full w-full object-cover"
                   loading="lazy"
+                  decoding="async"
                   draggable={false}
                 />
               </div>
