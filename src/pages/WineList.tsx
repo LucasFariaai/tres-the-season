@@ -123,13 +123,13 @@ function WineRow({ wine, query }: { wine: Wine; query: string }) {
         <span className="text-right" style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.35)" }}>
           {vintage}
         </span>
-        <span style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#F5EFE6" }}>
+        <span className="truncate" title={wine.name} style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#F5EFE6" }}>
           <Highlight text={wine.name} query={query} />
         </span>
-        <span className="text-right truncate" style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.4)" }}>
+        <span className="text-right truncate" title={wine.producer} style={{ fontFamily: "Abel, sans-serif", fontSize: "13px", color: "rgba(200,184,154,0.4)" }}>
           <Highlight text={wine.producer} query={query} />
         </span>
-        <span className="text-right truncate italic" style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.25)" }}>
+        <span className="text-right truncate italic" title={wine.grapes} style={{ fontFamily: "Abel, sans-serif", fontSize: "12px", color: "rgba(200,184,154,0.25)", paddingRight: "2px" }}>
           <Highlight text={wine.grapes} query={query} />
         </span>
         <span className="text-right" style={{ fontFamily: "Abel, sans-serif", fontSize: "15px", fontWeight: 500, color: "#C8B89A" }}>
