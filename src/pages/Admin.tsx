@@ -59,7 +59,7 @@ function EditableSection({ label, isSelected, onSelect, children }: { label: str
         {label}
       </div>
       <div
-        style={{ position: "absolute", inset: 0, zIndex: 2 }}
+        style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: isSelected ? "none" : "auto" }}
         onMouseEnter={(event) => {
           const wrapper = event.currentTarget.parentElement;
           const badge = wrapper?.firstElementChild as HTMLElement | null;
