@@ -119,8 +119,25 @@ const defaultAssetByBaseName = (() => {
   };
   visit(defaultHomeCmsContent);
   defaultMediaLibrary.forEach((item) => visit(item.file_path));
+
+  // Also index EVERY bundled asset under src/assets, so any stale dev path
+  // /src/assets/<anything>/<name>.<ext> can be healed to its current prod URL
+  // even if the file is not referenced by the seed content.
+  const bundled = import.meta.glob(
+    "/src/assets/**/*.{jpg,jpeg,png,webp,gif,svg,avif}",
+    { eager: true, query: "?url", import: "default" },
+  ) as Record<string, string>;
+  Object.entries(bundled).forEach(([sourcePath, url]) => {
+    if (typeof url !== "string") return;
+    const base = sourcePath.split("/").pop();
+    if (base && !map.has(base)) map.set(base, url);
+    const urlBase = viteBaseName(url);
+    if (urlBase && !map.has(urlBase)) map.set(urlBase, url);
+  });
+
   return map;
 })();
+
 
 function healVitePath(path: string): string {
   const base = viteBaseName(path);
