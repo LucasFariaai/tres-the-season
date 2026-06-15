@@ -52,6 +52,21 @@ export function AdminToolbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const hasUnpublishedChanges =
+    JSON.stringify({ content: editor.content, theme: editor.theme, media: editor.mediaLibrary }) !==
+    JSON.stringify(editor.published);
+
+  const statusLabel = editor.saving
+    ? "Saving"
+    : editor.publishing
+      ? "Publishing"
+      : hasUnpublishedChanges
+        ? "Draft"
+        : "Published";
+
+  const statusActive = editor.saving || editor.publishing;
+
+
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (event: MouseEvent) => {
@@ -112,13 +127,9 @@ export function AdminToolbar({
               letterSpacing: "0.16em",
               textTransform: "uppercase",
               color: uiPalette.toolbarBadge,
-              animation: editor.saving ? "adminPulse 1.6s ease-in-out infinite" : "none",
-              flexShrink: 0,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {editor.saving ? "Saving" : "Draft"}
+            {statusLabel}
           </span>
+
 
           <div style={{ display: "flex", gap: 4, alignItems: "center", flexShrink: 0 }}>
             <button
