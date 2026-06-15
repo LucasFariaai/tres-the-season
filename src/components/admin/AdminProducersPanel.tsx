@@ -298,6 +298,8 @@ export function AdminProducersPanel({ editor }: Props) {
                 quickPickLimit={4}
                 onApply={(filePath) => setProducer(index, "image", filePath)}
                 onUpload={(file) => uploadImage(file, index)}
+                onClear={() => setProducer(index, "image", "")}
+                clearLabel="Remove photo"
               />
 
               <FramingControls
