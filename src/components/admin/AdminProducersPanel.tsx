@@ -292,19 +292,12 @@ export function AdminProducersPanel({ editor }: Props) {
       </div>
 
       <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(min(440px, 100%), 1fr))" }}>
-        {editor.content.producers.items.map((producer, index) => {
-          const previewScale = typeof producer.imageScale === "number" ? producer.imageScale : 1;
-          const previewOffsetX = typeof producer.imageOffsetX === "number" ? producer.imageOffsetX : 0;
-          const previewOffsetY = typeof producer.imageOffsetY === "number" ? producer.imageOffsetY : 0;
-          return (
-            <div key={`${producer.name}-${index}`} style={{ ...cardStyle, display: "grid", gap: 14, padding: 16 }}>
+        {editor.content.producers.items.map((producer, index) => (
+          <div key={`${producer.name}-${index}`} style={{ ...cardStyle, display: "grid", gap: 14, padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                  <ProducerImageFrame image={producer.image} alt={producer.name} frameSize={56} backgroundColor={producersBackground} scale={previewScale} offsetX={previewOffsetX} offsetY={previewOffsetY} mediaWidth={280} quality={80} />
-                  <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
-                    {producer.name || `Point ${index + 1}`}
-                  </span>
-                </div>
+                <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
+                  {producer.name || `Point ${index + 1}`}
+                </span>
                 <div style={{ display: "flex", gap: 6 }}>
                   <button type="button" onClick={() => moveProducer(index, -1)} disabled={index === 0} style={{ ...buttonBase, padding: "6px 10px", opacity: index === 0 ? 0.4 : 1, color: uiPalette.controlText, fontSize: 11 }}>
                     ↑
@@ -370,9 +363,8 @@ export function AdminProducersPanel({ editor }: Props) {
 
               <AdminFieldTextarea label="Quote (shown when card is expanded)" value={producer.quote} minRows={3} onChange={(value) => setProducer(index, "quote", value)} />
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
 
       <AlertDialog
         open={pendingRemoveIndex !== null}
