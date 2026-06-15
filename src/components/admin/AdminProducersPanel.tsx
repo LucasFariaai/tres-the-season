@@ -6,6 +6,16 @@ import { buttonBase, cardStyle, fieldLabelStyle, sectionHeaderStyle, uiPalette }
 import { ProducerImageFrame } from "@/components/producers/ProducerImageFrame";
 import type { VisualEditor } from "@/components/admin/types";
 import { toast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Producer = VisualEditor["content"]["producers"]["items"][number];
 
