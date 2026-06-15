@@ -295,6 +295,7 @@ export function AdminLibraryBrowser({
                     </div>
                     <div style={{ padding: "8px 10px", display: "grid", gap: 4 }}>
                       <span
+                        title={item.title || item.file_path.split("/").pop() || ""}
                         style={{
                           fontFamily: "'Source Sans 3', sans-serif",
                           fontSize: 12,
