@@ -281,9 +281,7 @@ export function AdminProducersPanel({ editor }: Props) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (window.confirm(`Remove "${producer.name || `point ${index + 1}`}"?`)) removeProducer(index);
-                    }}
+                    onClick={() => setPendingRemoveIndex(index)}
                     style={{ ...buttonBase, padding: "6px 10px", color: "#c0533b", borderColor: "rgba(192,83,59,0.4)", fontSize: 11 }}
                   >
                     Remove
