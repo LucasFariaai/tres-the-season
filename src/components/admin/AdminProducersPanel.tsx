@@ -3,8 +3,8 @@ import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
 import { buttonBase, cardStyle, fieldLabelStyle, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
+import { ProducerImageFrame } from "@/components/producers/ProducerImageFrame";
 import type { VisualEditor } from "@/components/admin/types";
-import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import { toast } from "@/components/ui/use-toast";
 
 type Producer = VisualEditor["content"]["producers"]["items"][number];
@@ -31,9 +31,6 @@ function FramingControls({
   const scale = typeof producer.imageScale === "number" ? producer.imageScale : 1;
   const offsetX = typeof producer.imageOffsetX === "number" ? producer.imageOffsetX : 0;
   const offsetY = typeof producer.imageOffsetY === "number" ? producer.imageOffsetY : 0;
-  const objectPosition = `${clamp(50 - offsetX, 0, 100)}% ${clamp(50 - offsetY, 0, 100)}%`;
-
-  const previewUrl = resolveMediaUrl(producer.image, 600, 82) ?? producer.image;
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!previewRef.current) return;
@@ -96,25 +93,7 @@ function FramingControls({
             flexShrink: 0,
           }}
         >
-          {previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="Framing preview"
-              draggable={false}
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: scale < 1 ? "contain" : "cover",
-                objectPosition,
-                transform: `scale(${scale})`,
-                transformOrigin: objectPosition,
-                pointerEvents: "none",
-                userSelect: "none",
-              }}
-            />
-          ) : null}
+          <ProducerImageFrame image={producer.image} alt="Framing preview" frameSize={160} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={600} quality={82} />
         </div>
 
         <div style={{ flex: 1, minWidth: 200, display: "grid", gap: 10 }}>
