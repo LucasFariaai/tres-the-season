@@ -94,8 +94,8 @@ function FramingControls({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
           style={{
-            width: 160,
-            height: 160,
+            width: 220,
+            height: 220,
             borderRadius: 8,
             overflow: "hidden",
             position: "relative",
@@ -106,7 +106,37 @@ function FramingControls({
             flexShrink: 0,
           }}
         >
-          <ProducerImageFrame image={producer.image} alt="Framing preview" frameSize={160} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={600} quality={82} />
+          <ProducerImageFrame image={producer.image} alt="Framing preview" frameSize={220} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={720} quality={82} />
+          {onClear && producer.image ? (
+            <button
+              type="button"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onClear();
+              }}
+              aria-label="Remove photo"
+              title="Remove photo"
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                width: 32,
+                height: 32,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 999,
+                border: "1px solid rgba(26,20,16,0.15)",
+                background: "rgba(255,255,255,0.92)",
+                color: "#c0533b",
+                cursor: "pointer",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+              }}
+            >
+              <Trash2 size={16} />
+            </button>
+          ) : null}
         </div>
 
         <div style={{ flex: 1, minWidth: 200, display: "grid", gap: 10 }}>
