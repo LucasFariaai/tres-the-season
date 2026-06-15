@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
@@ -29,10 +30,12 @@ function FramingControls({
   producer,
   backgroundColor,
   onChange,
+  onClear,
 }: {
   producer: Producer;
   backgroundColor: string;
   onChange: (patch: Partial<Pick<Producer, "imageScale" | "imageOffsetX" | "imageOffsetY">>) => void;
+  onClear?: () => void;
 }) {
   const previewRef = useRef<HTMLDivElement | null>(null);
   const dragState = useRef<{ startX: number; startY: number; baseX: number; baseY: number; width: number; height: number } | null>(null);
@@ -91,8 +94,8 @@ function FramingControls({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
           style={{
-            width: 160,
-            height: 160,
+            width: 220,
+            height: 220,
             borderRadius: 8,
             overflow: "hidden",
             position: "relative",
@@ -103,7 +106,37 @@ function FramingControls({
             flexShrink: 0,
           }}
         >
-          <ProducerImageFrame image={producer.image} alt="Framing preview" frameSize={160} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={600} quality={82} />
+          <ProducerImageFrame image={producer.image} alt="Framing preview" frameSize={220} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={720} quality={82} />
+          {onClear && producer.image ? (
+            <button
+              type="button"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onClear();
+              }}
+              aria-label="Remove photo"
+              title="Remove photo"
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                width: 32,
+                height: 32,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 999,
+                border: "1px solid rgba(26,20,16,0.15)",
+                background: "rgba(255,255,255,0.92)",
+                color: "#c0533b",
+                cursor: "pointer",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+              }}
+            >
+              <Trash2 size={16} />
+            </button>
+          ) : null}
         </div>
 
         <div style={{ flex: 1, minWidth: 200, display: "grid", gap: 10 }}>
@@ -289,6 +322,13 @@ export function AdminProducersPanel({ editor }: Props) {
                 </div>
               </div>
 
+              <FramingControls
+                producer={producer}
+                backgroundColor={producersBackground}
+                onChange={(patch) => patchProducer(index, patch)}
+                onClear={() => setProducer(index, "image", "")}
+              />
+
               <AdminImagePicker
                 title="Photo"
                 value={producer.image}
@@ -296,16 +336,9 @@ export function AdminProducersPanel({ editor }: Props) {
                 uploadTags={["producers"]}
                 quickPickTags={["producers"]}
                 quickPickLimit={4}
+                hidePreview
                 onApply={(filePath) => setProducer(index, "image", filePath)}
                 onUpload={(file) => uploadImage(file, index)}
-                onClear={() => setProducer(index, "image", "")}
-                clearLabel="Remove photo"
-              />
-
-              <FramingControls
-                producer={producer}
-                backgroundColor={producersBackground}
-                onChange={(patch) => patchProducer(index, patch)}
               />
 
               <AdminFieldInput label="Name" value={producer.name} onChange={(value) => setProducer(index, "name", value)} />
