@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, type MouseEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import ConceptSection from "@/components/ConceptSection";
@@ -28,9 +28,31 @@ import { useVisualSiteEditor } from "@/hooks/useVisualSiteEditor";
 import { supabase } from "@/integrations/supabase/client";
 
 function EditableSection({ label, isSelected, onSelect, children }: { label: string; isSelected: boolean; onSelect: () => void; children: React.ReactNode }) {
+  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('button, a, input, textarea, select, summary, [role="button"], [data-admin-interactive="true"]')) return;
+    onSelect();
+  };
+
   return (
     <div
-      onClick={onSelect}
+      onClick={handleClick}
+      onMouseEnter={(event) => {
+        const badge = event.currentTarget.firstElementChild as HTMLElement | null;
+        event.currentTarget.style.outline = `1px dashed ${uiPalette.accentOutline}`;
+        if (badge) {
+          badge.style.background = uiPalette.outlineLabel;
+          badge.style.color = uiPalette.accentText;
+        }
+      }}
+      onMouseLeave={(event) => {
+        const badge = event.currentTarget.firstElementChild as HTMLElement | null;
+        if (!isSelected) event.currentTarget.style.outline = "1px dashed transparent";
+        if (badge && !isSelected) {
+          badge.style.background = "transparent";
+          badge.style.color = "transparent";
+        }
+      }}
       style={{
         position: "relative",
         outline: isSelected ? `1px dashed ${uiPalette.accentOutline}` : "1px dashed transparent",
@@ -59,25 +81,7 @@ function EditableSection({ label, isSelected, onSelect, children }: { label: str
         {label}
       </div>
       <div
-        style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: isSelected ? "none" : "auto" }}
-        onMouseEnter={(event) => {
-          const wrapper = event.currentTarget.parentElement;
-          const badge = wrapper?.firstElementChild as HTMLElement | null;
-          if (wrapper) wrapper.style.outline = `1px dashed ${uiPalette.accentOutline}`;
-          if (badge) {
-            badge.style.background = uiPalette.outlineLabel;
-            badge.style.color = uiPalette.accentText;
-          }
-        }}
-        onMouseLeave={(event) => {
-          const wrapper = event.currentTarget.parentElement;
-          const badge = wrapper?.firstElementChild as HTMLElement | null;
-          if (wrapper && !isSelected) wrapper.style.outline = "1px dashed transparent";
-          if (badge && !isSelected) {
-            badge.style.background = "transparent";
-            badge.style.color = "transparent";
-          }
-        }}
+        style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none" }}
       />
       <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
     </div>
