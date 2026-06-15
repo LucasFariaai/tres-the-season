@@ -281,7 +281,7 @@ export function AdminProducersPanel({ editor }: Props) {
                           inset: 0,
                           width: "100%",
                           height: "100%",
-                          objectFit: "cover",
+                          objectFit: (producer.imageScale ?? 1) < 1 ? "contain" : "cover",
                           transform: `translate(${producer.imageOffsetX ?? 0}%, ${producer.imageOffsetY ?? 0}%) scale(${producer.imageScale ?? 1})`,
                           transformOrigin: "center center",
                           display: "block",
