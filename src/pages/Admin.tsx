@@ -234,7 +234,7 @@ export default function Admin() {
       <AdminSubscribersPanel open={subscribersOpen} onClose={() => setSubscribersOpen(false)} />
       <div style={{ paddingTop: toolbarHeight, marginRight: selection && !isMobile ? 380 : 0, transition: "margin-right 200ms ease" }}>
         <EditableSection label="Hero" isSelected={selection?.id === "hero"} onSelect={() => setSelection({ id: "hero", label: "Hero" })}>
-          <HeroSection shouldPlay={false} content={editor.content.hero} theme={editor.theme} />
+          <HeroSection shouldPlay={false} allowAutoUnmute={false} content={editor.content.hero} theme={editor.theme} />
         </EditableSection>
 
         <EditableSection label="Transition · Hero to Zoom" isSelected={selection?.id === "heroToZoomTransition"} onSelect={() => setSelection({ id: "heroToZoomTransition", label: "Transition · Hero to Zoom" })}>
