@@ -340,6 +340,36 @@ export function AdminProducersPanel({ editor }: Props) {
           );
         })}
       </div>
+
+      <AlertDialog
+        open={pendingRemoveIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingRemoveIndex(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this producer?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingRemoveProducer
+                ? `"${pendingRemoveProducer.name || `Point ${(pendingRemoveIndex ?? 0) + 1}`}" will be removed from the producers list. This action cannot be undone until you discard the draft.`
+                : "This producer will be removed."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingRemoveIndex !== null) removeProducer(pendingRemoveIndex);
+                setPendingRemoveIndex(null);
+              }}
+              style={{ backgroundColor: "#c0533b" }}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
