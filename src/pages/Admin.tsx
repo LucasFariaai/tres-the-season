@@ -245,16 +245,8 @@ export default function Admin() {
           <ZoomParallaxSection content={editor.content.zoom} theme={editor.theme} />
         </EditableSection>
 
-        <EditableSection label="Transition · The Living Menu" isSelected={selection?.id === "livingMenuTransition"} onSelect={() => setSelection({ id: "livingMenuTransition", label: "Transition · The Living Menu" })}>
-          <LivingMenuIntro content={editor.content.livingMenuTransition} />
-        </EditableSection>
-
         <EditableSection label="Seasons archive" isSelected={selection?.id === "seasonsReadonly"} onSelect={() => setSelection({ id: "seasonsReadonly", label: "Seasons archive" })}>
           <SeasonsArchiveSection />
-        </EditableSection>
-
-        <EditableSection label="Tasting Menu · Open editor →" isSelected={false} onSelect={() => navigate("/admin/menus")}>
-          <MenuPoemSection showCta={false} menus={editor.content.menus} />
         </EditableSection>
 
         <EditableSection label="Concept" isSelected={selection?.id === "concept"} onSelect={() => setSelection({ id: "concept", label: "Concept" })}>
