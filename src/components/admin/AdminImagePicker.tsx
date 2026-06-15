@@ -1,8 +1,8 @@
-import { useId, useMemo, useState, type ChangeEvent } from "react";
+import { useId, useState, type ChangeEvent } from "react";
 import { Trash2 } from "lucide-react";
 import { AdminLibraryBrowser } from "@/components/admin/AdminLibraryBrowser";
 import { AdminMediaThumb } from "@/components/admin/AdminMediaThumb";
-import { buttonBase, fieldLabelStyle, uiPalette } from "@/components/admin/adminStyles";
+import { buttonBase, uiPalette } from "@/components/admin/adminStyles";
 import type { SiteMediaItem } from "@/lib/site-editor/types";
 
 type AdminImagePickerProps = {
@@ -11,8 +11,6 @@ type AdminImagePickerProps = {
   mediaLibrary: SiteMediaItem[];
   uploadLabel?: string;
   uploadTags: string[];
-  quickPickTags?: string[];
-  quickPickLimit?: number;
   previewHeight?: number;
   previewWidth?: string | number;
   previewFit?: "cover" | "contain";
@@ -22,16 +20,6 @@ type AdminImagePickerProps = {
   onClear?: () => void;
   clearLabel?: string;
 };
-
-function getQuickPicks(mediaLibrary: SiteMediaItem[], quickPickTags: string[], quickPickLimit: number) {
-  const exact = mediaLibrary.filter((item) => quickPickTags.every((tag) => item.tags.includes(tag)));
-  if (exact.length >= quickPickLimit) return exact.slice(0, quickPickLimit);
-
-  const partial = mediaLibrary.filter((item) => quickPickTags.some((tag) => item.tags.includes(tag)));
-  if (partial.length >= quickPickLimit) return partial.slice(0, quickPickLimit);
-
-  return mediaLibrary.slice(0, quickPickLimit);
-}
 
 export function AdminImagePicker({
   title,
