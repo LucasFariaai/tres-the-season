@@ -163,6 +163,9 @@ export function AdminProducersPanel({ editor }: Props) {
     editor.setContent((current) => ({ ...current, producers: { ...current.producers, [key]: value } }));
   };
 
+  const [pendingRemoveIndex, setPendingRemoveIndex] = useState<number | null>(null);
+  const pendingRemoveProducer = pendingRemoveIndex !== null ? editor.content.producers.items[pendingRemoveIndex] : null;
+
   const setProducer = (index: number, key: keyof Producer, value: Producer[keyof Producer]) => {
     editor.setContent((current) => ({
       ...current,
