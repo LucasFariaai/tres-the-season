@@ -30,10 +30,12 @@ function FramingControls({
   producer,
   backgroundColor,
   onChange,
+  onClear,
 }: {
   producer: Producer;
   backgroundColor: string;
   onChange: (patch: Partial<Pick<Producer, "imageScale" | "imageOffsetX" | "imageOffsetY">>) => void;
+  onClear?: () => void;
 }) {
   const previewRef = useRef<HTMLDivElement | null>(null);
   const dragState = useRef<{ startX: number; startY: number; baseX: number; baseY: number; width: number; height: number } | null>(null);
