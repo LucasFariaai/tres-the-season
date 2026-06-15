@@ -36,7 +36,7 @@ export default function ProducersSection({ content, theme }: ProducersSectionPro
           <div className="w-[45%] overflow-y-auto border-r border-border">
             {sectionContent.items.map((producer, index) => (
               <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
-                <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
+                <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} backgroundColor={sectionTheme.producersBackground} />
               </div>
             ))}
           </div>
@@ -50,7 +50,7 @@ export default function ProducersSection({ content, theme }: ProducersSectionPro
           <div className="px-2">
             {sectionContent.items.map((producer, index) => (
               <div key={`${producer.name}-${index}`} ref={(el) => { cardRefs.current[index] = el; }}>
-                <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} />
+                <ProducerCard producer={producer} index={index} isActive={activeIndex === index} onHover={setHoveredIndex} onClick={handleCardClick} backgroundColor={sectionTheme.producersBackground} />
               </div>
             ))}
           </div>
