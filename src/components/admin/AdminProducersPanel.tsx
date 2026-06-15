@@ -327,8 +327,6 @@ export function AdminProducersPanel({ editor }: Props) {
                 value={producer.image}
                 mediaLibrary={editor.mediaLibrary}
                 uploadTags={["producers"]}
-                quickPickTags={["producers"]}
-                quickPickLimit={4}
                 hidePreview
                 onApply={(filePath) => setProducer(index, "image", filePath)}
                 onUpload={(file) => uploadImage(file, index)}
