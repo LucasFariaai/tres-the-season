@@ -179,8 +179,6 @@ export function AdminMenusPanel({ editor }: Props) {
                 value={dish.image}
                 mediaLibrary={editor.mediaLibrary}
                 uploadTags={["menus", activeSeason]}
-                quickPickTags={["menus", activeSeason]}
-                quickPickLimit={4}
                 onApply={(filePath) => setDish(index, "image", filePath)}
                 onUpload={(file) => uploadDishImage(file, index)}
               />

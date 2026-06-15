@@ -27,8 +27,6 @@ export function AdminImagePicker({
   mediaLibrary,
   uploadLabel = "Upload new",
   uploadTags,
-  quickPickTags,
-  quickPickLimit = 4,
   previewHeight = 120,
   previewWidth = "100%",
   previewFit = "cover",
@@ -41,10 +39,6 @@ export function AdminImagePicker({
   const [uploading, setUploading] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const inputId = useId();
-  const quickPicks = useMemo(() => {
-    if (!quickPickLimit) return [];
-    return getQuickPicks(mediaLibrary, quickPickTags ?? uploadTags, quickPickLimit);
-  }, [mediaLibrary, quickPickLimit, quickPickTags, uploadTags]);
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -136,37 +130,11 @@ export function AdminImagePicker({
         </button>
       </div>
 
-      {quickPicks.length > 0 ? (
-        <div style={{ display: "grid", gap: 8 }}>
-          <span style={fieldLabelStyle}>Quick picks</span>
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${quickPicks.length}, minmax(0, 1fr))`, gap: 8 }}>
-            {quickPicks.map((item, index) => (
-              <button
-                key={item.id ?? `${item.file_path}-${index}`}
-                type="button"
-                onClick={() => onApply(item.file_path)}
-                style={{
-                  borderRadius: 10,
-                  border: "1px solid rgba(26,20,16,0.06)",
-                  background: "transparent",
-                  padding: 0,
-                  cursor: "pointer",
-                  aspectRatio: "1 / 1",
-                  overflow: "hidden",
-                }}
-              >
-                <AdminMediaThumb src={item.file_path} alt={item.alt_text ?? item.title ?? title} width={240} quality={76} />
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
       <AdminLibraryBrowser
         open={libraryOpen}
         title={`${title} · Library`}
         mediaLibrary={mediaLibrary}
-        initialTags={quickPickTags ?? uploadTags}
+        initialTags={uploadTags}
         uploadTags={uploadTags}
         uploading={uploading}
         onUpload={async (file, tags) => {
