@@ -127,8 +127,14 @@ export function AdminToolbar({
               letterSpacing: "0.16em",
               textTransform: "uppercase",
               color: uiPalette.toolbarBadge,
+              animation: statusActive ? "adminPulse 1.6s ease-in-out infinite" : "none",
+              flexShrink: 0,
+              whiteSpace: "nowrap",
+            }}
+          >
             {statusLabel}
           </span>
+
 
 
           <div style={{ display: "flex", gap: 4, alignItems: "center", flexShrink: 0 }}>
