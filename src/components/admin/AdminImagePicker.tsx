@@ -16,6 +16,7 @@ type AdminImagePickerProps = {
   previewHeight?: number;
   previewWidth?: string | number;
   previewFit?: "cover" | "contain";
+  hidePreview?: boolean;
   onUpload: (file: File, tags: string[]) => Promise<void>;
   onApply: (filePath: string) => void;
   onClear?: () => void;
