@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
