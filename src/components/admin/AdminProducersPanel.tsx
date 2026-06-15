@@ -363,9 +363,8 @@ export function AdminProducersPanel({ editor }: Props) {
 
               <AdminFieldTextarea label="Quote (shown when card is expanded)" value={producer.quote} minRows={3} onChange={(value) => setProducer(index, "quote", value)} />
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
 
       <AlertDialog
         open={pendingRemoveIndex !== null}
