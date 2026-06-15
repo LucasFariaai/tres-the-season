@@ -247,35 +247,14 @@ export function AdminProducersPanel({ editor }: Props) {
 
       <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(min(440px, 100%), 1fr))" }}>
         {editor.content.producers.items.map((producer, index) => {
-          const previewUrl = resolveMediaUrl(producer.image, 280, 80) ?? producer.image;
           const previewScale = typeof producer.imageScale === "number" ? producer.imageScale : 1;
           const previewOffsetX = typeof producer.imageOffsetX === "number" ? producer.imageOffsetX : 0;
           const previewOffsetY = typeof producer.imageOffsetY === "number" ? producer.imageOffsetY : 0;
-          const previewObjectPosition = `${clamp(50 - previewOffsetX, 0, 100)}% ${clamp(50 - previewOffsetY, 0, 100)}%`;
           return (
             <div key={`${producer.name}-${index}`} style={{ ...cardStyle, display: "grid", gap: 14, padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 8, border: "1px solid rgba(26,20,16,0.06)", overflow: "hidden", background: producersBackground, flexShrink: 0, position: "relative" }}>
-                    {previewUrl ? (
-                      <img
-                        src={previewUrl}
-                        alt={producer.name}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          objectFit: previewScale < 1 ? "contain" : "cover",
-                          objectPosition: previewObjectPosition,
-                          transform: `scale(${previewScale})`,
-                          transformOrigin: previewObjectPosition,
-                          display: "block",
-                        }}
-                        loading="lazy"
-                      />
-                    ) : null}
-                  </div>
+                  <ProducerImageFrame image={producer.image} alt={producer.name} frameSize={56} backgroundColor={producersBackground} scale={previewScale} offsetX={previewOffsetX} offsetY={previewOffsetY} mediaWidth={280} quality={80} />
                   <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
                     {producer.name || `Point ${index + 1}`}
                   </span>
