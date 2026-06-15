@@ -322,6 +322,13 @@ export function AdminProducersPanel({ editor }: Props) {
                 </div>
               </div>
 
+              <FramingControls
+                producer={producer}
+                backgroundColor={producersBackground}
+                onChange={(patch) => patchProducer(index, patch)}
+                onClear={() => setProducer(index, "image", "")}
+              />
+
               <AdminImagePicker
                 title="Photo"
                 value={producer.image}
@@ -329,16 +336,9 @@ export function AdminProducersPanel({ editor }: Props) {
                 uploadTags={["producers"]}
                 quickPickTags={["producers"]}
                 quickPickLimit={4}
+                hidePreview
                 onApply={(filePath) => setProducer(index, "image", filePath)}
                 onUpload={(file) => uploadImage(file, index)}
-                onClear={() => setProducer(index, "image", "")}
-                clearLabel="Remove photo"
-              />
-
-              <FramingControls
-                producer={producer}
-                backgroundColor={producersBackground}
-                onChange={(patch) => patchProducer(index, patch)}
               />
 
               <AdminFieldInput label="Name" value={producer.name} onChange={(value) => setProducer(index, "name", value)} />
