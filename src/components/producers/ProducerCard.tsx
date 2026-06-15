@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import type { Producer } from "./types";
 
 interface Props {
@@ -30,7 +31,7 @@ export default function ProducerCard({ producer, index, isActive, onHover, onCli
       <div className="flex gap-4 p-4">
         {/* Thumbnail */}
         <img
-          src={producer.image}
+          src={resolveMediaUrl(producer.image, 200, 80) ?? producer.image}
           alt={producer.name}
           className="w-[100px] h-[100px] object-cover flex-shrink-0"
           style={{ borderRadius: "6px" }}
