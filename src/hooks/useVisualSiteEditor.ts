@@ -204,7 +204,10 @@ export function useVisualSiteEditor() {
       const baseline = normalizeSnapshot(byId.get(idsRef.current.baseline ?? "") as Partial<EditorSnapshotPayload> | undefined);
       const publishedFromSnapshot = normalizeSnapshot(byId.get(idsRef.current.published ?? "") as Partial<EditorSnapshotPayload> | undefined);
 
-      const mediaLibrary = mediaResult.data?.length ? normalizeMediaLibrary(mediaResult.data) : defaultMediaLibrary;
+      const dbMedia = mediaResult.data?.length ? normalizeMediaLibrary(mediaResult.data) : [];
+      const dbPaths = new Set(dbMedia.map((item) => item.file_path));
+      const seedExtras = defaultMediaLibrary.filter((item) => !dbPaths.has(item.file_path));
+      const mediaLibrary = [...dbMedia, ...seedExtras];
       const publishedTheme = publishedThemeResult.data?.length ? tokenRowsToTheme(publishedThemeResult.data) : publishedFromSnapshot.theme;
 
       const nextDraft = draft.content ? draft : { ...initialSnapshot, media: mediaLibrary };
