@@ -299,12 +299,9 @@ export function AdminProducersPanel({ editor }: Props) {
           return (
             <div key={`${producer.name}-${index}`} style={{ ...cardStyle, display: "grid", gap: 14, padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <div style={{ display: "flex", gap: 12, alignItems: "center", minWidth: 0 }}>
-                  <ProducerImageFrame image={producer.image} alt={producer.name} frameSize={56} backgroundColor={producersBackground} scale={previewScale} offsetX={previewOffsetX} offsetY={previewOffsetY} mediaWidth={280} quality={80} />
-                  <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
-                    {producer.name || `Point ${index + 1}`}
-                  </span>
-                </div>
+                <span style={{ fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 18, color: uiPalette.controlText }}>
+                  {producer.name || `Point ${index + 1}`}
+                </span>
                 <div style={{ display: "flex", gap: 6 }}>
                   <button type="button" onClick={() => moveProducer(index, -1)} disabled={index === 0} style={{ ...buttonBase, padding: "6px 10px", opacity: index === 0 ? 0.4 : 1, color: uiPalette.controlText, fontSize: 11 }}>
                     ↑
