@@ -6,6 +6,16 @@ import { buttonBase, cardStyle, fieldLabelStyle, sectionHeaderStyle, uiPalette }
 import { ProducerImageFrame } from "@/components/producers/ProducerImageFrame";
 import type { VisualEditor } from "@/components/admin/types";
 import { toast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Producer = VisualEditor["content"]["producers"]["items"][number];
 
@@ -153,6 +163,9 @@ export function AdminProducersPanel({ editor }: Props) {
     editor.setContent((current) => ({ ...current, producers: { ...current.producers, [key]: value } }));
   };
 
+  const [pendingRemoveIndex, setPendingRemoveIndex] = useState<number | null>(null);
+  const pendingRemoveProducer = pendingRemoveIndex !== null ? editor.content.producers.items[pendingRemoveIndex] : null;
+
   const setProducer = (index: number, key: keyof Producer, value: Producer[keyof Producer]) => {
     editor.setContent((current) => ({
       ...current,
@@ -268,9 +281,7 @@ export function AdminProducersPanel({ editor }: Props) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (window.confirm(`Remove "${producer.name || `point ${index + 1}`}"?`)) removeProducer(index);
-                    }}
+                    onClick={() => setPendingRemoveIndex(index)}
                     style={{ ...buttonBase, padding: "6px 10px", color: "#c0533b", borderColor: "rgba(192,83,59,0.4)", fontSize: 11 }}
                   >
                     Remove
@@ -287,6 +298,8 @@ export function AdminProducersPanel({ editor }: Props) {
                 quickPickLimit={4}
                 onApply={(filePath) => setProducer(index, "image", filePath)}
                 onUpload={(file) => uploadImage(file, index)}
+                onClear={() => setProducer(index, "image", "")}
+                clearLabel="Remove photo"
               />
 
               <FramingControls
@@ -327,6 +340,36 @@ export function AdminProducersPanel({ editor }: Props) {
           );
         })}
       </div>
+
+      <AlertDialog
+        open={pendingRemoveIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingRemoveIndex(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this producer?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingRemoveProducer
+                ? `"${pendingRemoveProducer.name || `Point ${(pendingRemoveIndex ?? 0) + 1}`}" will be removed from the producers list. This action cannot be undone until you discard the draft.`
+                : "This producer will be removed."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingRemoveIndex !== null) removeProducer(pendingRemoveIndex);
+                setPendingRemoveIndex(null);
+              }}
+              style={{ backgroundColor: "#c0533b" }}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

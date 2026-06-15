@@ -1,4 +1,5 @@
 import { useId, useMemo, useState, type ChangeEvent } from "react";
+import { Trash2 } from "lucide-react";
 import { AdminLibraryBrowser } from "@/components/admin/AdminLibraryBrowser";
 import { AdminMediaThumb } from "@/components/admin/AdminMediaThumb";
 import { buttonBase, fieldLabelStyle, uiPalette } from "@/components/admin/adminStyles";
@@ -17,6 +18,8 @@ type AdminImagePickerProps = {
   previewFit?: "cover" | "contain";
   onUpload: (file: File, tags: string[]) => Promise<void>;
   onApply: (filePath: string) => void;
+  onClear?: () => void;
+  clearLabel?: string;
 };
 
 function getQuickPicks(mediaLibrary: SiteMediaItem[], quickPickTags: string[], quickPickLimit: number) {
@@ -42,6 +45,8 @@ export function AdminImagePicker({
   previewFit = "cover",
   onUpload,
   onApply,
+  onClear,
+  clearLabel = "Remove image",
 }: AdminImagePickerProps) {
   const [uploading, setUploading] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
@@ -76,9 +81,36 @@ export function AdminImagePicker({
             borderRadius: 12,
             border: "1px solid rgba(26,20,16,0.06)",
             overflow: "hidden",
+            position: "relative",
           }}
         >
           <AdminMediaThumb src={value} alt={title} width={1200} quality={82} fit={previewFit} />
+          {onClear && value ? (
+            <button
+              type="button"
+              onClick={onClear}
+              aria-label={clearLabel}
+              title={clearLabel}
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                width: 32,
+                height: 32,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 999,
+                border: "1px solid rgba(26,20,16,0.15)",
+                background: "rgba(255,255,255,0.92)",
+                color: "#c0533b",
+                cursor: "pointer",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+              }}
+            >
+              <Trash2 size={16} />
+            </button>
+          ) : null}
         </div>
       </div>
 
