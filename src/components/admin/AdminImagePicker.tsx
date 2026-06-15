@@ -1,4 +1,5 @@
 import { useId, useMemo, useState, type ChangeEvent } from "react";
+import { Trash2 } from "lucide-react";
 import { AdminLibraryBrowser } from "@/components/admin/AdminLibraryBrowser";
 import { AdminMediaThumb } from "@/components/admin/AdminMediaThumb";
 import { buttonBase, fieldLabelStyle, uiPalette } from "@/components/admin/adminStyles";
@@ -17,6 +18,8 @@ type AdminImagePickerProps = {
   previewFit?: "cover" | "contain";
   onUpload: (file: File, tags: string[]) => Promise<void>;
   onApply: (filePath: string) => void;
+  onClear?: () => void;
+  clearLabel?: string;
 };
 
 function getQuickPicks(mediaLibrary: SiteMediaItem[], quickPickTags: string[], quickPickLimit: number) {
