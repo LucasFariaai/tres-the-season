@@ -7,6 +7,7 @@ import type { HeroContent, SiteThemeTokens } from "@/lib/site-editor/types";
 
 interface HeroSectionProps {
   shouldPlay?: boolean;
+  allowAutoUnmute?: boolean;
   content?: HeroContent;
   theme?: SiteThemeTokens;
 }
@@ -71,7 +72,7 @@ function FloatingParticles() {
   return <canvas ref={canvasRef} className="absolute inset-0 z-[2] h-full w-full pointer-events-none" />;
 }
 
-const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, content, theme }, ref) => {
+const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = true, allowAutoUnmute = true, content, theme }, ref) => {
   const { season } = useSeason();
   const [scrolled, setScrolled] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -102,6 +103,8 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
   }, [shouldPlay, isMobile]);
 
   useEffect(() => {
+    if (!allowAutoUnmute) return;
+
     const video = videoRef.current;
     if (!video) return;
 
@@ -131,7 +134,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(({ shouldPlay = tr
       window.removeEventListener("touchstart", unmute);
       window.removeEventListener("scroll", unmute);
     };
-  }, []);
+  }, [allowAutoUnmute]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
