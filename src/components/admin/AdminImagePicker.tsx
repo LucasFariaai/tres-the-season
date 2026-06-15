@@ -45,6 +45,8 @@ export function AdminImagePicker({
   previewFit = "cover",
   onUpload,
   onApply,
+  onClear,
+  clearLabel = "Remove image",
 }: AdminImagePickerProps) {
   const [uploading, setUploading] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
