@@ -2,6 +2,8 @@ import { useState } from "react";
 import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import type { Producer } from "./types";
 
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
 interface Props {
   producer: Producer;
   index: number;
@@ -17,6 +19,7 @@ export default function ProducerCard({ producer, index, isActive, onHover, onCli
   const scale = typeof producer.imageScale === "number" ? producer.imageScale : 1;
   const offsetX = typeof producer.imageOffsetX === "number" ? producer.imageOffsetX : 0;
   const offsetY = typeof producer.imageOffsetY === "number" ? producer.imageOffsetY : 0;
+  const objectPosition = `${clamp(50 - offsetX, 0, 100)}% ${clamp(50 - offsetY, 0, 100)}%`;
 
   return (
     <div
@@ -57,8 +60,9 @@ export default function ProducerCard({ producer, index, isActive, onHover, onCli
               width: "100%",
               height: "100%",
               objectFit: scale < 1 ? "contain" : "cover",
-              transform: `translate(${offsetX}%, ${offsetY}%) scale(${scale})`,
-              transformOrigin: "center center",
+              objectPosition,
+              transform: `scale(${scale})`,
+              transformOrigin: objectPosition,
             }}
           />
         </div>
