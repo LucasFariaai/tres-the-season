@@ -44,6 +44,7 @@ export function AdminImagePicker({
   previewHeight = 120,
   previewWidth = "100%",
   previewFit = "cover",
+  hidePreview = false,
   onUpload,
   onApply,
   onClear,
