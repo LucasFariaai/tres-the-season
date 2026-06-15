@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import type { Producer } from "./types";
-
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+import { ProducerImageFrame } from "./ProducerImageFrame";
 
 interface Props {
   producer: Producer;
@@ -19,7 +17,6 @@ export default function ProducerCard({ producer, index, isActive, onHover, onCli
   const scale = typeof producer.imageScale === "number" ? producer.imageScale : 1;
   const offsetX = typeof producer.imageOffsetX === "number" ? producer.imageOffsetX : 0;
   const offsetY = typeof producer.imageOffsetY === "number" ? producer.imageOffsetY : 0;
-  const objectPosition = `${clamp(50 - offsetX, 0, 100)}% ${clamp(50 - offsetY, 0, 100)}%`;
 
   return (
     <div
@@ -38,34 +35,7 @@ export default function ProducerCard({ producer, index, isActive, onHover, onCli
     >
       <div className="flex gap-4 p-4">
         {/* Thumbnail frame — fills any extra area with the section background */}
-        <div
-          className="flex-shrink-0 overflow-hidden"
-          style={{
-            width: 100,
-            height: 100,
-            borderRadius: 6,
-            backgroundColor,
-            position: "relative",
-          }}
-        >
-          <img
-            src={resolveMediaUrl(producer.image, 400, 80) ?? producer.image}
-            alt={producer.name}
-            loading="lazy"
-            width={200}
-            height={200}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: scale < 1 ? "contain" : "cover",
-              objectPosition,
-              transform: `scale(${scale})`,
-              transformOrigin: objectPosition,
-            }}
-          />
-        </div>
+        <ProducerImageFrame image={producer.image} alt={producer.name} frameSize={100} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={400} quality={80} />
         {/* Details */}
         <div className="flex flex-col justify-center min-w-0">
           <h3 className="font-display text-lg" style={{ color: "#2A1F18" }}>
