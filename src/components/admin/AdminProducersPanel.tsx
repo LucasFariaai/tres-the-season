@@ -156,22 +156,15 @@ export function AdminProducersPanel({ editor }: Props) {
                 </div>
               </div>
 
-              <FramingControls
-                producer={producer}
-                backgroundColor={producersBackground}
-                onChange={(patch) => patchProducer(index, patch)}
-                onClear={() => setProducer(index, "image", "")}
-              />
-
               <AdminImagePicker
                 title="Photo"
                 value={producer.image}
                 mediaLibrary={editor.mediaLibrary}
                 uploadTags={["producers"]}
-                hidePreview
                 onApply={(filePath) => setProducer(index, "image", filePath)}
                 onUpload={(file) => uploadImage(file, index)}
               />
+
 
               <AdminFieldInput label="Name" value={producer.name} onChange={(value) => setProducer(index, "name", value)} />
               <AdminFieldInput label="Specialty" value={producer.specialty} onChange={(value) => setProducer(index, "specialty", value)} />
