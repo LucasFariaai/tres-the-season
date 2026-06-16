@@ -412,8 +412,6 @@ const gridLineStyle = (orientation: "h" | "v", percent: number): React.CSSProper
   pointerEvents: "none",
 });
 
-// Silence the unused toast import warning if it appears (toast remains used elsewhere in this file).
-void toast;
 
 
 
