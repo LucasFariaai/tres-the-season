@@ -23,7 +23,7 @@ const Index = () => {
   const { content, theme } = usePublishedHome();
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
+    <div className="min-h-screen">
       {!introDone && <div><IntroOverlay onComplete={() => setIntroDone(true)} /></div>}
       <div><SeasonBar /></div>
       <div><HeroSection shouldPlay={introDone} content={content.hero} theme={theme} /></div>
@@ -45,7 +45,7 @@ const Index = () => {
       <div><ProducersSection content={content.producers} theme={theme} /></div>
       <div><ReserveSection content={content.reserve} theme={theme} /></div>
       <div><TresGallerySection content={content.gallery} theme={theme} /></div>
-      <div style={{ backgroundColor: "hsl(var(--wine-bark))" }}><FooterSection content={content.footer} theme={theme} /></div>
+      <div><FooterSection content={content.footer} theme={theme} /></div>
     </div>
   );
 };
