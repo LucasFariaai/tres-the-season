@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, RotateCcw, RotateCw } from "lucide-react";
+import { rotateStoredImage } from "@/lib/imageUpload";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
