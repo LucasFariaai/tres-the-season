@@ -201,7 +201,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent["items"]; prefersReducedMotion: boolean }) {
   if (!items || items.length === 0) return null;
   return (
-    <div style={{ backgroundColor: "#F5EFE6" }}>
+    <div style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
       <MobileCarousel items={items} prefersReducedMotion={prefersReducedMotion} />
     </div>
   );
