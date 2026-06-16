@@ -58,6 +58,46 @@ export async function uploadSiteImage(file: File, path: string): Promise<string>
   return path;
 }
 
+/**
+ * Rotate the image stored at `path` by `degrees` (multiples of 90) and re-upload
+ * it to the same path. Used to repair legacy assets that were saved with the
+ * wrong orientation before EXIF normalization was in place.
+ */
+export async function rotateStoredImage(path: string, degrees: 90 | 180 | 270): Promise<void> {
+  const base = import.meta.env.VITE_SUPABASE_URL;
+  // Hit the raw object (not the render endpoint) so we get the actual stored pixels.
+  const url = `${base}/storage/v1/object/public/tres-images/${path}?cb=${Date.now()}`;
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Failed to fetch image (${response.status})`);
+  const blob = await response.blob();
+
+  const bitmap = await createImageBitmap(blob);
+  const rotated = ((degrees % 360) + 360) % 360;
+  const swap = rotated === 90 || rotated === 270;
+  const canvas = document.createElement("canvas");
+  canvas.width = swap ? bitmap.height : bitmap.width;
+  canvas.height = swap ? bitmap.width : bitmap.height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    bitmap.close?.();
+    throw new Error("Canvas 2D context unavailable");
+  }
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate((rotated * Math.PI) / 180);
+  ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
+  bitmap.close?.();
+
+  const outBlob: Blob | null = await new Promise((resolve) =>
+    canvas.toBlob(resolve, "image/jpeg", 0.92),
+  );
+  if (!outBlob) throw new Error("Failed to encode rotated image");
+
+  const { error } = await supabase.storage
+    .from("tres-images")
+    .upload(path, outBlob, { upsert: true, contentType: "image/jpeg" });
+  if (error) throw error;
+}
+
 export function getImageUrl(path: string | null, width: number = 1920, quality: number = 82): string | null {
   if (!path) return null;
   const base = import.meta.env.VITE_SUPABASE_URL;
