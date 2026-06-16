@@ -136,7 +136,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
   }, [useSimpleLayout]);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden" style={{ backgroundColor: "#F5EFE6" }}>
+    <section ref={sectionRef} className="relative overflow-hidden" style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
       <div className="px-[8%] pb-8 pt-0 text-center">
         <p
           style={{
@@ -144,7 +144,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
             fontSize: "12px",
             fontWeight: 400,
             letterSpacing: "0.18em",
-            color: "rgba(78, 55, 39, 0.9)",
+            color: "rgba(245, 239, 230, 0.65)",
             textTransform: "uppercase",
           }}
         >
@@ -157,12 +157,13 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
             fontStyle: "italic",
             fontSize: "18px",
             fontWeight: 300,
-            color: "rgba(26, 20, 16, 0.52)",
+            color: "rgba(245, 239, 230, 0.75)",
           }}
         >
           {galleryContent.subtitle}
         </p>
       </div>
+
 
       {useSimpleLayout ? (
         <MobileGallery items={galleryItems} prefersReducedMotion={!!prefersReducedMotion} />
@@ -200,7 +201,7 @@ export default function TresGallerySection({ content }: TresGallerySectionProps)
 function MobileGallery({ items, prefersReducedMotion }: { items: GalleryContent["items"]; prefersReducedMotion: boolean }) {
   if (!items || items.length === 0) return null;
   return (
-    <div style={{ backgroundColor: "#F5EFE6" }}>
+    <div style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
       <MobileCarousel items={items} prefersReducedMotion={prefersReducedMotion} />
     </div>
   );
@@ -243,7 +244,7 @@ function MobileCarousel({
   const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
 
   return (
-    <section className="relative" style={{ backgroundColor: "#F5EFE6" }} aria-label="Gallery carousel">
+    <section className="relative" style={{ backgroundColor: "hsl(var(--wine-bark))" }} aria-label="Gallery carousel">
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex touch-pan-y">
           {items.map((item) => (
