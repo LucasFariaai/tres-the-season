@@ -23,7 +23,7 @@ const Index = () => {
   const { content, theme } = usePublishedHome();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ backgroundColor: "hsl(var(--wine-bark))" }}>
       {!introDone && <div><IntroOverlay onComplete={() => setIntroDone(true)} /></div>}
       <div><SeasonBar /></div>
       <div><HeroSection shouldPlay={introDone} content={content.hero} theme={theme} /></div>
