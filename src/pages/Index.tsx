@@ -45,7 +45,7 @@ const Index = () => {
       <div><ProducersSection content={content.producers} theme={theme} /></div>
       <div><ReserveSection content={content.reserve} theme={theme} /></div>
       <div><TresGallerySection content={content.gallery} theme={theme} /></div>
-      <div><FooterSection content={content.footer} theme={theme} /></div>
+      <div style={{ backgroundColor: "hsl(var(--wine-bark))" }}><FooterSection content={content.footer} theme={theme} /></div>
     </div>
   );
 };
