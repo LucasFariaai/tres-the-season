@@ -129,6 +129,14 @@
     @apply border-border;
   }
 
+  html {
+    /* Garante que qualquer área "fora" das seções (overscroll no iOS, flicker
+       de hidratação, espaço abaixo do footer) apareça na cor marrom do rodapé
+       em vez de branca/creme. Todas as seções pintam o próprio fundo, então
+       isto não altera nenhum layout existente. */
+    background-color: hsl(var(--wine-bark));
+  }
+
   body {
     font-family: var(--font-body);
     @apply bg-background text-foreground;
