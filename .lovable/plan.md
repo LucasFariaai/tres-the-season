@@ -1,85 +1,73 @@
-## Diagnóstico inicial
+## O que muda
 
-Analisei o Excel `WINE STOCK LUCAS.xlsx` (3 abas: Champagne, White, Red) e comparei com a Wine List atual do site (162 vinhos, vindos do banco via `usePublishedHome` → tabela `site_content`, com seed em `src/data/tres-wine-list.json` / `src/data/tres-wine-data.ts`).
+Hoje o editor mostra a janela quadrada final e força a imagem a "preencher" essa janela — então com fotos em proporção estranha você nunca consegue ver a imagem inteira antes de cortar. Vou substituir essa lógica por um editor onde a imagem aparece **inteira** e você arrasta/redimensiona um **quadrado de seleção sobre ela** (modelo Instagram/Figma).
 
-**Totais brutos**
+Os botões de "Rotacionar 90°" que adicionei antes serão removidos.
 
-| Origem | Sparkling | White | Red | Dessert | Total |
-|---|---|---|---|---|---|
-| Excel (estoque) | 18 | 79 | 57 | 0 | 154 |
-| Site (hoje) | 22 | 80 | 57 | 2 | 161 |
+## Como vai funcionar
 
-**Observação chave:** apesar dos números próximos, são listas bastante diferentes. O Excel traz `Vinho, Produtor` em uma única coluna; muitas safras e preços mudaram (ex.: Le Cran 2016 €290 no site vs €275 no Excel; Côte De Val Vilaine 2020 €350 vs €325; Chromatique 2016 €230 vs €220). Há também vinhos novos no Excel que não estão no site (ex.: La Parcelle, Bourgogne Chardonnay Thierry Pillot, vários Pierre-Yves Colin-Morey 2020/2018, etc.) e vinhos no site que não aparecem no Excel (ex.: Les Murgieres, La Closerie LC22, Blanc d'Argile, alguns Grand Cru Ambonnay).
+```text
+┌─────────────────────────────────┐
+│                                 │
+│   ░░░░░░░░░░░░░░░░░░░░░░░░░░░   │  ← imagem inteira (contain)
+│   ░░░░┌──────────┐░░░░░░░░░░░   │     fundo escuro nas bordas
+│   ░░░░│          │░░░░░░░░░░░   │
+│   ░░░░│  CROP    │░░░░░░░░░░░   │  ← quadrado arrastável
+│   ░░░░│  (drag)  │░░░░░░░░░░░   │     + handle de redimensionar
+│   ░░░░└──────────┘░░░░░░░░░░░   │
+│   ░░░░░░░░░░░░░░░░░░░░░░░░░░░   │
+│                                 │
+└─────────────────────────────────┘
+   [Preview no site: ⬜] [Reset]
+```
 
-**Estoque**
-- 8 itens no Excel com `Stock = 0` (esgotados): Champagne AY Grand Cru 2015 (Bérèche), Indigene (Tissot), 1er Cru Perrières 2018/2019 (Domaine de Bellene), e mais 4.
-- 146 itens com estoque ≥ 1.
+- Container fixo (~360×360) onde a foto aparece com `object-fit: contain` — sempre visível inteira, com bandas escuras se a proporção não bater.
+- Um overlay quadrado semitransparente fora da seleção mostra o que será descartado.
+- Arrastar o quadrado = recentrar; arrastar o canto inferior-direito = redimensionar (mantendo razão 1:1).
+- O quadrado fica clampado às bordas da imagem.
+- Um mini-preview ao lado mostra como ficará no site (mesmo `ProducerImageFrame` usado em produção, garantindo paridade).
+- Botão único "Reset" centraliza o crop e usa o lado curto da imagem.
 
-Conclusão: o Excel é a nova fonte de verdade. A forma correta é **substituir** a lista atual pela versão do Excel, em vez de tentar um merge confuso item-a-item.
+## Compatibilidade com dados existentes
 
-## Plano
+A renderização no site continua usando `imageScale`/`imageOffsetX`/`imageOffsetY` do `ProducerImageFrame` — os campos no banco não mudam. O editor apenas passa a manipulá-los através de um modelo mais intuitivo (retângulo de crop em px da imagem original), com uma função utilitária que converte:
 
-### 1. Parsing definitivo do Excel
-Script Python que lê as 3 abas e separa, para cada linha de vinho:
-- `category`: sparkling / white / red (a aba)
-- `country`: detectado por linha “país” (France, Germany, Austria, Italy…)
-- `region` e `subregion`: cabeçalhos intermediários (ex.: “Burgundy - Grand Cru”, “Cuvée de Prestige Champagne”, “Ludes”)
-- `vintage`: coluna C (ou null = NV)
-- `name` + `producer`: a coluna D vem como `Nome, Produtor`; vou separar pela última vírgula que precede o produtor (com fallback manual para casos com vírgulas no nome, ex.: “Riesling GG ‘Aulerde’, Wittmann”)
-- `grapes`: coluna E
-- `price`: coluna F (number)
-- `stock`: coluna B (number)
+- `cropRect (x, y, size) em px naturais` → `{imageScale, imageOffsetX, imageOffsetY}` no save
+- `{imageScale, imageOffsetX, imageOffsetY}` → `cropRect` no load (para abrir o editor já no estado salvo)
 
-Itens com `stock = 0` serão **excluídos** da lista publicada (o pedido foi “remover ou marcar como esgotado”, e a estrutura atual não tem campo de esgotado — manter fora é mais limpo do que adicionar uma feature nova).
-
-### 2. Preservar curadoria do sommelier
-O campo `featured: true` (Conversation Starters) existe hoje em alguns vinhos. Para não perder esse trabalho de curadoria, vou re-aplicar o flag `featured` em qualquer vinho do Excel cujo `(produtor + nome básico)` bata com um featured atual. Se não houver correspondência, o vinho fica sem destaque (você reativa pelo admin depois). Os 2 itens da categoria “Dessert” do site atual não aparecem no Excel — por padrão eles serão removidos; se quiser mantê-los, me avise antes do build.
-
-### 3. Publicar no banco (não só no JSON)
-A Wine List exibida vem de `site_content` (Supabase), editável pelo admin em `/admin/wines`. Vou:
-1. Atualizar o seed local (`src/data/tres-wine-list.json` e `src/data/tres-wine-data.ts`) para refletir o Excel — assim novos ambientes/restauros já nascem corretos.
-2. Rodar um `UPDATE` na tabela `site_content` substituindo o array `wines.items` pelo novo conjunto, gerando ids estáveis (`s01…`, `w01…`, `r01…`) na ordem do Excel.
-3. Disparar um snapshot (`site_snapshots`) antes da troca, para permitir rollback pelo painel “History” do admin caso algo precise voltar.
-
-Nenhuma alteração no layout, tipografia, filtros, agrupamento por região, sticky bar, Sommelier Highlights ou na página `WineList.tsx`. Só os dados mudam.
-
-### 4. Entregáveis para conferência antes do go-live
-Antes de aplicar no banco, vou gerar e te entregar:
-- `wine_list_NEW.csv` (estado final que será publicado)
-- `wine_list_DIFF.csv` com 3 abas/colunas: “Adicionados”, “Removidos”, “Alterados (preço/safra)”
-Assim você valida com o cliente antes de eu rodar o update na produção.
+Assim, producers já enquadrados não se deslocam após o deploy, e o site continua renderizando exatamente o mesmo recorte.
 
 ## Detalhes técnicos
 
-```text
-Excel sheets
-├── CHAMPAGNE   → category = sparkling  (18 in-stock)
-├── WHITE WINE  → category = white      (~78 in-stock)
-└── RED WINE    → category = red        (~57 in-stock)
+**Arquivos**
 
-Estrutura por linha de vinho:
-[country header] → seta country
-[region header]  → seta region
-[subregion]      → seta subregion (opcional)
-[wine row] B=stock C=vintage D="Name, Producer" E=grapes F=price
-```
+- `src/components/admin/AdminProducersPanel.tsx`
+  - Remover os botões "Rotacionar 90°" e o import de `rotateStoredImage`, `RotateCcw`, `RotateCw`.
+  - Substituir o componente `FramingControls` por um novo que renderiza o editor descrito acima.
+  - Manter a assinatura `onChange({ imageScale, imageOffsetX, imageOffsetY })` para não afetar o save.
 
-**Regra de split Nome/Produtor:** pega o último token após a última vírgula; se o resultado tiver ≤ 2 palavras e começar com maiúscula, é o produtor. Para os ~15 casos ambíguos (ex.: “Riesling, Sterntaucher, Jakob Tennstedt”), monto uma tabela manual de exceções para garantir 100% de acerto. Vou te mostrar esses casos no CSV de revisão.
+- `src/lib/imageUpload.ts`
+  - Remover a função `rotateStoredImage` (não usada mais).
 
-**Arquivos a tocar (sem mudança visual):**
-- `src/data/tres-wine-list.json` — substituído
-- `src/data/tres-wine-data.ts` — regenerado a partir do JSON
-- Migration de dados via `supabase--insert` em `site_content` (campo `wines`) + snapshot prévio em `site_snapshots`
+- (novo) `src/components/admin/framingMath.ts`
+  - `cropRectToFraming({ naturalW, naturalH, cropX, cropY, cropSize })` → `{ imageScale, imageOffsetX, imageOffsetY }`
+  - `framingToCropRect({ naturalW, naturalH, imageScale, imageOffsetX, imageOffsetY })` → `{ cropX, cropY, cropSize }`
+  - Inversa exata da matemática usada em `ProducerImageFrame`: `coverRatio = max(frameSize/nw, frameSize/nh)`; `scale = frameSize / (coverRatio * cropSize)`; offsets derivados do deslocamento do centro do crop em relação ao centro da imagem, normalizados para % de `frameSize`. Como `frameSize` cai fora das contas (cancela), a conversão depende só de `naturalW`, `naturalH` e do `cropRect`.
 
-**Não vou tocar:**
-- `src/pages/WineList.tsx`
-- `src/components/admin/AdminWinesPanel.tsx`
-- Tipos em `src/lib/site-editor/types.ts`
-- Nenhum CSS, fonte ou breakpoint
+- `src/components/producers/ProducerImageFrame.tsx`
+  - **Sem mudanças.** Continua sendo a fonte da verdade para renderização (e para o mini-preview no admin).
 
-## Próximo passo
+**Comportamento de carregamento**
+- Editor lê `naturalWidth`/`naturalHeight` da `<img>` quando carrega (mesmo padrão de hoje).
+- Se a imagem ainda não carregou, esconde o overlay de crop até `onLoad` disparar.
 
-Confirma a abordagem? Em particular:
-1. Excluir do site os 8 vinhos com `stock = 0` (vs. deixá-los visíveis marcados como “esgotado” — exigiria nova UI).
-2. Remover os 2 “Dessert” atuais que não aparecem no Excel (ou manter como exceção)?
-3. Quer revisar o CSV de diff antes de eu publicar no banco, ou posso publicar direto após gerar a lista?
+**Drag & resize**
+- Pointer events com `setPointerCapture`, como hoje.
+- Resize: handle no canto inferior-direito; mantém quadrado; clampa para não sair da imagem nem ficar menor que ~32px exibidos.
+- Drag: clampa o quadrado dentro do retângulo da imagem exibida.
+
+## Fora de escopo
+
+- Permitir proporções não-quadradas (você confirmou que continua só 1:1).
+- Botão "corrigir orientação" / script de migração de imagens legadas (você reenvia o original quando necessário).
+- Mudanças em outros painéis (menus, hero, etc.) — o novo editor fica isolado ao painel de Producers por enquanto. Se gostar do resultado, depois podemos extrair e reusar.
