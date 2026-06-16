@@ -34,7 +34,7 @@ export function ProducerImageFrame({
   const src = resolveMediaUrl(image, mediaWidth, quality) ?? image;
 
   const layout = useMemo(() => {
-    const safeScale = clamp(scale, 0.2, 1.8);
+    const safeScale = clamp(scale, 0.1, 4);
     if (!naturalSize) {
       return {
         width: frameSize,

@@ -144,8 +144,8 @@ function FramingControls({
             <span>Zoom: {scale.toFixed(2)}×</span>
             <input
               type="range"
-              min={0.5}
-              max={1.5}
+              min={0.2}
+              max={3}
               step={0.01}
               value={scale}
               onChange={(event) => onChange({ imageScale: parseFloat(event.target.value) })}
