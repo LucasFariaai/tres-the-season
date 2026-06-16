@@ -28,8 +28,6 @@ type Props = {
 
 
 export function AdminProducersPanel({ editor }: Props) {
-  const producersBackground = editor.theme.producersBackground;
-
   const setProducers = <K extends keyof VisualEditor["content"]["producers"]>(
     key: K,
     value: VisualEditor["content"]["producers"][K],
@@ -52,17 +50,6 @@ export function AdminProducersPanel({ editor }: Props) {
     }));
   };
 
-  const patchProducer = (index: number, patch: Partial<Producer>) => {
-    editor.setContent((current) => ({
-      ...current,
-      producers: {
-        ...current.producers,
-        items: current.producers.items.map((producer, producerIndex) =>
-          producerIndex === index ? { ...producer, ...patch } : producer,
-        ),
-      },
-    }));
-  };
 
   const addProducer = () => {
     editor.setContent((current) => ({
