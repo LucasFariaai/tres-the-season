@@ -1,8 +1,47 @@
 import imageCompression from "browser-image-compression";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * Decode the file honoring EXIF orientation and re-encode the pixels in their
+ * displayed orientation. This guarantees that whatever lands in storage has
+ * naturalWidth/naturalHeight matching what the user actually sees — critical
+ * for the framing editor, which reads those values to compute the crop.
+ *
+ * Falls back to the original File if the browser cannot honor
+ * `imageOrientation: "from-image"` (older Safari).
+ */
+async function normalizeOrientation(file: File): Promise<File> {
+  if (typeof createImageBitmap !== "function") return file;
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      bitmap.close?.();
+      return file;
+    }
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close?.();
+
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.95),
+    );
+    if (!blob) return file;
+    return new File([blob], file.name.replace(/\.[a-z0-9]+$/i, ".jpg"), {
+      type: "image/jpeg",
+      lastModified: Date.now(),
+    });
+  } catch {
+    return file;
+  }
+}
+
 export async function uploadSiteImage(file: File, path: string): Promise<string> {
-  const compressed = await imageCompression(file, {
+  const oriented = await normalizeOrientation(file);
+
+  const compressed = await imageCompression(oriented, {
     maxSizeMB: 4,
     maxWidthOrHeight: 3840,
     useWebWorker: true,
