@@ -1,11 +1,12 @@
-import { useRef, useState } from "react";
-import { Trash2, RotateCcw, RotateCw } from "lucide-react";
-import { rotateStoredImage } from "@/lib/imageUpload";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { AdminFieldInput } from "@/components/admin/AdminFieldInput";
 import { AdminFieldTextarea } from "@/components/admin/AdminFieldTextarea";
 import { AdminImagePicker } from "@/components/admin/AdminImagePicker";
 import { buttonBase, cardStyle, fieldLabelStyle, sectionHeaderStyle, uiPalette } from "@/components/admin/adminStyles";
 import { ProducerImageFrame } from "@/components/producers/ProducerImageFrame";
+import { cropRectToFraming, framingToCropRect, type CropRect } from "@/components/admin/framingMath";
+import { resolveMediaUrl } from "@/lib/site-editor/mapper";
 import type { VisualEditor } from "@/components/admin/types";
 import { toast } from "@/components/ui/use-toast";
 import {
@@ -27,6 +28,42 @@ type Props = {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+const EDITOR_BOX = 360;
+const MIN_CROP_DISPLAY_PX = 32;
+
+type Natural = { width: number; height: number };
+
+type DragMode = "move" | "resize";
+
+type DragState = {
+  mode: DragMode;
+  pointerId: number;
+  startX: number;
+  startY: number;
+  startRect: CropRect;
+  pxPerOrig: number;
+};
+
+/**
+ * Computes the displayed rect (in container px) of an image rendered with
+ * object-fit:contain inside the editor box.
+ */
+function getContainRect(natural: Natural, box: number) {
+  const ratio = natural.width / natural.height;
+  let width: number;
+  let height: number;
+  if (ratio >= 1) {
+    width = box;
+    height = box / ratio;
+  } else {
+    height = box;
+    width = box * ratio;
+  }
+  const left = (box - width) / 2;
+  const top = (box - height) / 2;
+  return { left, top, width, height };
+}
+
 function FramingControls({
   producer,
   backgroundColor,
@@ -38,76 +75,250 @@ function FramingControls({
   onChange: (patch: Partial<Pick<Producer, "imageScale" | "imageOffsetX" | "imageOffsetY">>) => void;
   onClear?: () => void;
 }) {
-  const previewRef = useRef<HTMLDivElement | null>(null);
-  const dragState = useRef<{ startX: number; startY: number; baseX: number; baseY: number; width: number; height: number } | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const dragState = useRef<DragState | null>(null);
+  const [natural, setNatural] = useState<Natural | null>(null);
+  const [dragging, setDragging] = useState<DragMode | null>(null);
 
   const scale = typeof producer.imageScale === "number" ? producer.imageScale : 1;
   const offsetX = typeof producer.imageOffsetX === "number" ? producer.imageOffsetX : 0;
   const offsetY = typeof producer.imageOffsetY === "number" ? producer.imageOffsetY : 0;
 
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!previewRef.current) return;
-    const rect = previewRef.current.getBoundingClientRect();
+  // Reset natural size when the underlying image path changes.
+  useEffect(() => {
+    setNatural(null);
+  }, [producer.image]);
+
+  const editorSrc = useMemo(
+    () => (producer.image ? resolveMediaUrl(producer.image, 1280, 82) ?? producer.image : null),
+    [producer.image],
+  );
+
+  const contain = natural ? getContainRect(natural, EDITOR_BOX) : null;
+  const cropRect = natural
+    ? framingToCropRect(natural.width, natural.height, {
+        imageScale: scale,
+        imageOffsetX: offsetX,
+        imageOffsetY: offsetY,
+      })
+    : null;
+
+  // Convert the original-pixel crop rect into display pixels for overlay positioning.
+  const cropDisplay = useMemo(() => {
+    if (!natural || !contain || !cropRect) return null;
+    const pxPerOrig = contain.width / natural.width;
+    return {
+      left: contain.left + cropRect.cropX * pxPerOrig,
+      top: contain.top + cropRect.cropY * pxPerOrig,
+      size: cropRect.cropSize * pxPerOrig,
+      pxPerOrig,
+    };
+  }, [natural, contain, cropRect]);
+
+  const applyRect = (next: CropRect) => {
+    if (!natural) return;
+    const minSide = Math.min(natural.width, natural.height);
+    const minOrig = Math.max(1, (MIN_CROP_DISPLAY_PX / EDITOR_BOX) * Math.max(natural.width, natural.height));
+    const size = clamp(next.cropSize, minOrig, minSide);
+    const x = clamp(next.cropX, 0, natural.width - size);
+    const y = clamp(next.cropY, 0, natural.height - size);
+    const framing = cropRectToFraming(natural.width, natural.height, { cropX: x, cropY: y, cropSize: size });
+    onChange(framing);
+  };
+
+  const beginDrag = (
+    mode: DragMode,
+    event: React.PointerEvent<HTMLElement>,
+  ) => {
+    if (!natural || !cropRect || !cropDisplay) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const pointerId = event.pointerId;
+    (event.currentTarget as HTMLElement).setPointerCapture(pointerId);
     dragState.current = {
+      mode,
+      pointerId,
       startX: event.clientX,
       startY: event.clientY,
-      baseX: offsetX,
-      baseY: offsetY,
-      width: rect.width,
-      height: rect.height,
+      startRect: { ...cropRect },
+      pxPerOrig: cropDisplay.pxPerOrig,
     };
-    (event.target as HTMLElement).setPointerCapture(event.pointerId);
-    setDragging(true);
+    setDragging(mode);
   };
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
     const state = dragState.current;
     if (!state) return;
-    const dxPct = ((event.clientX - state.startX) / state.width) * 100;
-    const dyPct = ((event.clientY - state.startY) / state.height) * 100;
-    onChange({
-      imageOffsetX: clamp(Math.round(state.baseX + dxPct), -50, 50),
-      imageOffsetY: clamp(Math.round(state.baseY + dyPct), -50, 50),
-    });
-  };
-
-  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    dragState.current = null;
-    setDragging(false);
-    try {
-      (event.target as HTMLElement).releasePointerCapture(event.pointerId);
-    } catch {
-      // ignore
+    const dxOrig = (event.clientX - state.startX) / state.pxPerOrig;
+    const dyOrig = (event.clientY - state.startY) / state.pxPerOrig;
+    if (state.mode === "move") {
+      applyRect({
+        cropX: state.startRect.cropX + dxOrig,
+        cropY: state.startRect.cropY + dyOrig,
+        cropSize: state.startRect.cropSize,
+      });
+    } else {
+      // Resize from bottom-right corner; preserve square by averaging.
+      const delta = (dxOrig + dyOrig) / 2;
+      applyRect({
+        cropX: state.startRect.cropX,
+        cropY: state.startRect.cropY,
+        cropSize: state.startRect.cropSize + delta,
+      });
     }
   };
 
-  const reset = () => onChange({ imageScale: 1, imageOffsetX: 0, imageOffsetY: 0 });
+  const endDrag = (event: React.PointerEvent<HTMLElement>) => {
+    const state = dragState.current;
+    dragState.current = null;
+    setDragging(null);
+    if (state) {
+      try {
+        (event.currentTarget as HTMLElement).releasePointerCapture(state.pointerId);
+      } catch {
+        // ignore
+      }
+    }
+  };
+
+  const reset = () => {
+    if (!natural) {
+      onChange({ imageScale: 1, imageOffsetX: 0, imageOffsetY: 0 });
+      return;
+    }
+    const minSide = Math.min(natural.width, natural.height);
+    applyRect({
+      cropX: (natural.width - minSide) / 2,
+      cropY: (natural.height - minSide) / 2,
+      cropSize: minSide,
+    });
+  };
 
   return (
     <div style={{ display: "grid", gap: 10 }}>
-      <span style={fieldLabelStyle}>Framing (drag to reposition · slider to zoom)</span>
+      <span style={fieldLabelStyle}>Framing · drag the square to reposition, drag the corner to resize</span>
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-start" }}>
         <div
-          ref={previewRef}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
+          ref={boxRef}
           style={{
-            width: 220,
-            height: 220,
-            borderRadius: 8,
+            width: EDITOR_BOX,
+            height: EDITOR_BOX,
+            maxWidth: "100%",
+            borderRadius: 10,
             overflow: "hidden",
             position: "relative",
-            backgroundColor,
-            border: "1px solid rgba(26,20,16,0.1)",
-            cursor: dragging ? "grabbing" : "grab",
-            touchAction: "none",
+            background: "#1a1410",
+            border: "1px solid rgba(26,20,16,0.18)",
             flexShrink: 0,
+            touchAction: "none",
+            userSelect: "none",
           }}
         >
-          <ProducerImageFrame image={producer.image} alt="Framing preview" frameSize={220} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={720} quality={82} />
+          {editorSrc ? (
+            <img
+              src={editorSrc}
+              alt="Source"
+              draggable={false}
+              onLoad={(event) => {
+                const target = event.currentTarget;
+                setNatural({ width: target.naturalWidth, height: target.naturalHeight });
+              }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                pointerEvents: "none",
+                display: "block",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "rgba(255,255,255,0.55)",
+                fontSize: 12,
+                fontStyle: "italic",
+              }}
+            >
+              No image selected
+            </div>
+          )}
+
+          {contain && cropDisplay ? (
+            <>
+              {/* Dark mask outside the crop, built with 4 rectangles. */}
+              <div style={maskStyle(0, 0, EDITOR_BOX, cropDisplay.top)} />
+              <div
+                style={maskStyle(
+                  0,
+                  cropDisplay.top + cropDisplay.size,
+                  EDITOR_BOX,
+                  EDITOR_BOX - (cropDisplay.top + cropDisplay.size),
+                )}
+              />
+              <div style={maskStyle(0, cropDisplay.top, cropDisplay.left, cropDisplay.size)} />
+              <div
+                style={maskStyle(
+                  cropDisplay.left + cropDisplay.size,
+                  cropDisplay.top,
+                  EDITOR_BOX - (cropDisplay.left + cropDisplay.size),
+                  cropDisplay.size,
+                )}
+              />
+
+              {/* Draggable crop square. */}
+              <div
+                onPointerDown={(event) => beginDrag("move", event)}
+                onPointerMove={handlePointerMove}
+                onPointerUp={endDrag}
+                onPointerCancel={endDrag}
+                style={{
+                  position: "absolute",
+                  left: cropDisplay.left,
+                  top: cropDisplay.top,
+                  width: cropDisplay.size,
+                  height: cropDisplay.size,
+                  boxShadow: "0 0 0 1px rgba(255,255,255,0.9), 0 0 0 2px rgba(0,0,0,0.4)",
+                  cursor: dragging === "move" ? "grabbing" : "grab",
+                  touchAction: "none",
+                }}
+              >
+                {/* Rule-of-thirds guides */}
+                <div style={gridLineStyle("h", 33.33)} />
+                <div style={gridLineStyle("h", 66.66)} />
+                <div style={gridLineStyle("v", 33.33)} />
+                <div style={gridLineStyle("v", 66.66)} />
+
+                {/* Resize handle (bottom-right) */}
+                <div
+                  onPointerDown={(event) => beginDrag("resize", event)}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={endDrag}
+                  onPointerCancel={endDrag}
+                  title="Drag to resize"
+                  style={{
+                    position: "absolute",
+                    right: -7,
+                    bottom: -7,
+                    width: 14,
+                    height: 14,
+                    borderRadius: 3,
+                    background: "rgba(255,255,255,0.95)",
+                    boxShadow: "0 0 0 1px rgba(0,0,0,0.4)",
+                    cursor: dragging === "resize" ? "nwse-resize" : "nwse-resize",
+                    touchAction: "none",
+                  }}
+                />
+              </div>
+            </>
+          ) : null}
+
           {onClear && producer.image ? (
             <button
               type="button"
@@ -133,6 +344,7 @@ function FramingControls({
                 color: "#c0533b",
                 cursor: "pointer",
                 boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+                zIndex: 5,
               }}
             >
               <Trash2 size={16} />
@@ -140,92 +352,68 @@ function FramingControls({
           ) : null}
         </div>
 
-        <div style={{ flex: 1, minWidth: 200, display: "grid", gap: 10 }}>
-          <label style={{ display: "grid", gap: 4, fontSize: 12, color: uiPalette.controlText }}>
-            <span>Zoom: {scale.toFixed(2)}×</span>
-            <input
-              type="range"
-              min={0.2}
-              max={3}
-              step={0.01}
-              value={scale}
-              onChange={(event) => onChange({ imageScale: parseFloat(event.target.value) })}
-            />
-          </label>
-          <label style={{ display: "grid", gap: 4, fontSize: 12, color: uiPalette.controlText }}>
-            <span>Horizontal: {offsetX}%</span>
-            <input
-              type="range"
-              min={-50}
-              max={50}
-              step={1}
-              value={offsetX}
-              onChange={(event) => onChange({ imageOffsetX: parseInt(event.target.value, 10) })}
-            />
-          </label>
-          <label style={{ display: "grid", gap: 4, fontSize: 12, color: uiPalette.controlText }}>
-            <span>Vertical: {offsetY}%</span>
-            <input
-              type="range"
-              min={-50}
-              max={50}
-              step={1}
-              value={offsetY}
-              onChange={(event) => onChange({ imageOffsetY: parseInt(event.target.value, 10) })}
-            />
-          </label>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            <button
-              type="button"
-              onClick={reset}
-              style={{ ...buttonBase, padding: "6px 12px", color: uiPalette.controlText, fontSize: 11 }}
+        <div style={{ flex: 1, minWidth: 180, display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gap: 6 }}>
+            <span style={{ ...fieldLabelStyle, fontSize: 11 }}>How it appears on the site</span>
+            <div
+              style={{
+                width: 120,
+                height: 120,
+                borderRadius: 6,
+                overflow: "hidden",
+                background: backgroundColor,
+                border: "1px solid rgba(26,20,16,0.12)",
+              }}
             >
-              Reset framing
-            </button>
-            {producer.image ? (
-              <>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await rotateStoredImage(producer.image, 270);
-                      onChange({ imageScale: 1, imageOffsetX: 0, imageOffsetY: 0 });
-                      toast({ title: "Image rotated", description: "Rotated 90° counter-clockwise. Reload to see the change." });
-                      setTimeout(() => window.location.reload(), 600);
-                    } catch (err) {
-                      toast({ title: "Rotate failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
-                    }
-                  }}
-                  title="Rotate 90° counter-clockwise (saves to storage)"
-                  style={{ ...buttonBase, padding: "6px 10px", color: uiPalette.controlText, fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}
-                >
-                  <RotateCcw size={12} /> 90°
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await rotateStoredImage(producer.image, 90);
-                      onChange({ imageScale: 1, imageOffsetX: 0, imageOffsetY: 0 });
-                      toast({ title: "Image rotated", description: "Rotated 90° clockwise. Reload to see the change." });
-                      setTimeout(() => window.location.reload(), 600);
-                    } catch (err) {
-                      toast({ title: "Rotate failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
-                    }
-                  }}
-                  title="Rotate 90° clockwise (saves to storage)"
-                  style={{ ...buttonBase, padding: "6px 10px", color: uiPalette.controlText, fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}
-                >
-                  <RotateCw size={12} /> 90°
-                </button>
-              </>
-            ) : null}
+              <ProducerImageFrame
+                image={producer.image}
+                alt="Site preview"
+                frameSize={120}
+                backgroundColor={backgroundColor}
+                scale={scale}
+                offsetX={offsetX}
+                offsetY={offsetY}
+                mediaWidth={400}
+                quality={80}
+              />
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={reset}
+            style={{ ...buttonBase, padding: "6px 12px", color: uiPalette.controlText, fontSize: 11, justifySelf: "start" }}
+          >
+            Reset framing
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
+const maskStyle = (left: number, top: number, width: number, height: number): React.CSSProperties => ({
+  position: "absolute",
+  left,
+  top,
+  width: Math.max(0, width),
+  height: Math.max(0, height),
+  background: "rgba(0,0,0,0.55)",
+  pointerEvents: "none",
+});
+
+const gridLineStyle = (orientation: "h" | "v", percent: number): React.CSSProperties => ({
+  position: "absolute",
+  left: orientation === "v" ? `${percent}%` : 0,
+  top: orientation === "h" ? `${percent}%` : 0,
+  width: orientation === "v" ? 1 : "100%",
+  height: orientation === "h" ? 1 : "100%",
+  background: "rgba(255,255,255,0.35)",
+  pointerEvents: "none",
+});
+
+
+
 
 export function AdminProducersPanel({ editor }: Props) {
   const producersBackground = editor.theme.producersBackground;
