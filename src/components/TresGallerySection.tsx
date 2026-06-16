@@ -244,7 +244,7 @@ function MobileCarousel({
   const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
 
   return (
-    <section className="relative" style={{ backgroundColor: "#F5EFE6" }} aria-label="Gallery carousel">
+    <section className="relative" style={{ backgroundColor: "hsl(var(--wine-bark))" }} aria-label="Gallery carousel">
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex touch-pan-y">
           {items.map((item) => (
