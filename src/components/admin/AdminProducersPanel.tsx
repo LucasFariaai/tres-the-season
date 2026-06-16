@@ -174,13 +174,53 @@ function FramingControls({
               onChange={(event) => onChange({ imageOffsetY: parseInt(event.target.value, 10) })}
             />
           </label>
-          <button
-            type="button"
-            onClick={reset}
-            style={{ ...buttonBase, padding: "6px 12px", color: uiPalette.controlText, fontSize: 11, justifySelf: "start" }}
-          >
-            Reset framing
-          </button>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={reset}
+              style={{ ...buttonBase, padding: "6px 12px", color: uiPalette.controlText, fontSize: 11 }}
+            >
+              Reset framing
+            </button>
+            {producer.image ? (
+              <>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await rotateStoredImage(producer.image, 270);
+                      onChange({ imageScale: 1, imageOffsetX: 0, imageOffsetY: 0 });
+                      toast({ title: "Image rotated", description: "Rotated 90° counter-clockwise. Reload to see the change." });
+                      setTimeout(() => window.location.reload(), 600);
+                    } catch (err) {
+                      toast({ title: "Rotate failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+                    }
+                  }}
+                  title="Rotate 90° counter-clockwise (saves to storage)"
+                  style={{ ...buttonBase, padding: "6px 10px", color: uiPalette.controlText, fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}
+                >
+                  <RotateCcw size={12} /> 90°
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await rotateStoredImage(producer.image, 90);
+                      onChange({ imageScale: 1, imageOffsetX: 0, imageOffsetY: 0 });
+                      toast({ title: "Image rotated", description: "Rotated 90° clockwise. Reload to see the change." });
+                      setTimeout(() => window.location.reload(), 600);
+                    } catch (err) {
+                      toast({ title: "Rotate failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+                    }
+                  }}
+                  title="Rotate 90° clockwise (saves to storage)"
+                  style={{ ...buttonBase, padding: "6px 10px", color: uiPalette.controlText, fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}
+                >
+                  <RotateCw size={12} /> 90°
+                </button>
+              </>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
