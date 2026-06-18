@@ -1,7 +1,8 @@
-import { useId, useMemo, useState, type ChangeEvent } from "react";
+import { useId, useState, type ChangeEvent } from "react";
+import { Trash2 } from "lucide-react";
 import { AdminLibraryBrowser } from "@/components/admin/AdminLibraryBrowser";
 import { AdminMediaThumb } from "@/components/admin/AdminMediaThumb";
-import { buttonBase, fieldLabelStyle, uiPalette } from "@/components/admin/adminStyles";
+import { buttonBase, uiPalette } from "@/components/admin/adminStyles";
 import type { SiteMediaItem } from "@/lib/site-editor/types";
 
 type AdminImagePickerProps = {
@@ -10,24 +11,15 @@ type AdminImagePickerProps = {
   mediaLibrary: SiteMediaItem[];
   uploadLabel?: string;
   uploadTags: string[];
-  quickPickTags?: string[];
-  quickPickLimit?: number;
   previewHeight?: number;
   previewWidth?: string | number;
   previewFit?: "cover" | "contain";
+  hidePreview?: boolean;
   onUpload: (file: File, tags: string[]) => Promise<void>;
   onApply: (filePath: string) => void;
+  onClear?: () => void;
+  clearLabel?: string;
 };
-
-function getQuickPicks(mediaLibrary: SiteMediaItem[], quickPickTags: string[], quickPickLimit: number) {
-  const exact = mediaLibrary.filter((item) => quickPickTags.every((tag) => item.tags.includes(tag)));
-  if (exact.length >= quickPickLimit) return exact.slice(0, quickPickLimit);
-
-  const partial = mediaLibrary.filter((item) => quickPickTags.some((tag) => item.tags.includes(tag)));
-  if (partial.length >= quickPickLimit) return partial.slice(0, quickPickLimit);
-
-  return mediaLibrary.slice(0, quickPickLimit);
-}
 
 export function AdminImagePicker({
   title,
@@ -35,21 +27,18 @@ export function AdminImagePicker({
   mediaLibrary,
   uploadLabel = "Upload new",
   uploadTags,
-  quickPickTags,
-  quickPickLimit = 4,
   previewHeight = 120,
   previewWidth = "100%",
   previewFit = "cover",
+  hidePreview = false,
   onUpload,
   onApply,
+  onClear,
+  clearLabel = "Remove image",
 }: AdminImagePickerProps) {
   const [uploading, setUploading] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const inputId = useId();
-  const quickPicks = useMemo(() => {
-    if (!quickPickLimit) return [];
-    return getQuickPicks(mediaLibrary, quickPickTags ?? uploadTags, quickPickLimit);
-  }, [mediaLibrary, quickPickLimit, quickPickTags, uploadTags]);
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -69,17 +58,46 @@ export function AdminImagePicker({
         <h3 style={{ margin: 0, fontFamily: '"Playfair Display", serif', fontStyle: "italic", fontSize: 16, fontWeight: 400, color: uiPalette.controlText }}>
           {title}
         </h3>
-        <div
-          style={{
-            width: previewWidth,
-            height: previewHeight,
-            borderRadius: 12,
-            border: "1px solid rgba(26,20,16,0.06)",
-            overflow: "hidden",
-          }}
-        >
-          <AdminMediaThumb src={value} alt={title} width={1200} quality={82} fit={previewFit} />
-        </div>
+        {hidePreview ? null : (
+          <div
+            style={{
+              width: previewWidth,
+              height: previewHeight,
+              borderRadius: 12,
+              border: "1px solid rgba(26,20,16,0.06)",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <AdminMediaThumb src={value} alt={title} width={1200} quality={82} fit={previewFit} />
+            {onClear && value ? (
+              <button
+                type="button"
+                onClick={onClear}
+                aria-label={clearLabel}
+                title={clearLabel}
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  width: 32,
+                  height: 32,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 999,
+                  border: "1px solid rgba(26,20,16,0.15)",
+                  background: "rgba(255,255,255,0.92)",
+                  color: "#c0533b",
+                  cursor: "pointer",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+                }}
+              >
+                <Trash2 size={16} />
+              </button>
+            ) : null}
+          </div>
+        )}
       </div>
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -112,37 +130,11 @@ export function AdminImagePicker({
         </button>
       </div>
 
-      {quickPicks.length > 0 ? (
-        <div style={{ display: "grid", gap: 8 }}>
-          <span style={fieldLabelStyle}>Quick picks</span>
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${quickPicks.length}, minmax(0, 1fr))`, gap: 8 }}>
-            {quickPicks.map((item, index) => (
-              <button
-                key={item.id ?? `${item.file_path}-${index}`}
-                type="button"
-                onClick={() => onApply(item.file_path)}
-                style={{
-                  borderRadius: 10,
-                  border: "1px solid rgba(26,20,16,0.06)",
-                  background: "transparent",
-                  padding: 0,
-                  cursor: "pointer",
-                  aspectRatio: "1 / 1",
-                  overflow: "hidden",
-                }}
-              >
-                <AdminMediaThumb src={item.file_path} alt={item.alt_text ?? item.title ?? title} width={240} quality={76} />
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
       <AdminLibraryBrowser
         open={libraryOpen}
         title={`${title} · Library`}
         mediaLibrary={mediaLibrary}
-        initialTags={quickPickTags ?? uploadTags}
+        initialTags={uploadTags}
         uploadTags={uploadTags}
         uploading={uploading}
         onUpload={async (file, tags) => {

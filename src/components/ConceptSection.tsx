@@ -27,7 +27,7 @@ export default function ConceptSection({ content, theme }: ConceptSectionProps) 
           <p className="text-[17px] leading-[1.65] text-[hsl(var(--wine-muted))]">{sectionContent.body}</p>
         </motion.div>
 
-        <div className="grid items-start gap-6 md:grid-cols-2 sm:gap-8">
+        <div className="mx-auto grid max-w-md items-start justify-items-center gap-10 sm:gap-12 md:max-w-2xl lg:max-w-none lg:grid-cols-2 lg:justify-items-stretch lg:gap-8">
           <motion.div style={{ y: y1 }} className="relative">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 1, ease: "easeOut" }} className="relative overflow-hidden">
               <img src={resolveMediaUrl(sectionContent.chefImage) ?? sectionContent.chefImage} alt={sectionContent.chefAlt} className="aspect-[3/4] w-full object-cover" />
@@ -39,7 +39,7 @@ export default function ConceptSection({ content, theme }: ConceptSectionProps) 
             </motion.div>
           </motion.div>
 
-          <motion.div style={{ y: y2 }} className="md:mt-32">
+          <motion.div style={{ y: y2 }} className="lg:mt-32">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 1, delay: 0.2, ease: "easeOut" }} className="relative overflow-hidden">
               <img src={resolveMediaUrl(sectionContent.foundersImage) ?? sectionContent.foundersImage} alt={sectionContent.foundersAlt} className="aspect-[3/4] w-full object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to top, hsl(24 24% 8% / 0.5), transparent 60%)" }} />

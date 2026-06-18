@@ -52,6 +52,21 @@ export function AdminToolbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const hasUnpublishedChanges =
+    JSON.stringify({ content: editor.content, theme: editor.theme, media: editor.mediaLibrary }) !==
+    JSON.stringify(editor.published);
+
+  const statusLabel = editor.saving
+    ? "Saving"
+    : editor.publishing
+      ? "Publishing"
+      : hasUnpublishedChanges
+        ? "Draft"
+        : "Published";
+
+  const statusActive = editor.saving || editor.publishing;
+
+
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (event: MouseEvent) => {
@@ -112,13 +127,15 @@ export function AdminToolbar({
               letterSpacing: "0.16em",
               textTransform: "uppercase",
               color: uiPalette.toolbarBadge,
-              animation: editor.saving ? "adminPulse 1.6s ease-in-out infinite" : "none",
+              animation: statusActive ? "adminPulse 1.6s ease-in-out infinite" : "none",
               flexShrink: 0,
               whiteSpace: "nowrap",
             }}
           >
-            {editor.saving ? "Saving" : "Draft"}
+            {statusLabel}
           </span>
+
+
 
           <div style={{ display: "flex", gap: 4, alignItems: "center", flexShrink: 0 }}>
             <button
@@ -246,18 +263,18 @@ export function AdminToolbar({
             alignItems: "center",
             padding: "4px 10px",
             borderRadius: 999,
-            background: editor.saving ? "rgba(26,20,16,0.06)" : "transparent",
+            background: statusActive ? "rgba(26,20,16,0.06)" : "transparent",
             fontFamily: "'Source Sans 3', sans-serif",
             fontSize: 11,
             letterSpacing: "0.16em",
             textTransform: "uppercase",
-            color: uiPalette.toolbarBadge,
-            animation: editor.saving ? "adminPulse 1.6s ease-in-out infinite" : "none",
+            color: hasUnpublishedChanges || statusActive ? uiPalette.toolbarBadge : "#3a7d44",
+            animation: statusActive ? "adminPulse 1.6s ease-in-out infinite" : "none",
             flexShrink: 0,
             whiteSpace: "nowrap",
           }}
         >
-          {editor.saving ? "Saving" : "Draft"}
+          {statusLabel}
         </span>
 
         <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>

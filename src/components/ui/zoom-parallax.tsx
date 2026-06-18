@@ -46,6 +46,7 @@ export function ZoomParallax({ images, scrollHeightVh = 180 }: ZoomParallaxProps
 
   return (
     <div ref={container} className="relative" style={{ height: `${scrollHeightVh}vh` }}>
+
       <div className="sticky top-0 h-screen overflow-hidden">
         {images.map(({ src, alt }, index) => {
           const scale = scales[index % scales.length];
@@ -59,6 +60,8 @@ export function ZoomParallax({ images, scrollHeightVh = 180 }: ZoomParallaxProps
                 <img
                   src={src}
                   alt={alt || ''}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </div>

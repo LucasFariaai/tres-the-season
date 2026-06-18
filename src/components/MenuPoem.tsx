@@ -183,7 +183,7 @@ export default function MenuPoem({
             </div>
           ) : null}
 
-          <div className="flex flex-col flex-1 gap-6 py-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-[1fr_auto] lg:items-stretch lg:gap-x-16 lg:gap-y-0 lg:py-10">
+          <div className="flex flex-col flex-1 gap-6 pt-24 pb-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-[1fr_auto] lg:items-stretch lg:gap-x-16 lg:gap-y-0 lg:pt-10 lg:pb-10">
             <div className="order-1 flex flex-col lg:col-start-1 lg:row-start-1 lg:justify-center">
               {showHeader ? (
                 <div className="mb-6 lg:mb-10">
@@ -276,7 +276,7 @@ export default function MenuPoem({
                       key={`dish-${season}-${index}`}
                       src={dish.image}
                       alt={dish.name}
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-contain"
                       decoding="async"
                       loading={isPriority ? "eager" : "lazy"}
                       // @ts-expect-error fetchpriority is a valid HTML attr

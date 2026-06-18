@@ -267,8 +267,6 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
               mediaLibrary={editor.mediaLibrary}
               uploadLabel="Change"
               uploadTags={["zoom"]}
-              quickPickTags={["zoom"]}
-              quickPickLimit={3}
               onApply={(filePath) => {
                 editor.setContent((current) => ({
                   ...current,
@@ -453,8 +451,6 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
               value={editor.content.concept.chefImage}
               mediaLibrary={editor.mediaLibrary}
               uploadTags={["concept", "chef"]}
-              quickPickTags={["concept", "chef"]}
-              quickPickLimit={4}
               onApply={(filePath) => setConcept("chefImage", filePath)}
               onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setConcept("chefImage", filePath))}
             />
@@ -463,8 +459,6 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
               value={editor.content.concept.foundersImage}
               mediaLibrary={editor.mediaLibrary}
               uploadTags={["concept", "founders"]}
-              quickPickTags={["concept", "founders"]}
-              quickPickLimit={4}
               onApply={(filePath) => setConcept("foundersImage", filePath)}
               onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setConcept("foundersImage", filePath))}
             />
@@ -618,8 +612,6 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
                       value={dish.image}
                       mediaLibrary={editor.mediaLibrary}
                       uploadTags={["menus", activeMenuSeason]}
-                      quickPickTags={["menus", activeMenuSeason]}
-                      quickPickLimit={3}
                       onApply={(filePath) => setDish(activeMenuSeason, index, "image", filePath)}
                       onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setDish(activeMenuSeason, index, "image", filePath))}
                     />
@@ -682,8 +674,6 @@ export function AdminEditPanel({ editor, selection, onClose }: AdminEditPanelPro
                       value={producer.image}
                       mediaLibrary={editor.mediaLibrary}
                       uploadTags={["producers"]}
-                      quickPickTags={["producers"]}
-                      quickPickLimit={3}
                       onApply={(filePath) => setProducer(index, "image", filePath)}
                       onUpload={(file, tags) => uploadToField(file, tags, (filePath) => setProducer(index, "image", filePath))}
                     />

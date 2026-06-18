@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Producer } from "./types";
+import { ProducerImageFrame } from "./ProducerImageFrame";
 
 interface Props {
   producer: Producer;
@@ -7,10 +8,15 @@ interface Props {
   isActive: boolean;
   onHover: (index: number | null) => void;
   onClick: (index: number) => void;
+  backgroundColor?: string;
 }
 
-export default function ProducerCard({ producer, index, isActive, onHover, onClick }: Props) {
+export default function ProducerCard({ producer, index, isActive, onHover, onClick, backgroundColor = "#F5EFE6" }: Props) {
   const [expanded, setExpanded] = useState(false);
+
+  const scale = typeof producer.imageScale === "number" ? producer.imageScale : 1;
+  const offsetX = typeof producer.imageOffsetX === "number" ? producer.imageOffsetX : 0;
+  const offsetY = typeof producer.imageOffsetY === "number" ? producer.imageOffsetY : 0;
 
   return (
     <div
@@ -28,16 +34,8 @@ export default function ProducerCard({ producer, index, isActive, onHover, onCli
       }}
     >
       <div className="flex gap-4 p-4">
-        {/* Thumbnail */}
-        <img
-          src={producer.image}
-          alt={producer.name}
-          className="w-[100px] h-[100px] object-cover flex-shrink-0"
-          style={{ borderRadius: "6px" }}
-          loading="lazy"
-          width={200}
-          height={200}
-        />
+        {/* Thumbnail frame — fills any extra area with the section background */}
+        <ProducerImageFrame image={producer.image} alt={producer.name} frameSize={100} backgroundColor={backgroundColor} scale={scale} offsetX={offsetX} offsetY={offsetY} mediaWidth={400} quality={80} />
         {/* Details */}
         <div className="flex flex-col justify-center min-w-0">
           <h3 className="font-display text-lg" style={{ color: "#2A1F18" }}>
